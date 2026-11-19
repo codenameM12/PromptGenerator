@@ -44,15 +44,18 @@ If the commands are missing right after installing Rust, restart the shell so
 
 ## Quick start
 
-1. Start LM Studio's local server on `http://127.0.0.1:1234`.
-2. Build and run the native app:
+1. Clone with Git LFS installed (`git lfs install` once per machine). The bundled
+   `ffmpeg`/`ffprobe` sidecars in `src-tauri/binaries/` are stored as LFS objects;
+   without LFS they arrive as small text pointer files and media import fails.
+2. Start LM Studio's local server on `http://127.0.0.1:1234`.
+3. Build and run the native app:
 
 ```powershell
 cargo build --manifest-path native-ui/Cargo.toml
 cargo run --manifest-path native-ui/Cargo.toml
 ```
 
-3. Import an image or video from the **Media** view, edit if needed, choose a
+4. Import an image or video from the **Media** view, edit if needed, choose a
    preset in **Compose**, and run Describe or Compose. Results are saved to the
    Library and batch runs appear in **Jobs**.
 
