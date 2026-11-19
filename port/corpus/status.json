@@ -1,0 +1,525 @@
+{
+  "module": "status",
+  "source": "src/lib/useStatus.ts",
+  "generatedBy": "src/port/characterize_status.test.ts",
+  "scenarios": [
+    {
+      "name": "successful polling updates the snapshot",
+      "events": [
+        {
+          "action": {
+            "kind": "initial"
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": null,
+            "error": null,
+            "checking": true
+          }
+        },
+        {
+          "action": {
+            "kind": "mount",
+            "first": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": true,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 2,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1000
+              }
+            },
+            "intervalMs": 10
+          },
+          "calls": [],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1000
+            },
+            "error": null,
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": true,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 1,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1010
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 1,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1010
+            },
+            "error": null,
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": false,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 2,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1020
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": false,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1020
+            },
+            "error": null,
+            "checking": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "an error keeps the previous snapshot and recovers",
+      "events": [
+        {
+          "action": {
+            "kind": "initial"
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": null,
+            "error": null,
+            "checking": true
+          }
+        },
+        {
+          "action": {
+            "kind": "mount",
+            "first": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": true,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 2,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1000
+              }
+            },
+            "intervalMs": 10
+          },
+          "calls": [],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1000
+            },
+            "error": null,
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": false,
+              "cause": {},
+              "message": "runtime down"
+            }
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1000
+            },
+            "error": "runtime down",
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": true,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 2,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1030
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1030
+            },
+            "error": null,
+            "checking": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "errors before any successful snapshot, including String() fallback",
+      "events": [
+        {
+          "action": {
+            "kind": "initial"
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": null,
+            "error": null,
+            "checking": true
+          }
+        },
+        {
+          "action": {
+            "kind": "mount",
+            "first": {
+              "ok": false,
+              "cause": {},
+              "message": "initial outage"
+            },
+            "intervalMs": 10
+          },
+          "calls": [],
+          "state": {
+            "snapshot": null,
+            "error": "initial outage",
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": false,
+              "cause": "plain failure",
+              "message": "plain failure"
+            }
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": null,
+            "error": "plain failure",
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": false,
+              "cause": {
+                "code": "unexpected"
+              },
+              "message": "[object Object]"
+            }
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": null,
+            "error": "[object Object]",
+            "checking": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "unmount stops polling",
+      "events": [
+        {
+          "action": {
+            "kind": "initial"
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": null,
+            "error": null,
+            "checking": true
+          }
+        },
+        {
+          "action": {
+            "kind": "mount",
+            "first": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": true,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 2,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1000
+              }
+            },
+            "intervalMs": 10
+          },
+          "calls": [],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1000
+            },
+            "error": null,
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": true,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 2,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1040
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "status_snapshot",
+              "args": {}
+            }
+          ],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1040
+            },
+            "error": null,
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "unmount"
+          },
+          "calls": [],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1040
+            },
+            "error": null,
+            "checking": false
+          }
+        },
+        {
+          "action": {
+            "kind": "poll",
+            "result": {
+              "ok": true,
+              "value": {
+                "endpoint": "http://127.0.0.1:1234",
+                "reachable": true,
+                "latencyMs": 12,
+                "loadedModels": ["model-a"],
+                "activeJobs": 2,
+                "cacheBytes": 4096,
+                "dataBytes": 8192,
+                "portable": false,
+                "storageNote": null,
+                "checkedAtMs": 1050
+              }
+            }
+          },
+          "calls": [],
+          "state": {
+            "snapshot": {
+              "endpoint": "http://127.0.0.1:1234",
+              "reachable": true,
+              "latencyMs": 12,
+              "loadedModels": ["model-a"],
+              "activeJobs": 2,
+              "cacheBytes": 4096,
+              "dataBytes": 8192,
+              "portable": false,
+              "storageNote": null,
+              "checkedAtMs": 1040
+            },
+            "error": null,
+            "checking": false
+          }
+        }
+      ]
+    }
+  ]
+}

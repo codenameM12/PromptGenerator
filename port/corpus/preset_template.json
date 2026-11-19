@@ -1,0 +1,419 @@
+{
+  "module": "presetTemplate",
+  "source": "src/features/presets/presetTemplate.ts",
+  "generatedBy": "src/port/characterize_preset_template.test.ts",
+  "slugify": [
+    {
+      "value": "Krea 2  Edit!",
+      "output": "krea-2-edit"
+    },
+    {
+      "value": "   ",
+      "output": "custom-target"
+    },
+    {
+      "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "value": "Café Crème",
+      "output": "caf-cr-me"
+    },
+    {
+      "value": "a---b___c",
+      "output": "a-b-c"
+    },
+    {
+      "value": "-leading-and-trailing-",
+      "output": "leading-and-trailing"
+    },
+    {
+      "value": "ALL CAPS 123",
+      "output": "all-caps-123"
+    },
+    {
+      "value": "已经中文",
+      "output": "custom-target"
+    }
+  ],
+  "nextVersion": [
+    {
+      "version": "1.0.0",
+      "output": "1.0.1"
+    },
+    {
+      "version": "2.3.9",
+      "output": "2.3.10"
+    },
+    {
+      "version": "1.2",
+      "output": "1.2.1"
+    },
+    {
+      "version": "",
+      "output": "0.0.1"
+    },
+    {
+      "version": "1.2.3.4",
+      "output": "1.2.4"
+    },
+    {
+      "version": "abc",
+      "output": "0.0.1"
+    },
+    {
+      "version": "1.x.3",
+      "output": "1.0.4"
+    },
+    {
+      "version": "0.0.0",
+      "output": "0.0.1"
+    }
+  ],
+  "validateGuide": [
+    {
+      "guide": {
+        "name": " ",
+        "kind": "video",
+        "description": "Short cinematic clips",
+        "guide": "Describe one continuous shot with camera language.",
+        "promptChars": 3000
+      },
+      "output": "Give the preset a name"
+    },
+    {
+      "guide": {
+        "name": "Hailuo clip",
+        "kind": "video",
+        "description": "Short cinematic clips",
+        "guide": "  ",
+        "promptChars": 3000
+      },
+      "output": "Write the prompt guide text"
+    },
+    {
+      "guide": {
+        "name": "Hailuo clip",
+        "kind": "video",
+        "description": "Short cinematic clips",
+        "guide": "Describe one continuous shot with camera language.",
+        "promptChars": -1
+      },
+      "output": "The character limit cannot be negative"
+    },
+    {
+      "guide": {
+        "name": "Hailuo clip",
+        "kind": "video",
+        "description": "Short cinematic clips",
+        "guide": "Describe one continuous shot with camera language.",
+        "promptChars": 0
+      },
+      "output": null
+    },
+    {
+      "guide": {
+        "name": "Hailuo clip",
+        "kind": "video",
+        "description": "Short cinematic clips",
+        "guide": "Describe one continuous shot with camera language.",
+        "promptChars": 3000
+      },
+      "output": null
+    }
+  ],
+  "documents": [
+    {
+      "label": "new video preset from an empty id",
+      "guide": {
+        "name": "Hailuo clip",
+        "kind": "video",
+        "description": "Short cinematic clips",
+        "guide": "Describe one continuous shot with camera language.",
+        "promptChars": 3000
+      },
+      "base": {
+        "id": "",
+        "name": "Custom target",
+        "kind": "image",
+        "version": "1.0.0",
+        "description": "",
+        "systemPrompt": "Write a prompt for this target. Return only the prompt.",
+        "params": {},
+        "promptChars": 1500
+      },
+      "output": {
+        "id": "hailuo-clip",
+        "name": "Hailuo clip",
+        "kind": "video",
+        "version": "1.0.0",
+        "description": "Short cinematic clips",
+        "systemPrompt": "Describe one continuous shot with camera language.",
+        "guidance": null,
+        "mode": "compose",
+        "sections": ["subject", "action", "camera", "lighting", "style"],
+        "supportsNegative": false,
+        "referenceSlots": 0,
+        "resolutions": [[1280, 720]],
+        "checklist": ["subject", "camera"],
+        "params": {},
+        "promptChars": 3000
+      }
+    },
+    {
+      "label": "edit an image preset keeps params and bumps patch",
+      "guide": {
+        "name": "My target",
+        "kind": "image",
+        "description": "Short cinematic clips",
+        "guide": "New instructions",
+        "promptChars": 900
+      },
+      "base": {
+        "id": "my-target",
+        "name": "My target",
+        "kind": "image",
+        "version": "1.0.0",
+        "description": "",
+        "systemPrompt": "Write a prompt for this target. Return only the prompt.",
+        "params": {
+          "aspect_ratio": {
+            "type": "enum",
+            "values": ["1:1"],
+            "default": "1:1",
+            "min": null,
+            "max": null,
+            "label": "Aspect ratio"
+          }
+        },
+        "promptChars": 1500
+      },
+      "output": {
+        "id": "my-target",
+        "name": "My target",
+        "kind": "image",
+        "version": "1.0.1",
+        "description": "Short cinematic clips",
+        "systemPrompt": "New instructions",
+        "guidance": null,
+        "mode": "compose",
+        "sections": ["subject", "lighting", "style"],
+        "supportsNegative": true,
+        "referenceSlots": 0,
+        "resolutions": [[1024, 1024]],
+        "checklist": ["subject"],
+        "params": {
+          "aspect_ratio": {
+            "type": "enum",
+            "values": ["1:1"],
+            "default": "1:1",
+            "min": null,
+            "max": null,
+            "label": "Aspect ratio"
+          }
+        },
+        "promptChars": 900
+      }
+    },
+    {
+      "label": "switching kind resets params",
+      "guide": {
+        "name": "Editor",
+        "kind": "edit",
+        "description": "Short cinematic clips",
+        "guide": "Describe one continuous shot with camera language.",
+        "promptChars": 3000
+      },
+      "base": {
+        "id": "keep-id",
+        "name": "Old",
+        "kind": "image",
+        "version": "3.4.5",
+        "description": "",
+        "systemPrompt": "Write a prompt for this target. Return only the prompt.",
+        "params": {
+          "a": {
+            "type": "string",
+            "values": [],
+            "default": null,
+            "min": null,
+            "max": null,
+            "label": null
+          }
+        },
+        "promptChars": 1500
+      },
+      "output": {
+        "id": "keep-id",
+        "name": "Editor",
+        "kind": "edit",
+        "version": "3.4.6",
+        "description": "Short cinematic clips",
+        "systemPrompt": "Describe one continuous shot with camera language.",
+        "guidance": null,
+        "mode": "edit",
+        "sections": ["change", "preserve", "style"],
+        "supportsNegative": true,
+        "referenceSlots": 1,
+        "resolutions": [[1024, 1024]],
+        "checklist": ["change", "preserve"],
+        "params": {},
+        "promptChars": 3000
+      }
+    },
+    {
+      "label": "zero prompt chars falls back to base limit",
+      "guide": {
+        "name": "Hailuo clip",
+        "kind": "video",
+        "description": "Short cinematic clips",
+        "guide": "Describe one continuous shot with camera language.",
+        "promptChars": 0
+      },
+      "base": {
+        "id": "fallback",
+        "name": "Fallback",
+        "kind": "image",
+        "version": "1.0.0",
+        "description": "",
+        "systemPrompt": "Write a prompt for this target. Return only the prompt.",
+        "params": {},
+        "promptChars": 1200
+      },
+      "output": {
+        "id": "fallback",
+        "name": "Hailuo clip",
+        "kind": "video",
+        "version": "1.0.1",
+        "description": "Short cinematic clips",
+        "systemPrompt": "Describe one continuous shot with camera language.",
+        "guidance": null,
+        "mode": "compose",
+        "sections": ["subject", "action", "camera", "lighting", "style"],
+        "supportsNegative": false,
+        "referenceSlots": 0,
+        "resolutions": [[1280, 720]],
+        "checklist": ["subject", "camera"],
+        "params": {},
+        "promptChars": 1200
+      }
+    },
+    {
+      "label": "nothing changed keeps the version",
+      "guide": {
+        "name": "Steady",
+        "kind": "image",
+        "description": "",
+        "guide": "Write a prompt for this target. Return only the prompt.",
+        "promptChars": 1500
+      },
+      "base": {
+        "id": "steady",
+        "name": "Steady",
+        "kind": "image",
+        "version": "1.2.3",
+        "description": "",
+        "systemPrompt": "Write a prompt for this target. Return only the prompt.",
+        "params": {},
+        "promptChars": 1500
+      },
+      "output": {
+        "id": "steady",
+        "name": "Steady",
+        "kind": "image",
+        "version": "1.2.3",
+        "description": "",
+        "systemPrompt": "Write a prompt for this target. Return only the prompt.",
+        "guidance": null,
+        "mode": "compose",
+        "sections": ["subject", "lighting", "style"],
+        "supportsNegative": true,
+        "referenceSlots": 0,
+        "resolutions": [[1024, 1024]],
+        "checklist": ["subject"],
+        "params": {},
+        "promptChars": 1500
+      }
+    }
+  ],
+  "guides": [
+    {
+      "document": {
+        "id": "custom-target",
+        "name": "Custom target",
+        "kind": "image",
+        "version": "1.0.0",
+        "description": "",
+        "systemPrompt": "Write a prompt for this target. Return only the prompt.",
+        "guidance": null,
+        "mode": "compose",
+        "sections": ["subject", "lighting", "style"],
+        "supportsNegative": true,
+        "referenceSlots": 0,
+        "resolutions": [[1024, 1024]],
+        "checklist": ["subject"],
+        "params": {},
+        "promptChars": 1500
+      },
+      "output": {
+        "name": "Custom target",
+        "kind": "image",
+        "description": "",
+        "guide": "Write a prompt for this target. Return only the prompt.",
+        "promptChars": 1500
+      }
+    },
+    {
+      "document": {
+        "id": "custom-target",
+        "name": "Custom target",
+        "kind": "image",
+        "version": "1.0.0",
+        "description": "",
+        "systemPrompt": "First line",
+        "guidance": "Second line",
+        "mode": "compose",
+        "sections": ["subject", "lighting", "style"],
+        "supportsNegative": true,
+        "referenceSlots": 0,
+        "resolutions": [[1024, 1024]],
+        "checklist": ["subject"],
+        "params": {},
+        "promptChars": 1500
+      },
+      "output": {
+        "name": "Custom target",
+        "kind": "image",
+        "description": "",
+        "guide": "First line\n\nSecond line",
+        "promptChars": 1500
+      }
+    },
+    {
+      "document": {
+        "id": "custom-target",
+        "name": "Custom target",
+        "kind": "image",
+        "version": "1.0.0",
+        "description": "",
+        "systemPrompt": "   padded   ",
+        "guidance": null,
+        "mode": "compose",
+        "sections": ["subject", "lighting", "style"],
+        "supportsNegative": true,
+        "referenceSlots": 0,
+        "resolutions": [[1024, 1024]],
+        "checklist": ["subject"],
+        "params": {},
+        "promptChars": 1500
+      },
+      "output": {
+        "name": "Custom target",
+        "kind": "image",
+        "description": "",
+        "guide": "padded",
+        "promptChars": 1500
+      }
+    }
+  ]
+}

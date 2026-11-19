@@ -1,0 +1,46 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+dist-portable
+
+# Rust build output
+target/
+**/target/
+
+# Local runtime data (never commit user libraries, caches, or the DPAPI token)
+data/
+portable.txt
+prompt-studio-native-data/
+*.db
+*.db-shm
+*.db-wal
+token.bin
+settings.json
+workspace.json
+workspace.corrupt.json
+
+# Local scratch
+*.zip
+*.tmp
+.partial

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Overview · Prompt Studio docs</title>
+<meta name="description" content="Prompt Studio documentation: Overview" />
+<link rel="stylesheet" href="assets/wiki.css" />
+</head>
+<body data-page="index.html">
+<a class="skip" href="#content">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">PS</span>
+      <span><strong>Prompt Studio</strong><small>Documentation</small></span>
+    </a>
+    <label class="search">
+      <span class="visually-hidden">Filter pages</span>
+      <input id="nav-filter" type="search" placeholder="Filter pages…" autocomplete="off" />
+    </label>
+    <nav class="nav" aria-label="Documentation"><a class="nav-link is-current" href="index.html" data-title="overview start here"><span>Overview</span><small>Start here</small></a>
+<a class="nav-link" href="user-guide.html" data-title="user guide day-to-day use"><span>User guide</span><small>Day-to-day use</small></a>
+<a class="nav-link" href="presets.html" data-title="presets targets"><span>Presets</span><small>Targets</small></a>
+<a class="nav-link" href="troubleshooting.html" data-title="troubleshooting fix problems"><span>Troubleshooting</span><small>Fix problems</small></a>
+<a class="nav-link" href="release-notes.html" data-title="release notes verification"><span>Release notes</span><small>Verification</small></a>
+<a class="nav-link" href="drag-out.html" data-title="drag out files"><span>Drag out</span><small>Files</small></a>
+<a class="nav-link" href="ui-system.html" data-title="interface system design"><span>Interface system</span><small>Design</small></a></nav>
+    <p class="sidebar-foot">Offline wiki · built from the Markdown guides</p>
+  </aside>
+  <main id="content" class="content">
+    <header class="page-head">
+      <p class="eyebrow">Start here</p>
+      <h1>Overview</h1>
+    </header>
+    <article class="prose">
+<h1 id="prompt-studio">Prompt Studio</h1>
+<p>A local-first Windows desktop workbench that turns images and video into prompts for image and video generation targets. A small vision model describes the media; a larger local model writes the prompt for the selected target. Nothing leaves the machine.</p>
+<blockquote><p>Status: v1 is complete. All planning changes are archived under</p><p><code>openspec/changes/archive/</code>, <code>openspec validate --specs --strict</code> passes for all</p><p>12 capabilities, and no active changes remain. The UI system is documented in</p><p><a href="ui-system.html">docs/ui-system.md</a>; the original contract is preserved in</p><p><code>openspec/changes/archive/2026-11-05-build-local-prompt-studio/</code>.</p></blockquote>
+<h2 id="workspace">Workspace</h2>
+<p>The app opens on <strong>Compose</strong>. A persistent left rail switches between seven sections:</p>
+<ul><li><strong>Compose</strong> — the default prompt workspace (Describe, Compose, Refine, Batch).</li><li><strong>Media</strong> — import, inspect, and edit source images and video.</li><li><strong>Library</strong> — search saved generations and their provenance.</li><li><strong>Jobs</strong> — watch and control queued work.</li><li><strong>Presets</strong> — edit target instructions and preview the compiled result.</li><li><strong>Runtime</strong> — load models and set the keep-warm policy.</li><li><strong>Datasets</strong> — map, run, and export batches.</li></ul>
+<p>Sections stay mounted after the first visit, so moving away and back keeps the selected asset, compose inputs, filters, and editor state in place. The top bar shows the current section and LM Studio health; storage mode and data size sit at the foot of the rail.</p>
+<h2 id="what-it-does">What it does</h2>
+<ul><li>Two-stage local pipeline: <code>lfm3-vl-2b</code> describes, a configurable composer</li></ul>
+<p>(default <code>gemma4-12b-qat-uncensored-hauhaucs-balanced</code>) writes the prompt.</p>
+<ul><li>Target presets for <code>mmh3</code>, <code>krea2</code>, <code>krea2 edit</code>, <code>qwen2 edit</code>, plus generic</li></ul>
+<p>image/video. Presets are editable and importable.</p>
+<ul><li>Drag media in from Explorer, edit it non-destructively (crop, mask, trim, fps,</li></ul>
+<p>resolution), generate prompts, and drag the result back out.</p>
+<ul><li>Durable job queue with pause/resume, retry, cancel, reorder, crash recovery,</li></ul>
+<p>and a job panel.</p>
+<ul><li>Prompt library with FTS search, filters, favorites, tags, collections, notes,</li></ul>
+<p>ratings, versions/diffs, trash, backup/restore, and JSON/JSONL/CSV/TXT export.</p>
+<ul><li>Dataset import wizard (TXT, JSON, JSONL, CSV, TSV, image folders), mapping</li></ul>
+<p>profiles, dedupe, batch runs, and result export.</p>
+<ul><li>Per-role model instructions, multi-reference compose, media masking and video</li></ul>
+<p>trimming, and batch runs with a worked guide.</p>
+<ul><li>Talks only to a local LM Studio instance.</li></ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul><li>Windows 10/11 with WebView2 (preinstalled on current builds).</li><li>Node.js 24+ and npm 11+.</li><li>Rust stable with the MSVC toolchain, plus Visual Studio Build Tools with the</li></ul>
+<p>C++ workload and a Windows SDK.</p>
+<ul><li>LM Studio for inference (the app is unusable without it at runtime).</li></ul>
+<p>Check the toolchain:</p>
+<pre class="code"><code>rustc --version
+cargo --version</code></pre>
+<p>If the commands are missing right after installing Rust, restart the shell so <code>%USERPROFILE%\.cargo\bin</code> is on <code>PATH</code>.</p>
+<h2 id="quick-start">Quick start</h2>
+<ol><li>Start LM Studio's local server on <code>http://127.0.0.1:1234</code>.</li><li>Load or let Prompt Studio load <code>lfm3-vl-2b</code> and your composer model.</li><li>Run the app:</li></ol>
+<pre class="code"><code>npm install
+npm run tauri dev</code></pre>
+<ol><li>Drag an image or video into the window. The editor opens; apply edits if</li></ol>
+<p>needed, choose a preset, and compose. The prompt appears in the workspace and is saved to the library; queued batches also appear in <strong>Jobs</strong>.</p>
+<p>The Vite dev server runs on <code>http://localhost:1420</code>; Tauri opens the desktop window and loads that URL.</p>
+<h2 id="install-and-portable-builds">Install and portable builds</h2>
+<p>Build the NSIS installer and the raw release executable:</p>
+<pre class="code"><code>npm run tauri build -- --bundles nsis</code></pre>
+<p>Outputs:</p>
+<ul><li><code>src-tauri/target/release/prompt-studio.exe</code> — raw executable.</li><li><code>src-tauri/target/release/bundle/nsis/Prompt Studio_0.1.0_x64-setup.exe</code> —</li></ul>
+<p>NSIS installer.</p>
+<ul><li><code>dist-portable/Prompt Studio/</code> — portable folder.</li><li><code>dist-portable/Prompt Studio_0.1.0_x64-portable.zip</code> — portable zip.</li></ul>
+<p>Create or refresh the portable folder after a build:</p>
+<pre class="code"><code>npm run package:portable</code></pre>
+<p>The portable folder contains <code>portable.txt</code>; the app then stores data, cache, config, and the SQLite database under <code>.\data</code> beside the executable. If that folder is not writable, it falls back to the per-user directories and reports the reason in the status panel.</p>
+<h2 id="startup-measurements">Startup measurements</h2>
+<p>Measured on the reference machine on 2026-11-05 with the portable build, from process launch until the main window handle exists, then three seconds idle:</p>
+<div class="table-wrap"><table><thead><tr><th>Run</th><th>Time to window</th><th>Idle working set</th></tr></thead><tbody><tr><td>Cold</td><td>27.61 s</td><td>29.4 MB</td></tr><tr><td>Warm</td><td>0.09 s</td><td>29.1 MB</td></tr></tbody></table></div>
+<p>The cold run includes first-run WebView2 initialization and Defender scanning of the bundled 100 MB ffmpeg/ffprobe binaries. First paint is not instrumented separately; the renderer bundle is ~345 KB (102 KB gzipped), so first paint follows window creation closely on warm launches. Re-measure on the target machine before publishing release numbers.</p>
+<h2 id="scripts">Scripts</h2>
+<div class="table-wrap"><table><thead><tr><th>Command</th><th>Purpose</th></tr></thead><tbody><tr><td><code>npm run tauri dev</code></td><td>Run the desktop app with hot reload</td></tr><tr><td><code>npm run tauri build</code></td><td>Produce installer and raw bundles</td></tr><tr><td><code>npm run package:portable</code></td><td>Build the portable folder and zip</td></tr><tr><td><code>npm run build</code></td><td>Typecheck and build the renderer only</td></tr><tr><td><code>npm run typecheck</code></td><td><code>tsc --noEmit</code></td></tr><tr><td><code>npm run lint</code></td><td>ESLint over the renderer</td></tr><tr><td><code>npm run lint:rust</code></td><td><code>cargo clippy -- -D warnings</code></td></tr><tr><td><code>npm run format</code></td><td>Prettier write</td></tr><tr><td><code>npm run format:check</code></td><td>Prettier check (CI gate)</td></tr><tr><td><code>npm test</code></td><td>Vitest</td></tr><tr><td><code>npm run test:watch</code></td><td>Vitest watch mode</td></tr><tr><td><code>npm run audit:tokens</code></td><td>Token and stylesheet audit</td></tr><tr><td><code>npm run test:rust</code></td><td>Rust unit tests</td></tr></tbody></table></div>
+<p>Before shipping, run <code>npm run typecheck</code>, <code>npm run lint</code>, <code>npm run format:check</code>, <code>npm test</code>, <code>npm run lint:rust</code>, and <code>npm run test:rust</code>.</p>
+<h2 id="media-sidecars">Media sidecars</h2>
+<p><code>ffmpeg</code> and <code>ffprobe</code> are bundled, not taken from <code>PATH</code>:</p>
+<pre class="code"><code>src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
+src-tauri/binaries/ffprobe-x86_64-pc-windows-msvc.exe</code></pre>
+<p>The <code>-&lt;target-triple&gt;</code> suffix is required by Tauri's <code>externalBin</code> mechanism. See <code>src-tauri/binaries/FFMPEG-NOTICE.txt</code> for version and licensing. The build is GPLv3; redistribution obligations apply.</p>
+<p>To update, replace both files with a matching static build (keep the suffix) and update the notice. Debug builds write the <code>ffprobe</code> check result to <code>%TEMP%\prompt-studio-sidecar-check.txt</code>.</p>
+<h2 id="documentation">Documentation</h2>
+<ul><li><strong>HTML wiki</strong> — open <a href="index.html"><code>docs/wiki/index.html</code></a> for the styled,</li></ul>
+<p>interlinked documentation. Rebuild it with <code>npm run docs:wiki</code> after editing any Markdown guide.</p>
+<ul><li><a href="user-guide.html">User guide</a> — models, presets, editing, library,</li></ul>
+<p>datasets, drag-out, diagnostics.</p>
+<ul><li><a href="ui-system.html">UI system</a> — tokens, primitives, states, motion, and the</li></ul>
+<p>token audit.</p>
+<ul><li><a href="presets.html">Preset schema</a> — add a target and validate it.</li><li><a href="drag-out.html">Drag-out spike</a> — native drag result and fallbacks.</li><li><a href="troubleshooting.html">Troubleshooting</a> — common failures and fixes.</li><li><a href="release-notes.html">Release notes</a> — verification matrix and known limits.</li><li>Architecture decisions and the data model:</li></ul>
+<p><code>openspec/changes/archive/2026-11-05-build-local-prompt-studio/design.md</code>.</p>
+<h2 id="project-layout">Project layout</h2>
+<pre class="code"><code>src/                 React renderer (Vite)
+src-tauri/           Rust backend (Tauri 2)
+src-tauri/binaries/  Bundled ffmpeg/ffprobe sidecars
+src-tauri/presets/   Built-in target presets
+openspec/            Spec-driven change artifacts
+docs/                User and operator documentation
+scripts/             Packaging helpers</code></pre>
+<h2 id="testing">Testing</h2>
+<ul><li>Renderer tests use Vitest + Testing Library + jsdom.</li><li>Rust tests use <code>cargo test</code>.</li><li>LM Studio HTTP behavior is exercised with <code>wiremock</code>; the normal suite needs</li></ul>
+<p>no local model server.</p>
+<ul><li><code>pipeline::tests::real_models_describe_and_compose</code> is <code>#[ignore]</code>d and can be</li></ul>
+<p>run against a live LM Studio with <code>cargo test real_models_describe_and_compose -- --ignored --nocapture</code>. It loads the configured describer and composer models, so close other GPU work first. The 10k library performance test is also ignored; see <code>docs/release-notes.md</code> for the command.</p>
+    </article>
+    
+    <nav class="pager" aria-label="Page navigation"><span></span><a class="pager-next" href="user-guide.html"><small>Next</small><span>User guide</span></a></nav>
+  </main>
+  <aside class="rail"><nav class="toc" aria-label="On this page"><p class="eyebrow">On this page</p><a class="toc-link toc-2" href="#workspace">Workspace</a><a class="toc-link toc-2" href="#what-it-does">What it does</a><a class="toc-link toc-2" href="#prerequisites">Prerequisites</a><a class="toc-link toc-2" href="#quick-start">Quick start</a><a class="toc-link toc-2" href="#install-and-portable-builds">Install and portable builds</a><a class="toc-link toc-2" href="#startup-measurements">Startup measurements</a><a class="toc-link toc-2" href="#scripts">Scripts</a><a class="toc-link toc-2" href="#media-sidecars">Media sidecars</a><a class="toc-link toc-2" href="#documentation">Documentation</a><a class="toc-link toc-2" href="#project-layout">Project layout</a><a class="toc-link toc-2" href="#testing">Testing</a></nav></aside>
+</div>
+<script src="assets/wiki.js"></script>
+</body>
+</html>

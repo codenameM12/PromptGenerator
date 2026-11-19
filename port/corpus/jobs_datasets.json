@@ -1,0 +1,888 @@
+{
+  "module": "jobs_datasets",
+  "sources": ["src/features/jobs/JobPanel.tsx", "src/features/datasets/DatasetPanel.tsx"],
+  "generatedBy": "src/port/characterize_jobs_datasets.test.ts",
+  "fixtures": {
+    "datasets_preview": {
+      "path": "C:\\data\\prompts.csv",
+      "format": "csv",
+      "encoding": "utf-8",
+      "delimiter": ",",
+      "headers": ["caption"],
+      "rows": [
+        {
+          "row": 1,
+          "fields": {
+            "caption": "a red fox"
+          },
+          "prompt": "a red fox",
+          "negative": null,
+          "params": {},
+          "mediaPath": null,
+          "mediaMissing": false,
+          "tags": [],
+          "identifier": null
+        }
+      ],
+      "totalRows": 2,
+      "mapping": {
+        "fields": {
+          "caption": "prompt"
+        }
+      },
+      "profiles": [],
+      "issues": []
+    },
+    "datasets_rows": {
+      "dataset": {
+        "id": "ds-1",
+        "name": "prompts.csv",
+        "sourcePath": "C:\\data\\prompts.csv",
+        "rowCount": 2,
+        "createdAt": "2026-11-05T12:00:00Z",
+        "mapping": {
+          "fields": {
+            "caption": "prompt"
+          }
+        },
+        "exportColumns": ["caption"]
+      },
+      "counts": {
+        "pending": 2
+      },
+      "rows": [
+        {
+          "id": "row-1",
+          "index": 0,
+          "status": "pending",
+          "generationId": null,
+          "error": null,
+          "prompt": "a red fox",
+          "mediaPath": null,
+          "mediaMissing": false,
+          "mediaAssetIds": [],
+          "mediaStatus": "none",
+          "mediaThumbnails": [],
+          "fields": {
+            "caption": "a red fox"
+          },
+          "params": {},
+          "tags": []
+        }
+      ],
+      "total": 2
+    },
+    "presets_list": [
+      {
+        "id": "mmh3",
+        "name": "mmh3",
+        "kind": "video",
+        "version": "1.0.0",
+        "description": "Video target",
+        "builtin": true
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "jobs mount and refresh",
+      "panel": "jobs",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "noop"
+          },
+          "calls": [],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "jobs pause",
+      "panel": "jobs",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "pause"
+          },
+          "calls": [
+            {
+              "command": "jobs_pause",
+              "args": {}
+            },
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "jobs cancel waiting",
+      "panel": "jobs",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "cancelWaiting"
+          },
+          "calls": [
+            {
+              "command": "jobs_cancel_waiting",
+              "args": {}
+            },
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "jobs reorder up",
+      "panel": "jobs",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "reorder",
+            "direction": "up"
+          },
+          "calls": [
+            {
+              "command": "jobs_reorder",
+              "args": {
+                "request": {
+                  "id": "job-1",
+                  "direction": "up"
+                }
+              }
+            },
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "jobs cancel a job",
+      "panel": "jobs",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "cancel",
+            "id": "job-1"
+          },
+          "calls": [
+            {
+              "command": "jobs_cancel",
+              "args": {
+                "id": "job-1"
+              }
+            },
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "jobs retry a failed job",
+      "panel": "jobs",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "retry",
+            "id": "job-failed"
+          },
+          "calls": [
+            {
+              "command": "jobs_retry",
+              "args": {
+                "id": "job-failed"
+              }
+            },
+            {
+              "command": "jobs_list",
+              "args": {}
+            },
+            {
+              "command": "jobs_status",
+              "args": {}
+            }
+          ],
+          "state": {
+            "paused": false,
+            "jobCount": 1,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "datasets mount",
+      "panel": "datasets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "noop"
+          },
+          "calls": [],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "datasets preview a source",
+      "panel": "datasets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "preview",
+            "path": "C:\\data\\prompts.csv"
+          },
+          "calls": [
+            {
+              "command": "datasets_preview",
+              "args": {
+                "request": {
+                  "path": "C:\\data\\prompts.csv"
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": true,
+            "hasSummary": false,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "datasets import",
+      "panel": "datasets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "import",
+            "path": "C:\\data\\prompts.csv"
+          },
+          "calls": [
+            {
+              "command": "datasets_preview",
+              "args": {
+                "request": {
+                  "path": "C:\\data\\prompts.csv"
+                }
+              }
+            },
+            {
+              "command": "datasets_import",
+              "args": {
+                "request": {
+                  "path": "C:\\data\\prompts.csv",
+                  "mapping": {
+                    "fields": {
+                      "caption": "prompt"
+                    }
+                  },
+                  "dedupe": "skip",
+                  "profileName": null,
+                  "saveProfile": true
+                }
+              }
+            },
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": true,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "datasets run batch",
+      "panel": "datasets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "run",
+            "datasetId": "ds-1"
+          },
+          "calls": [
+            {
+              "command": "datasets_run",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "presetId": "mmh3",
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  }
+                }
+              }
+            },
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "datasets export",
+      "panel": "datasets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "export",
+            "outputPath": "C:\\data\\out.csv"
+          },
+          "calls": [
+            {
+              "command": "datasets_export",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "outputPath": "C:\\data\\out.csv",
+                  "format": "csv",
+                  "columns": ["caption"]
+                }
+              }
+            },
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "datasets delete",
+      "panel": "datasets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "delete",
+            "datasetId": "ds-1"
+          },
+          "calls": [
+            {
+              "command": "datasets_delete",
+              "args": {
+                "datasetId": "ds-1"
+              }
+            },
+            {
+              "command": "datasets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "datasets_profiles",
+              "args": {}
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            },
+            {
+              "command": "datasets_rows",
+              "args": {
+                "request": {
+                  "datasetId": "ds-1",
+                  "offset": 0,
+                  "limit": 500
+                }
+              }
+            }
+          ],
+          "state": {
+            "datasetCount": 1,
+            "hasRows": true,
+            "hasPreview": false,
+            "hasSummary": false,
+            "error": null
+          }
+        }
+      ]
+    }
+  ]
+}

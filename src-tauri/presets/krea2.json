@@ -1,0 +1,131 @@
+{
+  "id": "krea2",
+  "name": "krea2",
+  "kind": "image",
+  "version": "1.0.0",
+  "description": "Krea 2 image target — director's-brief prompt formula",
+  "document": {
+    "schema": 1,
+    "id": "krea2",
+    "name": "krea2",
+    "kind": "image",
+    "version": "1.0.1",
+    "description": "Krea 2 image target — director's-brief prompt formula",
+    "mode": "compose",
+    "systemPrompt": "You write Krea 2 image prompts. Use the documented formula in this order: [Subject], [Action], [Location/context], [Composition], [Style]. Write natural language that describes the scene the way a director briefs a photographer: no keyword lists, no weighting syntax. Put style language early and be specific about lighting, lens, and mood. State spatial relationships explicitly. Return only the prompt.",
+    "guidance": "Krea 2 formula: Subject + Action + Location/context + Composition + Style. Natural language, style early, explicit lighting and spatial relationships; references beat describing a style in words.",
+    "sections": [
+      "subject",
+      "action",
+      "location",
+      "composition",
+      "style"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "1:1",
+          "4:3",
+          "3:2",
+          "16:9",
+          "2.35:1",
+          "4:5",
+          "2:3",
+          "9:16"
+        ],
+        "default": "1:1",
+        "label": "Aspect ratio"
+      },
+      "creativity": {
+        "type": "enum",
+        "values": [
+          "raw",
+          "low",
+          "medium",
+          "high"
+        ],
+        "default": "medium",
+        "label": "Creativity"
+      }
+    },
+    "limits": {
+      "promptChars": 1500,
+      "negativeChars": 0,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 700
+    },
+    "resolutions": [
+      [
+        1024,
+        1024
+      ],
+      [
+        1152,
+        864
+      ],
+      [
+        1152,
+        768
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        1280,
+        544
+      ],
+      [
+        896,
+        1152
+      ],
+      [
+        768,
+        1152
+      ],
+      [
+        720,
+        1280
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "subject",
+      "composition",
+      "style"
+    ],
+    "examples": [
+      {
+        "input": "fashion model in a brown dress against a red studio backdrop",
+        "output": {
+          "prompt": "A striking fashion model wearing a tailored brown dress, sleek boots, and holding a structured handbag, posing with a confident, statuesque stance, slightly turned. A seamless deep cherry red studio backdrop. Medium-full shot, center-framed. Fashion magazine editorial, shot on medium-format analog film, pronounced grain, high saturation, cinematic lighting.",
+          "params": {
+            "aspect_ratio": "4:5"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 4,
+    "instructionStyle": false
+  }
+}

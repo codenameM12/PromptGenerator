@@ -1,0 +1,107 @@
+{
+  "id": "mmh3",
+  "name": "mmh3",
+  "kind": "video",
+  "version": "1.0.1",
+  "description": "MiniMax H3 (Hailuo) video target — H3 prompt structure",
+  "document": {
+    "schema": 1,
+    "id": "mmh3",
+    "name": "mmh3",
+    "kind": "video",
+    "version": "1.0.1",
+    "description": "MiniMax H3 (Hailuo) video target — H3 prompt structure",
+    "mode": "compose",
+    "systemPrompt": "You write MiniMax H3 video prompts. Follow the H3 prompt guide: write one `integrated_multimodal_description` that describes visuals, actions, shots, speakers and diegetic audio along the timeline; write camera motion as natural English inside the shot (movement type, amplitude, speed), for example \"The camera pushes in with small amplitude at slow speed toward the letter\"; mark the opening as [Shot 1] and later cuts as [Shot N] At MM:SS.mmm; keep dialogue and on-screen text in their original language. Add an `overall_soundscape` line for ambience and action sounds, and a `non_diegetic_music` line only when music the characters cannot hear is wanted. Return the prompt as plain prose for the target, without markdown.",
+    "guidance": "H3 guide: [Shot 1] first, cuts as [Shot N] At MM:SS.mmm. Camera motion is natural English with direction, amplitude and speed. Describe ambience in overall_soundscape and score in non_diegetic_music. No negative prompts.",
+    "sections": [
+      "integrated_multimodal_description",
+      "camera",
+      "overall_soundscape",
+      "non_diegetic_music"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "negative": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "duration_s": {
+        "type": "integer",
+        "min": 4,
+        "max": 15,
+        "default": 5,
+        "label": "Duration (s)"
+      },
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4"
+        ],
+        "default": "16:9",
+        "label": "Aspect ratio"
+      }
+    },
+    "limits": {
+      "promptChars": 7000,
+      "negativeChars": 0,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 900
+    },
+    "resolutions": [
+      [
+        1280,
+        720
+      ],
+      [
+        720,
+        1280
+      ],
+      [
+        1024,
+        1024
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "shot markers",
+      "camera",
+      "soundscape"
+    ],
+    "examples": [
+      {
+        "input": "a woman reads a folded letter at a desk, late afternoon",
+        "output": {
+          "prompt": "[Shot 1] A woman in a linen shirt sits at a wooden desk, a folded letter in her hands. The camera pushes in with small amplitude at slow speed toward the letter while late-afternoon window light moves across the paper. overall_soundscape: quiet room tone, paper rustling, distant traffic. non_diegetic_music: sparse piano, low and unhurried.",
+          "params": {
+            "duration_s": 5,
+            "aspect_ratio": "16:9"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 0,
+    "instructionStyle": false
+  }
+}

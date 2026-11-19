@@ -1,0 +1,2143 @@
+{
+  "module": "media",
+  "source": "src/features/editor/MediaEditor.tsx + src/lib/media/import.ts",
+  "generatedBy": "src/port/characterize_media.test.ts",
+  "scenarios": [
+    {
+      "name": "import a path and refresh the grid",
+      "steps": [
+        {
+          "action": {
+            "kind": "importPaths",
+            "paths": ["C:\\media\\still.png"]
+          },
+          "calls": [
+            {
+              "method": "assets_import",
+              "args": {
+                "request": {
+                  "paths": ["C:\\media\\still.png"]
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "path": "C:\\media\\still.png",
+                "assetId": "asset-1",
+                "duplicate": false,
+                "restored": false,
+                "error": null
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\still.png",
+                "displayName": "still.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-01-01T00:00:00Z"
+              }
+            ]
+          ],
+          "state": {
+            "assets": [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\still.png",
+                "displayName": "still.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-01-01T00:00:00Z"
+              }
+            ],
+            "selectedAssetId": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "rotate, undo and redo",
+      "steps": [
+        {
+          "action": {
+            "kind": "open",
+            "assetId": "asset-1",
+            "width": 1024,
+            "height": 768,
+            "assetKind": "image",
+            "durationMs": null
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "rotate"
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 90,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "undo"
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": true,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "redo"
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 90,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        }
+      ]
+    },
+    {
+      "name": "aspect crop and crop edge",
+      "steps": [
+        {
+          "action": {
+            "kind": "open",
+            "assetId": "asset-1",
+            "width": 1024,
+            "height": 768,
+            "assetKind": "image",
+            "durationMs": null
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "cropAspect",
+            "numerator": 16,
+            "denominator": 9
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": {
+                      "x": 0,
+                      "y": 96,
+                      "width": 1024,
+                      "height": 576
+                    },
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": {
+                "x": 0,
+                "y": 96,
+                "width": 1024,
+                "height": 576
+              },
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "Selection 1024×576 at 0,96"
+          }
+        },
+        {
+          "action": {
+            "kind": "cropEdge",
+            "edge": "left",
+            "value": 10
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": {
+                      "x": 102,
+                      "y": 96,
+                      "width": 922,
+                      "height": 576
+                    },
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": {
+                "x": 102,
+                "y": 96,
+                "width": 922,
+                "height": 576
+              },
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "Selection 922×576 at 102,96"
+          }
+        }
+      ]
+    },
+    {
+      "name": "flip, fit and reset",
+      "steps": [
+        {
+          "action": {
+            "kind": "open",
+            "assetId": "asset-1",
+            "width": 1024,
+            "height": 768,
+            "assetKind": "image",
+            "durationMs": null
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "flipH"
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": true,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": true,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "reset"
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        }
+      ]
+    },
+    {
+      "name": "apply and save",
+      "steps": [
+        {
+          "action": {
+            "kind": "open",
+            "assetId": "asset-1",
+            "width": 1024,
+            "height": 768,
+            "assetKind": "image",
+            "durationMs": null
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "rotate"
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 90,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "apply"
+          },
+          "calls": [
+            {
+              "method": "edits_save",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 90,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "editId": "edit-1",
+              "outputPath": "C:\\media\\edited\\still.png",
+              "width": 1024,
+              "height": 768,
+              "fps": null,
+              "durationMs": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": {
+              "editId": "edit-1",
+              "outputPath": "C:\\media\\edited\\still.png",
+              "width": 1024,
+              "height": 768,
+              "fps": null,
+              "durationMs": null,
+              "warnings": []
+            },
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        }
+      ]
+    },
+    {
+      "name": "output target, format and mask export",
+      "steps": [
+        {
+          "action": {
+            "kind": "open",
+            "assetId": "asset-1",
+            "width": 1024,
+            "height": 768,
+            "assetKind": "image",
+            "durationMs": null
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "target",
+            "width": 1024,
+            "height": 1024
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 1024,
+                    "height": 1024,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 1024,
+              "height": 1024,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "format",
+            "value": "jpg"
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": "jpg",
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-image",
+                    "width": 1024,
+                    "height": 1024,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": "jpg",
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 1024,
+              "height": 1024,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "exportMask",
+            "feather": 0
+          },
+          "calls": [
+            {
+              "method": "edits_export_mask",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "mask": [0],
+                  "maskWidth": 480,
+                  "maskHeight": 360,
+                  "targetWidth": 1024,
+                  "targetHeight": 768,
+                  "feather": 0,
+                  "invert": false,
+                  "polarity": "whiteKeeps"
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "path": "C:\\media\\mask.png"
+            }
+          ],
+          "state": {
+            "assetId": "asset-1",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": "C:\\media\\mask.png",
+              "format": "jpg",
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-image",
+              "width": 1024,
+              "height": 1024,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        }
+      ]
+    },
+    {
+      "name": "video trim and fps",
+      "steps": [
+        {
+          "action": {
+            "kind": "open",
+            "assetId": "asset-2",
+            "width": 1024,
+            "height": 768,
+            "assetKind": "video",
+            "durationMs": 4000
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-2",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": null,
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-video",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-2",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": false,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-video",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "trimStart",
+            "value": 1000
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-2",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": {
+                      "startMs": 1000,
+                      "endMs": 4000
+                    },
+                    "fps": null,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-video",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-2",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": {
+                "startMs": 1000,
+                "endMs": 4000
+              },
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-video",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        },
+        {
+          "action": {
+            "kind": "fps",
+            "value": 30
+          },
+          "calls": [
+            {
+              "method": "edits_preview",
+              "args": {
+                "request": {
+                  "assetId": "asset-2",
+                  "ops": {
+                    "crop": null,
+                    "rotate": 0,
+                    "flipH": false,
+                    "flipV": false,
+                    "fit": "fit",
+                    "trim": {
+                      "startMs": 1000,
+                      "endMs": 4000
+                    },
+                    "fps": 30,
+                    "removeAudio": false,
+                    "maskPath": null,
+                    "format": null,
+                    "loopVideo": false,
+                    "padColor": null
+                  },
+                  "target": {
+                    "presetId": "generic-video",
+                    "width": 0,
+                    "height": 0,
+                    "dimensionMultiple": 16,
+                    "maskPolarity": "whiteKeeps"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            }
+          ],
+          "state": {
+            "assetId": "asset-2",
+            "ops": {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": {
+                "startMs": 1000,
+                "endMs": 4000
+              },
+              "fps": 30,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            "canUndo": true,
+            "canRedo": false,
+            "target": {
+              "presetId": "generic-video",
+              "width": 0,
+              "height": 0,
+              "dimensionMultiple": 16,
+              "maskPolarity": "whiteKeeps"
+            },
+            "preview": {
+              "crop": null,
+              "resolution": {
+                "width": 1024,
+                "height": 768,
+                "upscaled": false,
+                "warnings": []
+              },
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "format": "png",
+              "loopVideo": false,
+              "maskPath": null,
+              "warnings": []
+            },
+            "result": null,
+            "error": null,
+            "readout": "No crop. Drag an edge or choose an aspect ratio."
+          }
+        }
+      ]
+    }
+  ]
+}

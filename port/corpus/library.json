@@ -1,0 +1,1869 @@
+{
+  "module": "library",
+  "source": "src/features/library/LibraryPanel.tsx",
+  "generatedBy": "src/port/characterize_library.test.ts",
+  "fixtures": {
+    "library_query": {
+      "items": [
+        {
+          "id": "gen-1",
+          "parentId": null,
+          "assetId": "asset-1",
+          "editId": null,
+          "prompt": "a red fox in snow",
+          "negative": null,
+          "params": {},
+          "guidance": {
+            "global": null,
+            "preset": null,
+            "run": null
+          },
+          "description": null,
+          "presetId": "mmh3",
+          "presetVersion": "1.0.0",
+          "presetHash": "preset-hash",
+          "models": ["gemma4-12b-qat-uncensored-hauhaucs-balanced"],
+          "seed": 1,
+          "status": "succeeded",
+          "error": null,
+          "favorite": false,
+          "rating": null,
+          "notes": null,
+          "tags": ["snow"],
+          "collections": [],
+          "createdAt": "2026-11-05T12:00:00Z",
+          "deletedAt": null
+        }
+      ],
+      "total": 1,
+      "offset": 0,
+      "limit": 25
+    },
+    "library_get": {
+      "id": "gen-1",
+      "parentId": null,
+      "assetId": "asset-1",
+      "editId": null,
+      "prompt": "a red fox in snow",
+      "negative": null,
+      "params": {},
+      "guidance": {
+        "global": null,
+        "preset": null,
+        "run": null
+      },
+      "description": null,
+      "presetId": "mmh3",
+      "presetVersion": "1.0.0",
+      "presetHash": "preset-hash",
+      "models": ["gemma4-12b-qat-uncensored-hauhaucs-balanced"],
+      "seed": 1,
+      "status": "succeeded",
+      "error": null,
+      "favorite": false,
+      "rating": null,
+      "notes": null,
+      "tags": ["snow"],
+      "collections": [],
+      "createdAt": "2026-11-05T12:00:00Z",
+      "deletedAt": null,
+      "rawResponse": null,
+      "tokensIn": 120,
+      "tokensOut": 80,
+      "latencyMs": 900,
+      "cacheKey": "cache-key",
+      "references": []
+    },
+    "presets_list": [
+      {
+        "id": "mmh3",
+        "name": "mmh3",
+        "kind": "video",
+        "version": "1.0.0",
+        "description": "Video target",
+        "builtin": true
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "library mount",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "noop"
+          },
+          "calls": [],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library search filters",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "query",
+            "text": "fox"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": "fox",
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library paging next",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "page",
+            "offset": 25
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 25,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library open detail",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "get",
+            "id": "gen-0"
+          },
+          "calls": [
+            {
+              "command": "library_get",
+              "args": {
+                "id": "gen-0"
+              }
+            },
+            {
+              "command": "drag_prepare",
+              "args": {
+                "request": {
+                  "generationId": "gen-0",
+                  "assetId": "asset-1",
+                  "editId": null,
+                  "payload": "plainPrompt",
+                  "sidecars": false
+                }
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": true,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library toggle favorite",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "favorite",
+            "id": "gen-0"
+          },
+          "calls": [
+            {
+              "command": "library_favorite",
+              "args": {
+                "request": {
+                  "id": "gen-0",
+                  "favorite": true,
+                  "asset": false
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library compare two",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "compare",
+            "ids": ["gen-0", "gen-1"]
+          },
+          "calls": [
+            {
+              "command": "library_compare",
+              "args": {
+                "request": {
+                  "ids": ["gen-0", "gen-1"]
+                }
+              }
+            },
+            {
+              "command": "library_diff",
+              "args": {
+                "request": {
+                  "leftId": "gen-0",
+                  "rightId": "gen-1"
+                }
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 2,
+            "hasDetail": true,
+            "compareColumns": 2,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library show versions",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "versions",
+            "id": "gen-0"
+          },
+          "calls": [
+            {
+              "command": "library_get",
+              "args": {
+                "id": "gen-0"
+              }
+            },
+            {
+              "command": "drag_prepare",
+              "args": {
+                "request": {
+                  "generationId": "gen-0",
+                  "assetId": "asset-1",
+                  "editId": null,
+                  "payload": "plainPrompt",
+                  "sidecars": false
+                }
+              }
+            },
+            {
+              "command": "library_versions",
+              "args": {
+                "id": "gen-0"
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": true,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library metadata note",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "update",
+            "id": "gen-0"
+          },
+          "calls": [
+            {
+              "command": "library_get",
+              "args": {
+                "id": "gen-0"
+              }
+            },
+            {
+              "command": "drag_prepare",
+              "args": {
+                "request": {
+                  "generationId": "gen-0",
+                  "assetId": "asset-1",
+                  "editId": null,
+                  "payload": "plainPrompt",
+                  "sidecars": false
+                }
+              }
+            },
+            {
+              "command": "library_update",
+              "args": {
+                "request": {
+                  "ids": ["gen-0"],
+                  "rating": null,
+                  "clearRating": true,
+                  "notes": "reviewed"
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            },
+            {
+              "command": "library_get",
+              "args": {
+                "id": "gen-0"
+              }
+            },
+            {
+              "command": "drag_prepare",
+              "args": {
+                "request": {
+                  "generationId": "gen-0",
+                  "assetId": "asset-1",
+                  "editId": null,
+                  "payload": "plainPrompt",
+                  "sidecars": false
+                }
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": true,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library trash selection",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "trash",
+            "ids": ["gen-0", "gen-1"]
+          },
+          "calls": [
+            {
+              "command": "library_trash",
+              "args": {
+                "request": {
+                  "generationIds": ["gen-0", "gen-1"]
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 2,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library export",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "export",
+            "format": "json"
+          },
+          "calls": [
+            {
+              "command": "library_export",
+              "args": {
+                "request": {
+                  "format": "json",
+                  "outputPath": "C:\\out\\library.json",
+                  "ids": ["gen-0"]
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 1,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library import",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "import",
+            "path": "C:\\out\\library.json"
+          },
+          "calls": [
+            {
+              "command": "library_import",
+              "args": {
+                "request": {
+                  "path": "C:\\out\\library.json"
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library backup",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "backup",
+            "outputPath": "C:\\out\\backup.zip"
+          },
+          "calls": [
+            {
+              "command": "library_backup",
+              "args": {
+                "request": {
+                  "outputPath": "C:\\out\\backup.zip"
+                }
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": "Backup written: C:\\out\\backup.zip (100 bytes)",
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library restore backup",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "restore",
+            "backupPath": "C:\\out\\backup.zip"
+          },
+          "calls": [
+            {
+              "command": "library_restore",
+              "args": {
+                "request": {
+                  "backupPath": "C:\\out\\backup.zip"
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": "Restored backup bundle. Restart Prompt Studio to apply settings and token.",
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library rerun",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "rerun",
+            "presetId": "mmh3"
+          },
+          "calls": [
+            {
+              "command": "library_rerun",
+              "args": {
+                "request": {
+                  "ids": ["gen-0"],
+                  "presetId": "mmh3"
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 1,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library create collection",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "createCollection",
+            "name": "City"
+          },
+          "calls": [
+            {
+              "command": "library_collection_create",
+              "args": {
+                "request": {
+                  "name": "City"
+                }
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": "col-1",
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "library restore to workspace",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": false,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        },
+        {
+          "action": {
+            "kind": "restoreWorkspace",
+            "id": "gen-0"
+          },
+          "calls": [
+            {
+              "command": "library_get",
+              "args": {
+                "id": "gen-0"
+              }
+            },
+            {
+              "command": "drag_prepare",
+              "args": {
+                "request": {
+                  "generationId": "gen-0",
+                  "assetId": "asset-1",
+                  "editId": null,
+                  "payload": "plainPrompt",
+                  "sidecars": false
+                }
+              }
+            },
+            {
+              "command": "library_restore_workspace",
+              "args": {
+                "id": "gen-0"
+              }
+            },
+            {
+              "command": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "includeDeleted": false,
+                  "onlyDeleted": false,
+                  "offset": 0,
+                  "limit": 25,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "library_tags",
+              "args": {}
+            },
+            {
+              "command": "library_collections",
+              "args": {}
+            },
+            {
+              "command": "library_get",
+              "args": {
+                "id": "gen-0"
+              }
+            },
+            {
+              "command": "drag_prepare",
+              "args": {
+                "request": {
+                  "generationId": "gen-0",
+                  "assetId": "asset-1",
+                  "editId": null,
+                  "payload": "plainPrompt",
+                  "sidecars": false
+                }
+              }
+            }
+          ],
+          "state": {
+            "cardCount": 4,
+            "checked": 0,
+            "hasDetail": true,
+            "compareColumns": 0,
+            "notice": null,
+            "error": null,
+            "hasTrash": false
+          }
+        }
+      ]
+    }
+  ]
+}

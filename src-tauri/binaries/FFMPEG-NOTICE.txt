@@ -1,0 +1,21 @@
+FFmpeg / FFprobe notice
+=======================
+
+The binaries in this directory are bundled sidecars:
+
+  ffmpeg-x86_64-pc-windows-msvc.exe
+  ffprobe-x86_64-pc-windows-msvc.exe
+
+Source: https://www.gyan.dev/ffmpeg/builds/ (ffmpeg-release-essentials build)
+Version at time of bundling: ffmpeg 9.0.2
+
+FFmpeg is licensed under the GNU General Public License version 3 (GPLv3)
+or later for this build configuration. See https://ffmpeg.org/legal.html
+and the license text shipped with the FFmpeg project.
+
+These binaries are redistributed unmodified for local, personal use. If you
+redistribute this application, review the GPL obligations or replace the
+sidecars with an LGPL-compatible build.
+
+The application itself does not link against FFmpeg; it only invokes the
+binaries as separate processes.

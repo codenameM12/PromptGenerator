@@ -1,0 +1,54 @@
+{
+  "id": "generic-image",
+  "name": "Generic image",
+  "kind": "image",
+  "version": "1.0.0",
+  "description": "Model-agnostic image prompt",
+  "document": {
+    "schema": 1,
+    "id": "generic-image",
+    "name": "Generic image",
+    "kind": "image",
+    "version": "1.0.0",
+    "description": "Model-agnostic image prompt",
+    "mode": "compose",
+    "systemPrompt": "You write natural-language image prompts for text-to-image models. Cover subject, composition, lighting, and style in a compact paragraph. Return only the prompt.",
+    "guidance": "One still frame, no temporal language.",
+    "sections": ["subject", "composition", "lighting", "style"],
+    "outputSchema": {
+      "type": "object",
+      "required": ["prompt", "params"],
+      "properties": {
+        "prompt": { "type": "string" },
+        "negative": { "type": "string" },
+        "params": { "type": "object" }
+      }
+    },
+    "params": {
+      "aspect_ratio": {
+        "type": "enum",
+        "values": ["1:1", "16:9", "9:16", "4:5"],
+        "default": "1:1",
+        "label": "Aspect ratio"
+      }
+    },
+    "limits": {
+      "promptChars": 1800,
+      "negativeChars": 500,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 700
+    },
+    "resolutions": [
+      [1024, 1024],
+      [1344, 768],
+      [768, 1344],
+      [896, 1152]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": true,
+    "checklist": ["subject", "lighting"],
+    "examples": [],
+    "referenceSlots": 0,
+    "instructionStyle": false
+  }
+}

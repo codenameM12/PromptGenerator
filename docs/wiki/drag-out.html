@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Drag out · Prompt Studio docs</title>
+<meta name="description" content="Prompt Studio documentation: Drag out" />
+<link rel="stylesheet" href="assets/wiki.css" />
+</head>
+<body data-page="drag-out.html">
+<a class="skip" href="#content">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">PS</span>
+      <span><strong>Prompt Studio</strong><small>Documentation</small></span>
+    </a>
+    <label class="search">
+      <span class="visually-hidden">Filter pages</span>
+      <input id="nav-filter" type="search" placeholder="Filter pages…" autocomplete="off" />
+    </label>
+    <nav class="nav" aria-label="Documentation"><a class="nav-link" href="index.html" data-title="overview start here"><span>Overview</span><small>Start here</small></a>
+<a class="nav-link" href="user-guide.html" data-title="user guide day-to-day use"><span>User guide</span><small>Day-to-day use</small></a>
+<a class="nav-link" href="presets.html" data-title="presets targets"><span>Presets</span><small>Targets</small></a>
+<a class="nav-link" href="troubleshooting.html" data-title="troubleshooting fix problems"><span>Troubleshooting</span><small>Fix problems</small></a>
+<a class="nav-link" href="release-notes.html" data-title="release notes verification"><span>Release notes</span><small>Verification</small></a>
+<a class="nav-link is-current" href="drag-out.html" data-title="drag out files"><span>Drag out</span><small>Files</small></a>
+<a class="nav-link" href="ui-system.html" data-title="interface system design"><span>Interface system</span><small>Design</small></a></nav>
+    <p class="sidebar-foot">Offline wiki · built from the Markdown guides</p>
+  </aside>
+  <main id="content" class="content">
+    <header class="page-head">
+      <p class="eyebrow">Files</p>
+      <h1>Drag out</h1>
+    </header>
+    <article class="prose">
+<h1 id="drag-out-spike">Drag-out spike</h1>
+<h2 id="result">Result</h2>
+<p>Native drag-out is available on Windows through <a href="https://crates.io/crates/tauri-plugin-drag"><code>tauri-plugin-drag</code></a> <code>2.1.1</code>. The plugin is registered in <code>src-tauri/src/lib.rs</code> and the renderer calls its <code>plugin:drag|start_drag</code> command directly because the plugin does not publish a separate npm guest package.</p>
+<ul><li>The drag uses <code>mode: &quot;copy&quot;</code>; source files and stored outputs are never moved,</li></ul>
+<p>renamed, or deleted.</p>
+<ul><li>Files are materialized first under <code>&lt;cache&gt;/drag/&lt;session&gt;/</code>, then the native</li></ul>
+<p>drag starts. This keeps the async preparation out of the OLE drag loop.</p>
+<ul><li>The drag icon is a 1x1 transparent PNG data URL.</li><li>The capability allowlist includes <code>drag:default</code>.</li></ul>
+<h2 id="fallbacks">Fallbacks</h2>
+<p>Every draggable item also exposes:</p>
+<ul><li><strong>Save as</strong> — a native save dialog opens with the template-expanded name and</li></ul>
+<p>copies the prepared file atomically.</p>
+<ul><li><strong>Reveal</strong> — Explorer opens with the prepared file selected.</li></ul>
+<p>Both are in the library detail panel (<code>src/features/library/LibraryPanel.tsx</code>).</p>
+<h2 id="verification">Verification</h2>
+<p>The Rust side is covered by tests for template expansion, Windows-illegal character sanitization, reserved names, collision suffixes, missing sources, atomic Save-as failures, and stale-session cleanup. The build is validated with <code>cargo check</code>, <code>cargo clippy</code>, and <code>npm run typecheck</code>. If native drag is unavailable on a specific Windows/WebView2 combination, the UI reports the failure and directs the user to <strong>Save as</strong>; no partial file is left behind.</p>
+<h2 id="retention">Retention</h2>
+<p>Prepared drag sessions live for 24 hours. <code>drag_out::cleanup</code> runs on startup and before each preparation, removing older session folders without touching asset sources or edit outputs.</p>
+<h2 id="interactive-result">Interactive result</h2>
+<ul><li><strong>Interactive Explorer drop passed on the target machine</strong>: dragging from the</li></ul>
+<p>Library <strong>Drag out</strong> handle into an Explorer window produced the prepared files with the expected template-expanded names and byte content. The drag uses copy mode, so the session folder and the stored original remain in place.</p>
+<ul><li>Save-as and Reveal remain the documented fallbacks and stay covered by tests.</li></ul>
+    </article>
+    <section class="backlinks"><p class="eyebrow">Linked from</p><ul><li><a href="index.html">Overview</a></li></ul></section>
+    <nav class="pager" aria-label="Page navigation"><a href="release-notes.html"><small>Previous</small><span>Release notes</span></a><a class="pager-next" href="ui-system.html"><small>Next</small><span>Interface system</span></a></nav>
+  </main>
+  <aside class="rail"><nav class="toc" aria-label="On this page"><p class="eyebrow">On this page</p><a class="toc-link toc-2" href="#result">Result</a><a class="toc-link toc-2" href="#fallbacks">Fallbacks</a><a class="toc-link toc-2" href="#verification">Verification</a><a class="toc-link toc-2" href="#retention">Retention</a><a class="toc-link toc-2" href="#interactive-result">Interactive result</a></nav></aside>
+</div>
+<script src="assets/wiki.js"></script>
+</body>
+</html>

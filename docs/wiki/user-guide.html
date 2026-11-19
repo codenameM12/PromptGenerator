@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>User guide · Prompt Studio docs</title>
+<meta name="description" content="Prompt Studio documentation: User guide" />
+<link rel="stylesheet" href="assets/wiki.css" />
+</head>
+<body data-page="user-guide.html">
+<a class="skip" href="#content">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">PS</span>
+      <span><strong>Prompt Studio</strong><small>Documentation</small></span>
+    </a>
+    <label class="search">
+      <span class="visually-hidden">Filter pages</span>
+      <input id="nav-filter" type="search" placeholder="Filter pages…" autocomplete="off" />
+    </label>
+    <nav class="nav" aria-label="Documentation"><a class="nav-link" href="index.html" data-title="overview start here"><span>Overview</span><small>Start here</small></a>
+<a class="nav-link is-current" href="user-guide.html" data-title="user guide day-to-day use"><span>User guide</span><small>Day-to-day use</small></a>
+<a class="nav-link" href="presets.html" data-title="presets targets"><span>Presets</span><small>Targets</small></a>
+<a class="nav-link" href="troubleshooting.html" data-title="troubleshooting fix problems"><span>Troubleshooting</span><small>Fix problems</small></a>
+<a class="nav-link" href="release-notes.html" data-title="release notes verification"><span>Release notes</span><small>Verification</small></a>
+<a class="nav-link" href="drag-out.html" data-title="drag out files"><span>Drag out</span><small>Files</small></a>
+<a class="nav-link" href="ui-system.html" data-title="interface system design"><span>Interface system</span><small>Design</small></a></nav>
+    <p class="sidebar-foot">Offline wiki · built from the Markdown guides</p>
+  </aside>
+  <main id="content" class="content">
+    <header class="page-head">
+      <p class="eyebrow">Day-to-day use</p>
+      <h1>User guide</h1>
+    </header>
+    <article class="prose">
+<h1 id="prompt-studio-user-guide">Prompt Studio user guide</h1>
+<h2 id="0-workspace">0. Workspace</h2>
+<p>The app opens on <strong>Compose</strong>. The left rail switches between <strong>Compose</strong>, <strong>Media</strong>, <strong>Library</strong>, <strong>Jobs</strong>, <strong>Presets</strong>, <strong>Runtime</strong>, and <strong>Datasets</strong>. The current section is marked in the rail, and the top bar shows LM Studio health. Sections stay loaded after the first visit, so moving away and back keeps the selected asset, prompt inputs, filters, and editor state.</p>
+<h2 id="1-connect-lm-studio">1. Connect LM Studio</h2>
+<ol><li>Open LM Studio and go to the local server tab.</li><li>Start the server on <code>http://127.0.0.1:1234</code> (the default).</li><li>Make sure these models exist:</li></ol>
+<ul><li><code>lfm3-vl-2b</code> (describer)</li><li>your composer, default</li></ul>
+<p><code>gemma4-12b-qat-uncensored-hauhaucs-balanced</code></p>
+<ol><li>In Prompt Studio open <strong>Runtime</strong>. Confirm the endpoint shows _online_, pick</li></ol>
+<p>the describer and composer roles, and press <strong>Load</strong> for each if you want them resident before generating.</p>
+<p><strong>Keep warm</strong> controls whether the runtime unloads the other model when roles switch: <code>Both</code>, <code>Describer</code>, <code>Composer</code>, or <code>None</code>. <code>None</code> uses less VRAM but switches models on every stage change. <strong>Unload all</strong> frees everything; active requests must finish first unless you force it.</p>
+<p>The composer is serialized to one request at a time. The describer accepts 1–4 concurrent requests (configurable in <strong>Runtime</strong>), and extra work waits in the job queue rather than failing.</p>
+<p>Model cards show what LM Studio reports: context length, maximum output, quantization, and <strong>Vision</strong> / <strong>Text only</strong> / <strong>Vision unknown</strong> badges. <strong>Suggest roles</strong> ranks a vision-capable model first for the describer and the largest loaded context for the composer; it only fills the selects, so choose <strong>Save roles</strong> to apply them. When the describer is known to be text-only, or the composer's reported context is smaller than the preset input budget, the workspace warns before a run but still allows it. Reported context is used as the budget when it is smaller than the preset's <code>maxInputTokens</code>; the generation parameters record which value was used.</p>
+<p><strong>Model instructions</strong> edits the system prompt for each role. A describer override replaces the built-in &quot;describe this media&quot; instructions; a composer override replaces the selected preset's target instructions. The pipeline still appends its required JSON shape, length limit, output language, guidance, and locked phrases, so the response stays parseable. Leave a field empty and save to restore the default. Overrides apply to every run — Describe, Compose, Refine, batch, and queued jobs — and changing one invalidates cached results from the old instructions.</p>
+<h2 id="2-import-media">2. Import media</h2>
+<p>Open <strong>Media</strong> in the rail.</p>
+<ul><li>Drag files or folders from Explorer into the window.</li><li>Or use <strong>Add files</strong>, <strong>Add folder</strong>, or <strong>Paste image</strong> in the Media toolbar.</li></ul>
+<p>Media is hashed with BLAKE3, deduplicated, probed with <code>ffprobe</code>, and given a cached thumbnail plus a preview proxy when the codec is not web-friendly. Videos show fps, resolution, duration, and audio state. Missing source files stay visible with an offline marker; actions that need the source are disabled.</p>
+<p>WebP, GIF, BMP, TIFF, and AVIF images import normally. Because the vision model expects PNG or JPEG, the describer converts them once to a cached PNG before sending; the original file is untouched.</p>
+<p>Hover a media card to reveal <strong>Remove</strong>, or use the remove action on a Compose tile. Removing moves the asset straight to the Library trash without a confirmation popup: it leaves the Media view and every picker, existing prompts keep their text but lose that reference, and a restore from <strong>Library → Trash</strong> brings it back. The original file on disk is never deleted or modified. Re-importing a removed file restores the same asset instead of creating a second copy.</p>
+<h2 id="3-edit-media">3. Edit media</h2>
+<p>Select a media card in <strong>Media</strong> to open the editor. A quick-action row above the editor jumps to the tool you need: <strong>Crop / trim edges</strong> for images, <strong>Crop / aspect</strong> and <strong>Trim clip</strong> for video, and <strong>Mask regions</strong> for both. The actions only move the view; edits stay staged until you apply them.</p>
+<p>The editor is non-destructive. Toolbar changes are staged until you apply them:</p>
+<ul><li>crop (free or fixed aspect), rotate, flip, fit/fill/pad</li><li>video trim (start/end milliseconds), loop, remove audio, constant frame rate</li></ul>
+<p>(24/25/30/60)</p>
+<ul><li>mask brush/eraser/rectangle, hardness, feather, invert, polarity</li><li>target resolution from the preset table, dimension-multiple snapping, manual</li></ul>
+<p>override</p>
+<ul><li>undo, redo, reset</li></ul>
+<p><strong>Masking</strong> works for images and video. The source is shown under the mask layer, so you paint over the actual picture rather than a blank canvas. Paint the region to keep or remove, invert the polarity when your target expects the opposite convention, then <strong>Export mask</strong> to write a grayscale PNG at the target resolution. For a clip the mask applies to the whole duration. Typical uses: isolate a product from its background, protect a face while restyling the rest, or give an edit target a precise region instead of a sentence.</p>
+<p><strong>Crop</strong> uses percentage edges (Left, Right, Top, Bottom) plus <strong>1:1</strong>, <strong>16:9</strong>, and <strong>9:16</strong> presets. You can also drag a rectangle directly on the preview: the live dashed box becomes the crop selection when released, and the sliders and readout follow. Values are clamped to the source so an impossible crop cannot be submitted. Pixel entry is not required.</p>
+<p><strong>Trimming</strong> applies to video. Set a start and end to drop a shaky intro or a dead tail, optionally set a constant frame rate, loop a short clip, or remove audio before composing. The original file is never changed; the edit is written to <code>edited/</code> when applied and can be reverted with <strong>Reset</strong>.</p>
+<p>Applying an edit writes a new file to <code>&lt;source parent&gt;\edited\</code>. The original is never modified. Collisions get numeric suffixes; a configured alternate output root is used when set. If Windows denies writing to the folder, the error names it and explains the two ways out: choose another output folder, or allow the app in Windows Security → Ransomware protection. Every result is re-probed and material mismatches are warned about.</p>
+<p>Masks are exported as grayscale PNGs at the target resolution and polarity.</p>
+<h2 id="4-presets">4. Presets</h2>
+<p>Pick a preset for the selected target. The six built-ins are <strong>generic image</strong>, <strong>generic video</strong>, <strong>krea2</strong>, <strong>krea2 edit</strong>, <strong>qwen2 edit</strong>, and <strong>mmh3</strong>.</p>
+<p>Open <strong>Presets</strong> to:</p>
+<ul><li>write a preset as a <strong>text guide</strong> — name, kind, target description, prompt</li></ul>
+<p>guide, and an optional character limit — and let the app compile the document</p>
+<ul><li>switch to <strong>JSON</strong> for parameters, resolutions, references, and exact schemas</li><li>preview the compiled prompt live while you edit either view</li><li>duplicate a built-in (built-ins cannot be edited or deleted in either view)</li><li>create, import, export, or delete user presets</li><li>see validation errors, unsupported negatives, truncation, and checklist</li></ul>
+<p>warnings</p>
+<p>The <strong>Guide</strong> fields become the target's instructions; saving bumps a user preset's patch version and leaves advanced fields intact. Anchor to JSON when you need parameters, reference slots, or a custom output schema.</p>
+<p>See <a href="presets.html">presets.md</a> for the schema and a validated example.</p>
+<h2 id="5-generate-prompts">5. Generate prompts</h2>
+<p>The <strong>Prompt workspace</strong> is the default surface. Its mode selector has four modes:</p>
+<ul><li><strong>Describe</strong> — media to a verbose text description, no target prompt.</li><li><strong>Compose</strong> — brief and optional description to a prompt; text-only is supported.</li><li><strong>Refine</strong> — an existing prompt plus an instruction to a revised prompt.</li><li><strong>Batch</strong> — queue selected assets or a dataset through the job queue.</li></ul>
+<p>For media, Describe runs first so you can review the verbose prose description. <strong>Edit description</strong> opens the text for correction, and the corrected text is what Compose uses. Describe mode stops after the description. Compose mode requires that review step before it enables the compose action. Text-only Compose skips the describer.</p>
+<p><strong>Media</strong> sits in the panel beside the form. It lists every imported asset with a thumbnail and supports multiple references:</p>
+<ul><li>Click a tile to toggle it. The number badge and <strong>Selected</strong> label show its</li></ul>
+<p>reference order; the order is the order sent to the model.</p>
+<ul><li>Each selected tile has a <strong>Weight</strong> field below it (<code>0</code>–<code>2</code>, step <code>0.05</code>,</li></ul>
+<p>default <code>1</code>). Weights are clamped and the app warns above four references.</p>
+<ul><li><strong>Select all</strong> and <strong>Clear</strong> manage the set. <strong>Edit media</strong> opens the first</li></ul>
+<p>selected asset in the Media editor.</p>
+<ul><li>Describe runs once per selected asset that has no description. Compose stays</li></ul>
+<p>blocked until every selected asset has a reviewed description.</p>
+<p>Each description is a detailed paragraph. Review it, correct any misread detail with <strong>Edit description</strong>, and <strong>Save description</strong>; the composer receives that text for the reference. Clearing the text is rejected so a reference cannot silently lose its description. Long descriptions are trimmed to the preset's input budget.</p>
+<p>When a result exists, the <strong>Result</strong> section moves to the top of the output column so the prompt, metadata, and copy actions are visible immediately. The prompt lists every reference with its index, name, weight, and a short summary, and the same list is stored in the generation parameters.</p>
+<p><strong>Send media to composer</strong> (Compose mode, only while media is selected) also feeds the selected reference images to the composer itself, not just their descriptions: images arrive as additional image parts after the prompt text. Video references contribute one sampled frame and edited references use the saved edit output. The switch is enabled only when the composer model reports vision capability; it is disabled while the composer is text-only, and Reset turns it off. Image runs use their own cache entries, so image and text-only results never get mixed up.</p>
+<p>When an asset has an applied crop or mask, the Compose tile previews that edit with an <strong>Edited</strong> badge, and Describe and Compose send the edit identifier so the prompt is built from the edited output. The tiles update as soon as you press <strong>Apply</strong> in the Media editor.</p>
+<p>Drop files on the workspace to import them without leaving it, or use <strong>Add media</strong>.</p>
+<p><strong>Reset</strong> clears the current result, descriptions, brief, refine inputs, locked phrases, per-run guidance, media selection, and batch selection so you can start over. The chosen preset, global guidance, and the imported library stay, and nothing is removed from history. The button is disabled when the workspace is already empty.</p>
+<p>The workspace also shows the effective guidance (global + preset + run) before running and warns when levels appear to conflict. Locked phrases are preserved, output language and 1–4 variations are selectable, and a seed plus cache-bypass toggle are available. Results show prompt, negative prompt, parameters, warnings, seed, model, and a <code>fresh</code>/<code>cached</code> badge. Use <strong>Copy plain prompt</strong>, <strong>Copy structured</strong>, <strong>Regenerate</strong>, or <strong>Edit prompt</strong>; over-limit results flag the excess and allow manual correction before copying.</p>
+<p>Refine can start from a stored generation; the result is stored as its child. Batch describes each selected asset before queuing one job with one item per asset. The dataset tab queues <code>datasets.run</code> instead. Progress appears in the workspace and in <strong>Jobs</strong>.</p>
+<p>Outputs are validated, JSON is repaired once with feedback, and a failed repair is stored as an <code>invalid</code> generation with the raw response intact.</p>
+<ul><li>Variations 1–4 produce sibling generations with distinct seeds.</li><li>Locked phrases are appended if the model omits them.</li><li>Character limits slice the result and add a warning.</li><li>Presets without negative-prompt support drop it with a warning.</li><li>Output language is configurable; the prompt is still limited by preset length.</li></ul>
+<h2 id="6-job-queue">6. Job queue</h2>
+<p>Every long compose/dataset batch is a persisted job. Open <strong>Jobs</strong> to:</p>
+<ul><li>see running, queued, waiting, failed, interrupted, and finished jobs</li><li>pause/resume the queue (running items finish; no new items start)</li><li>cancel a job or cancel everything still waiting</li><li>retry failed/interrupted jobs; only unfinished items rerun</li><li>reorder waiting jobs</li><li>expand item errors and copy full details for a bug report</li><li>see each item's ordered media references with a thumbnail and weight; missing</li></ul>
+<p>assets stay listed with an unavailable marker</p>
+<p>Compositions run one at a time because the composer is serialized. If the app exits unexpectedly, the next launch marks running jobs as interrupted and keeps their completed items. Resume with <strong>Retry</strong>.</p>
+<p>Retryable backend/network failures retry automatically with backoff (three attempts). Missing inputs, validation failures, and unsupported requests fail immediately and require a manual retry after fixing the input.</p>
+<h3 id="worked-example-prompts-for-40-product-photos">Worked example: prompts for 40 product photos</h3>
+<p>Goal: one target-ready prompt per photo, reviewed in the Library, exported as CSV.</p>
+<ol><li><strong>Import</strong> the folder: Media → <strong>Add folder</strong>. All 40 images appear once</li></ol>
+<p>(duplicates are skipped by hash).</p>
+<ol><li><strong>Pick a target</strong> in Compose, for example <code>krea2</code> for stills. Open the Batch</li></ol>
+<p>tab and choose <strong>Assets</strong>.</p>
+<ol><li><strong>Select the photos.</strong> Use <strong>Select all</strong>, or click individual tiles. The</li></ol>
+<p>selection is the batch input; per-tile weights still apply.</p>
+<ol><li><strong>Queue the batch.</strong> The app describes each selected asset first, then composes</li></ol>
+<p>one prompt per asset with one job item each. You do not need to describe manually first.</p>
+<ol><li><strong>Watch Jobs.</strong> Progress shows completed, failed, and waiting counts. You can</li></ol>
+<p>pause the queue, cancel waiting items, or leave it running. The composer is serialized, so 40 items run one at a time by design.</p>
+<ol><li><strong>Fix failures.</strong> Expand the job to see the error per item. After correcting a</li></ol>
+<p>missing file or a bad preset, press <strong>Retry</strong>; only unfinished items rerun.</p>
+<ol><li><strong>Review and export.</strong> Results land in the Library. Filter by the batch's</li></ol>
+<p>preset or date, then select all and <strong>Export</strong> as CSV or JSONL. Plain text writes one prompt per line.</p>
+<p>For a spreadsheet instead of photos, use <strong>Datasets</strong>: import the CSV, map the caption column to prompt and any media column to media path, then <strong>Run batch</strong>. The row table shows imported or missing media, failures stay isolated per row, and export adds the media asset ID, generation ID, and status alongside your original columns.</p>
+<h2 id="7-library">7. Library</h2>
+<p>Open <strong>Library</strong> to browse every generation, including failed and cancelled ones.</p>
+<ul><li>Search uses FTS over prompt, negative, guidance, and description text.</li><li>Filter by preset, kind, status, tag, collection, favorite, or date.</li><li>Sort by newest, oldest, rating, or prompt.</li><li>Favorite generations and media independently.</li><li>Add tags, collections, notes, and 1–5 ratings.</li><li><strong>Versions</strong> shows ancestors and descendants; <strong>Diff</strong> compares prompt,</li></ul>
+<p>negative, parameters, guidance, seed, preset, models, and status.</p>
+<ul><li><strong>Compare</strong> opens two to four selected generations side by side, including</li></ul>
+<p>unrelated presets. Each column shows the prompt with changed words highlighted, models, seed, reference thumbnails and weights, and <strong>Copy prompt</strong>. Compare is disabled outside two to four selections.</p>
+<ul><li>Generation details list the ordered references with a thumbnail and weight;</li></ul>
+<p>unavailable assets are marked missing.</p>
+<ul><li><strong>Restore inputs</strong> loads the asset, edit stack, preset, guidance, and parameters</li></ul>
+<p>back into the workspace without changing history.</p>
+<ul><li>Bulk actions: favorite, tag, assign a collection, re-run with another preset,</li></ul>
+<p>export, trash.</p>
+<ul><li><strong>Trash</strong> hides items without deleting them. <strong>Restore</strong> brings them back.</li></ul>
+<p><strong>Delete forever</strong> requires confirmation and removes cached thumbnails, proxies, and frames but never source files.</p>
+<ul><li><strong>Back up</strong> writes a single <code>.zip</code> bundle containing the database, settings,</li></ul>
+<p>the encrypted token, and the workspace draft. <strong>Restore</strong> accepts that bundle or a legacy <code>.db</code> backup and snapshots the current database first. Restart Prompt Studio after restoring to apply settings and the token. A token is DPAPI-bound to the Windows user and machine, so a bundle moved to another machine cannot decrypt it; the app treats it as absent and asks for the token again.</p>
+<p>Exports support JSON, JSONL, CSV, and plain text. Plain text writes one prompt per line and nothing else. Import accepts this app's JSON/JSONL/CSV export and plain-text prompt lists.</p>
+<p><strong>Re-run</strong> queues one job per selected generation, links the new result to the source as a child version, bypasses the cache, preserves the ordered references and weights, and uses the stored description or prompt. The preset, seed, and variations can change without losing the references.</p>
+<h2 id="8-datasets">8. Datasets</h2>
+<p>Open <strong>Datasets</strong> and choose <strong>Import file</strong> or <strong>Import folder</strong>.</p>
+<p>Supported inputs:</p>
+<ul><li>TXT: one prompt per line; blank/whitespace lines are skipped</li><li>JSON: array of objects</li><li>JSONL/NDJSON: one object per line</li><li>CSV/TSV: header row required; delimiter detected automatically</li><li>image folder: images paired with same-named <code>.txt</code> captions; images without a</li></ul>
+<p>caption are listed as incomplete</p>
+<p>The wizard previews the first rows and auto-maps likely fields to prompt, negative, parameters, media path, tags, identifier, or ignore. Change any mapping before importing. Save the mapping as a named profile to reuse it.</p>
+<p>Validation reports row numbers and reasons. Valid rows import while invalid rows are listed. UTF-8 is used when possible; invalid UTF-8 falls back to Windows-1252 and the encoding is shown. Oversized files are refused before fully loading; split them first. Media paths are resolved against the dataset root; paths escaping that root are rejected. Formula-like cells are stored and exported as text and never evaluated.</p>
+<p>Duplicate handling:</p>
+<ul><li><strong>Skip</strong> — keep the first row only</li><li><strong>Merge</strong> — keep the first prompt and merge tags/parameters/missing fields</li><li><strong>Keep</strong> — import both with distinct row IDs</li></ul>
+<p><strong>Run batch</strong> uses one job item per unfinished row and records queued, running, succeeded, and failed counts. Succeeded rows are skipped on resume. Rows with a media path import that media lazily into the asset library (hash deduplicated) and compose with it as a reference; rows without media run as text-only compose. A row may list several media paths separated by <code>|</code>, with an optional <code>@weight</code> per path, for example <code>subject.png@0.8|style.png</code>. Weights default to 1.0 and clamp to 0.0-2.0.</p>
+<p>The row table shows each row's media state before and after a run:</p>
+<ul><li><strong>None</strong> — text-only row</li><li><strong>Not imported</strong> — a media path is present but not yet imported</li><li><strong>1 reference</strong> / <strong>N references</strong> — imported media with thumbnails</li><li><strong>Missing</strong> — the declared file is gone</li></ul>
+<p>A missing or unreadable row media marks only that row failed and records the reason; other rows still run. Fix the file or mapping and run again to retry the unfinished rows.</p>
+<p><strong>Export</strong> writes the original row fields plus media asset ID, generated prompt, negative, parameters, status, error, and generation ID. Tick the columns you want; the selection is remembered for that dataset. CSV, JSON, and JSONL are supported.</p>
+<h2 id="9-drag-out-and-save-as">9. Drag out and Save as</h2>
+<p>Select a generation, choose the payload, and drag the <strong>Drag</strong> handle into Explorer:</p>
+<ul><li>plain prompt (<code>.txt</code>)</li><li>structured JSON (<code>.json</code>)</li><li>original media</li><li>edited media</li><li>mask PNG</li><li>bundle (media + prompt + JSON)</li></ul>
+<p>Enable <strong>Sidecars</strong> to add <code>.txt</code> and <code>.json</code> files with the same base name as a media file. Names come from the naming template (<code>{preset}</code>, <code>{target}</code>, <code>{asset}</code>, <code>{date}</code>, <code>{time}</code>, <code>{index}</code>, <code>{seed}</code>), with Windows-illegal characters replaced and collisions suffixed. Dragging copies; sources are never moved or renamed.</p>
+<p>If native drag is unavailable, use <strong>Save as</strong> (native save dialog) or <strong>Reveal</strong> (Explorer with the file selected). Preparation progress appears for large clips; preparation can be cancelled.</p>
+<p>Configure the naming template in settings. Prepared drag files live under the cache and are removed after 24 hours.</p>
+<h2 id="10-backup-diagnostics-and-storage">10. Backup, diagnostics, and storage</h2>
+<ul><li><strong>Library → backup/restore</strong> writes or restores a <code>.zip</code> bundle containing the</li></ul>
+<p>database, settings, encrypted token, and workspace draft; a legacy <code>.db</code> backup is still accepted. Restore snapshots the current database first. See §7 for the portability caveat.</p>
+<ul><li><strong>Diagnostics</strong> exports a redacted zip. Tokens and prompt bodies are excluded</li></ul>
+<p>unless you explicitly opt in.</p>
+<ul><li>The top bar shows endpoint health, loaded models, and cache size; the rail</li></ul>
+<p>foot shows portable/per-user mode and data size.</p>
+<ul><li>Portable mode is enabled by <code>portable.txt</code> beside the executable or</li></ul>
+<p><code>PROMPT_STUDIO_PORTABLE=1</code>; data goes to <code>.\data</code>.</p>
+<h2 id="11-keyboard-and-workspace-behavior">11. Keyboard and workspace behavior</h2>
+<p>The workspace autosaves the selected asset, edit stack, preset, guidance, and parameters. Relaunching restores an unapplied edit draft. A corrupt draft is backed up as <code>workspace.corrupt.json</code> and ignored.</p>
+<h2 id="keyboard">Keyboard</h2>
+<ul><li><strong>Ctrl+Enter</strong> — run the active mode. In Compose with media it describes the</li></ul>
+<p>selected media first, then the next press composes.</p>
+<ul><li><strong>Ctrl+Shift+Enter</strong> — describe the selected media.</li><li><strong>Esc</strong> — cancel the active describe or compose.</li></ul>
+<p>Shortcuts are ignored while a modal dialog is open, and while an input or select has focus. <code>Ctrl+Enter</code> works from a textarea, so you can submit without leaving the field.</p>
+    </article>
+    <section class="backlinks"><p class="eyebrow">Linked from</p><ul><li><a href="index.html">Overview</a></li></ul></section>
+    <nav class="pager" aria-label="Page navigation"><a href="index.html"><small>Previous</small><span>Overview</span></a><a class="pager-next" href="presets.html"><small>Next</small><span>Presets</span></a></nav>
+  </main>
+  <aside class="rail"><nav class="toc" aria-label="On this page"><p class="eyebrow">On this page</p><a class="toc-link toc-2" href="#0-workspace">0. Workspace</a><a class="toc-link toc-2" href="#1-connect-lm-studio">1. Connect LM Studio</a><a class="toc-link toc-2" href="#2-import-media">2. Import media</a><a class="toc-link toc-2" href="#3-edit-media">3. Edit media</a><a class="toc-link toc-2" href="#4-presets">4. Presets</a><a class="toc-link toc-2" href="#5-generate-prompts">5. Generate prompts</a><a class="toc-link toc-2" href="#6-job-queue">6. Job queue</a><a class="toc-link toc-3" href="#worked-example-prompts-for-40-product-photos">Worked example: prompts for 40 product photos</a><a class="toc-link toc-2" href="#7-library">7. Library</a><a class="toc-link toc-2" href="#8-datasets">8. Datasets</a><a class="toc-link toc-2" href="#9-drag-out-and-save-as">9. Drag out and Save as</a><a class="toc-link toc-2" href="#10-backup-diagnostics-and-storage">10. Backup, diagnostics, and storage</a><a class="toc-link toc-2" href="#11-keyboard-and-workspace-behavior">11. Keyboard and workspace behavior</a><a class="toc-link toc-2" href="#keyboard">Keyboard</a></nav></aside>
+</div>
+<script src="assets/wiki.js"></script>
+</body>
+</html>

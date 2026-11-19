@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Release notes · Prompt Studio docs</title>
+<meta name="description" content="Prompt Studio documentation: Release notes" />
+<link rel="stylesheet" href="assets/wiki.css" />
+</head>
+<body data-page="release-notes.html">
+<a class="skip" href="#content">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">PS</span>
+      <span><strong>Prompt Studio</strong><small>Documentation</small></span>
+    </a>
+    <label class="search">
+      <span class="visually-hidden">Filter pages</span>
+      <input id="nav-filter" type="search" placeholder="Filter pages…" autocomplete="off" />
+    </label>
+    <nav class="nav" aria-label="Documentation"><a class="nav-link" href="index.html" data-title="overview start here"><span>Overview</span><small>Start here</small></a>
+<a class="nav-link" href="user-guide.html" data-title="user guide day-to-day use"><span>User guide</span><small>Day-to-day use</small></a>
+<a class="nav-link" href="presets.html" data-title="presets targets"><span>Presets</span><small>Targets</small></a>
+<a class="nav-link" href="troubleshooting.html" data-title="troubleshooting fix problems"><span>Troubleshooting</span><small>Fix problems</small></a>
+<a class="nav-link is-current" href="release-notes.html" data-title="release notes verification"><span>Release notes</span><small>Verification</small></a>
+<a class="nav-link" href="drag-out.html" data-title="drag out files"><span>Drag out</span><small>Files</small></a>
+<a class="nav-link" href="ui-system.html" data-title="interface system design"><span>Interface system</span><small>Design</small></a></nav>
+    <p class="sidebar-foot">Offline wiki · built from the Markdown guides</p>
+  </aside>
+  <main id="content" class="content">
+    <header class="page-head">
+      <p class="eyebrow">Verification</p>
+      <h1>Release notes</h1>
+    </header>
+    <article class="prose">
+<h1 id="release-notes-—-prompt-studio-v1">Release notes — Prompt Studio v1</h1>
+<h2 id="scope">Scope</h2>
+<p>Prompt Studio is a local-first Windows workbench for turning media into prompts for image/video generation targets. v1 includes:</p>
+<ul><li>media ingest with hashing, dedupe, probing, thumbnails, proxies, frames, and</li></ul>
+<p>embedded metadata parsing</p>
+<ul><li>non-destructive image/video editing with masks, trim, fps, resolution, and the</li></ul>
+<p><code>edited/</code> output layout</p>
+<ul><li>LM Studio runtime management with roles, keep-warm policies, TTL, unload, and</li></ul>
+<p>local-only HTTP</p>
+<ul><li>six built-in presets plus import/export/duplicate/edit</li><li>two-stage describe/compose pipeline with caching, retries, variations, seeds,</li></ul>
+<p>output-language enforcement, and self-check warnings</p>
+<ul><li>durable job queue with pause/resume/cancel/retry/reorder/recovery</li><li>generation library with search, filters, favorites, tags, collections, notes,</li></ul>
+<p>ratings, versions/diffs, restore, trash, backup/restore, and exports</p>
+<ul><li>dataset import wizard, mapping profiles, dedupe, batch runs, and exports</li><li>native drag-out plus Save-as/Reveal fallbacks and sidecars</li></ul>
+<h2 id="compose-media-and-preset-ergonomics">Compose, media, and preset ergonomics</h2>
+<ul><li><strong>Reset</strong> in the Compose header clears the result, descriptions, brief, refine</li></ul>
+<p>inputs, locked phrases, per-run guidance, media selection, and batch selection. The preset, global guidance, imported library, and stored history are untouched.</p>
+<ul><li>Each Media card exposes <strong>Remove</strong>, which moves the asset to the Library trash,</li></ul>
+<p>drops it from every picker, and leaves the original file on disk. Restore from Library → Trash brings it back.</p>
+<ul><li>Presets can be authored as a <strong>text guide</strong> (name, kind, target description,</li></ul>
+<p>prompt guide, optional character limit). The app compiles and validates the stored JSON document, so hand-writing JSON is optional; the <strong>JSON</strong> tab stays available for parameters, resolutions, references, and output schemas.</p>
+<ul><li><strong>Model instructions</strong> in the Runtime panel add optional system prompt</li></ul>
+<p>overrides for the describer and composer. They apply to describe, compose, batch, and jobs; the pipeline still adds its JSON, length, and language rules.</p>
+<ul><li><strong>Quick media tools</strong> above the editor jump straight to crop/trim edges, video</li></ul>
+<p>trim, and mask regions, for images and video.</p>
+<ul><li><strong>Docs wiki</strong>: <code>npm run docs:wiki</code> builds a styled offline site in <code>docs/wiki/</code></li></ul>
+<p>with a sidebar, per-page contents, wiki-style backlinks, previous/next, search, dark mode, and print styles.</p>
+<ul><li>Re-importing a removed asset restores it instead of leaving it hidden; Compose</li></ul>
+<p>media tiles also expose <strong>Remove</strong>.</p>
+<ul><li>The mask canvas shows the source image underneath, and crop uses percentage</li></ul>
+<p>edge controls with aspect presets instead of pixel entry. Crop can now also be drawn as a rectangle directly on the preview, IPC failures render their real message instead of <code>[object Object]</code>, and picker removal asks nothing because the asset still goes to the Library trash.</p>
+<ul><li>WebP and other non-PNG/JPEG stills are converted once to a cached PNG for the</li></ul>
+<p>describer, so they no longer fail at the describe step.</p>
+<ul><li>Compose gained a <strong>Send media to composer</strong> option: reference images join the</li></ul>
+<p>composer request as image parts when the composer reports vision, with image runs cached separately from text-only runs.</p>
+<ul><li>Describe, Compose, and the Send-media-to-composer images now follow the</li></ul>
+<p>latest applied edit: picker tiles show the cropped/masked output with an <strong>Edited</strong> badge, and edit-write permission failures name the folder plus the output-folder and ransomware-protection remedies.</p>
+<ul><li>Descriptions are now verbose prose instead of JSON. The describer is prompted</li></ul>
+<p>for three to six detailed sentences, stores text, flattens legacy structured descriptions to readable prose, and the composer receives a <strong>Visual description</strong> section. The UI edits the paragraph directly.</p>
+<h2 id="automated-verification">Automated verification</h2>
+<p>Run from the repository root:</p>
+<pre class="code"><code>npm run typecheck
+npm run lint
+npm run format:check
+npm test
+npm run lint:rust
+npm run test:rust</code></pre>
+<p>Last recorded result: <strong>161 Vitest tests</strong> and <strong>238 Rust tests</strong> (236 passed, two ignored: one needs a live LM Studio and one is the 10k performance measurement), with <code>real_models_describe_and_compose</code> and <code>measures_first_page_for_ten_thousand_generations</code> as the ignored tests. All 12 capability specs pass <code>openspec validate --specs --strict</code>, and no active changes remain.</p>
+<h2 id="multi-reference-compose">Multi-reference compose</h2>
+<ul><li>Compose and Describe now accept an ordered multi-selection of images and clips.</li></ul>
+<p>Each selected tile shows its reference number and a weight field (<code>0</code>–<code>2</code>, default <code>1</code>). Describe runs per asset and Compose waits for every description.</p>
+<ul><li>Descriptions are verbose prose now. Each description card shows the paragraph</li></ul>
+<p>with a word count and a plain-text editor; the composer receives the text directly. Field checkboxes, JSON editing, and confidence are gone.</p>
+<ul><li><code>ComposeRequest.references</code> carries <code>assetId</code>, <code>editId</code>, <code>weight</code>, <code>name</code>, and</li></ul>
+<p>text <code>description</code> with a serde default, so older payloads and stored jobs still work. Weights are clamped, more than four references warn, and the cache key includes the ordered reference set.</p>
+<ul><li>The generated prompt appends a <code>References:</code> block and generation</li></ul>
+<p><code>params.references</code> mirrors it for Library/JSON consumers.</p>
+<ul><li>When a result exists it renders first in the output column; the compose button</li></ul>
+<p>is full width and the media grid fills the remaining height.</p>
+<h2 id="runtime-fixes">Runtime fixes</h2>
+<ul><li>Dataset rows with media now import it lazily (hash-deduplicated) and compose</li></ul>
+<p>with it as a reference; multi-media rows accept <code>a.png@0.8|b.png</code>. Row failures are isolated, unfinished rows are retried, and exports include the media asset id, generation id, and status.</p>
+<ul><li>Runtime capability detection reads LM Studio's reported vision, reasoning,</li></ul>
+<p>context, maximum output, and quantization. The Runtime panel shows badges and a <strong>Suggest roles</strong> action; Compose warns when the describer is text-only or the composer context is below the preset budget, and budgets with the smaller reported context.</p>
+<ul><li>The Library compares two to four generations side by side with a word-level</li></ul>
+<p>prompt diff, reference thumbnails, and per-column copy. Re-run preserves the ordered references and weights.</p>
+<ul><li>Backup is now one <code>.zip</code> bundle with the database, settings, token, and</li></ul>
+<p>workspace draft; restore accepts the bundle or a legacy <code>.db</code>.</p>
+<ul><li>Job details list ordered references with thumbnails and weights, and the app</li></ul>
+<p>shell provides compose, describe, and cancel shortcuts.</p>
+<ul><li>The composer model reports <code>reasoning.default = &quot;on&quot;</code>. A reasoning model can</li></ul>
+<p>spend its whole output budget in <code>reasoning_content</code> and return an empty <code>content</code>, which the pipeline correctly reports as invalid JSON. The LM Studio client now sends <code>reasoning_effort: &quot;none&quot;</code> on every chat request, so structured describe and compose calls produce content instead of a reasoning trace. This is covered by <code>runtime::client::tests::disables_reasoning_for_structured_chat</code>. The actual composer model was also tested directly with <code>reasoning_effort: &quot;none&quot;</code> and a JSON schema; it returned valid JSON with zero reasoning tokens.</p>
+<ul><li>Generated seeds are masked to the non-negative <code>i64</code> range. LM Studio rejects</li></ul>
+<p>seeds below <code>-1</code>, which previously made both compose attempts return an empty response and store <code>invalid</code> generations. Covered by <code>pipeline::tests::seeds_are_non_negative_for_lm_studio</code>.</p>
+<ul><li>The runtime manager now reconciles with LM Studio's loaded instances before</li></ul>
+<p>loading, so a model already loaded by a previous app run or by hand is reused instead of loaded a second time. Unload now removes every instance of a model key, not just the first. Covered by <code>runtime::manager::tests::reuses_a_model_already_loaded_in_lm_studio</code> and <code>runtime::client::tests::finds_every_loaded_instance_for_a_key</code>.</p>
+<ul><li><code>media://</code> now canonicalizes the cache directory before comparing paths, so</li></ul>
+<p>thumbnails and proxies load when the portable <code>data</code> folder is reached through a junction. Previously the canonical file path was compared against the un-resolved cache path and rejected as unapproved. Covered by <code>media::protocol::tests::cache_files_are_allowed_through_a_junction</code>.</p>
+<ul><li>The Compose form is narrowed to a 480 px input column, short fields are grouped into two- and three-column rows, textareas are shorter, and the primary action</li></ul>
+<p>stays visible while scrolling. The media dropdown is gone: an asset grid now fills the space beside the form, with click-to-select, drag-and-drop import that keeps you in the workspace, <strong>Add media</strong>, and <strong>Edit media</strong> next to the selection.</p>
+<p>The build was refreshed and the portable folder and zip were updated without touching the existing <code>data</code> folder.</p>
+<h2 id="ui-redesign-verification">UI redesign verification</h2>
+<p>The <code>redesign-prompt-studio-ui</code> change replaces the top-bar toggles and the per-panel palettes with the rail shell and the token-first interface system.</p>
+<ul><li><code>npm run audit:tokens</code>: clean, 10 stylesheets, 59 tokens.</li><li>Hallmark <code>sloplint src/App.css --scope app --genre modern-minimal</code>: 0 FAIL,</li></ul>
+<p>0 REFLEX, 0 WARN. The run follows the local <code>tokens.css</code> and <code>base.css</code> imports.</p>
+<ul><li><code>npm run format:check</code>, <code>npm run typecheck</code>, <code>npm run lint</code>, <code>npm test</code>,</li></ul>
+<p><code>npm run lint:rust</code>, and <code>npm run test:rust</code> all pass.</p>
+<ul><li>28 screenshots in <code>docs/ui-screens/</code> cover all seven views at 1100×700,</li></ul>
+<p>1280×800, 1440×900, and 1920×1080. No horizontal page or workspace overflow, and no interactive control extends past the workspace edge.</p>
+<ul><li>Keyboard focus, field-error association, disabled/busy states, and reduced</li></ul>
+<p>motion are recorded in <code>docs/ui-system.md</code>. The screenshots were taken against the Vite preview, so the LM Studio offline banner and IPC error alerts are expected in those images.</p>
+<p>The real-model test is opt-in:</p>
+<pre class="code"><code>cargo test real_models_describe_and_compose -- --ignored --nocapture</code></pre>
+<p>It loads <code>lfm3-vl-2b</code> and the composer, describes a generated image, and composes with <code>mmh3</code>. Running it surfaced two real LM Studio compatibility issues that are fixed in v1:</p>
+<ul><li>chat/load requests no longer send an unsupported <code>ttl</code> field</li><li>model tracking uses the model key, and unload uses <code>instance_id</code></li></ul>
+<h2 id="packaging-verification">Packaging verification</h2>
+<ul><li>NSIS installer produced at</li></ul>
+<p><code>src-tauri/target/release/bundle/nsis/Prompt Studio_0.1.0_x64-setup.exe</code> (58.26 MiB).</p>
+<ul><li>Portable folder and zip produced by <code>npm run package:portable</code>.</li><li>The portable executable was launched twice; the second (warm) launch reached a</li></ul>
+<p>window in 0.09 s with a 29.1 MB idle working set. The first cold launch took 27.61 s in this environment, including first-run WebView2 setup and Defender scanning of the bundled sidecars.</p>
+<h2 id="manual-checklist">Manual checklist</h2>
+<p>These are the checks that still need a human at the target machine. They are tracked here, not in an archived change.</p>
+<h3 id="install-and-launch">Install and launch</h3>
+<ul><li>[ ] Install the NSIS bundle on a clean Windows profile.</li><li>[ ] Launch from the Start menu; no terminal window appears.</li><li>[ ] Launch the portable zip after extracting to a writable folder.</li><li>[ ] Confirm data lives under <code>.\data</code> in portable mode.</li><li>[ ] Confirm a second launch focuses the first window.</li></ul>
+<h3 id="offline-end-to-end">Offline end-to-end</h3>
+<ul><li>[ ] Start LM Studio with <code>lfm3-vl-2b</code> and the composer; disconnect the network.</li><li>[ ] Import an image and a video.</li><li>[ ] Describe, compose, and verify prompt/negative/params.</li><li>[ ] Apply a crop or trim and confirm <code>edited/</code> output.</li><li>[x] Drag a prompt, media, mask, and bundle into Explorer; verify bytes/playback.</li><li>[ ] Restart and confirm the draft, library, and finished jobs persist.</li><li>[ ] Interrupt a batch, restart, retry, and confirm succeeded items are skipped.</li></ul>
+<h3 id="prompt-workspace">Prompt workspace</h3>
+<ul><li>[ ] Open the app: Compose is the default mode in the Prompt workspace.</li><li>[ ] Text-only Compose skips the describer.</li><li>[ ] Media Compose runs Describe first, shows the verbose text, allows an edit,</li></ul>
+<p>and composes from the correction.</p>
+<ul><li>[ ] Describe mode stops after the description.</li><li>[ ] Refine from a stored generation links the new result as a child.</li><li>[ ] Effective guidance is visible; conflicting guidance warns before running.</li><li>[ ] Copy plain prompt and copy structured produce the expected clipboard text.</li><li>[ ] Regenerate bypasses the cache and the result shows fresh vs cached.</li><li>[ ] Over-limit output warns and permits manual prompt editing.</li><li>[ ] Batch from selected assets and from a dataset queues one job and shows</li></ul>
+<p>progress in the workspace and Jobs.</p>
+<h3 id="filesystem-edge-cases">Filesystem edge cases</h3>
+<ul><li>[ ] Unicode/CJK/emoji filenames and source folders.</li><li>[ ] Long paths (&gt;260 characters) with the Windows long-path policy enabled and</li></ul>
+<p>disabled; record the result.</p>
+<ul><li>[ ] Removable drive: import, edit, disconnect, and confirm the offline state.</li><li>[ ] Network share: import, edit, drag out, and confirm latency/permissions.</li><li>[ ] Read-only source folder: edit fails with no partial output.</li><li>[ ] Unwritable destination: Save-as fails with a clear error and no partial file.</li></ul>
+<h3 id="ui">UI</h3>
+<ul><li>[ ] Runtime: load/unload both roles, keep-warm matrix, unload-all busy guard.</li><li>[ ] Presets: duplicate, edit, import, export, delete-in-use guard.</li><li>[ ] Editor: undo/redo/reset, mask polarity, fps/trim, resolution snapping.</li><li>[ ] Jobs: pause/resume, cancel waiting, reorder, error details, copy details.</li><li>[ ] Library: search, every filter, favorites, tags, collections, notes, rating,</li></ul>
+<p>versions, diff, restore, trash, purge, export/import round trip.</p>
+<ul><li>[ ] Datasets: each import format, mapping profile reuse, dedupe modes, 97/100</li></ul>
+<p>partial import, run/resume, column-selected export.</p>
+<ul><li>[ ] Drag payload selector for prompt/JSON/original/edited/mask/bundle and</li></ul>
+<p>sidecars on/off.</p>
+<h2 id="measurements">Measurements</h2>
+<ul><li>10,000-generation library on this Windows x64 machine, debug in-memory build:</li></ul>
+<p>seeding took 900 ms and the first 25-row page took 1 ms (target: under 300 ms, spec <code>generation-library</code>). Reproduce with <code>cargo test --manifest-path src-tauri/Cargo.toml --lib measures_first_page_for_ten_thousand -- --ignored --nocapture</code>.</p>
+<h2 id="known-limitations">Known limitations</h2>
+<ul><li>Native drag-out uses <code>tauri-plugin-drag</code> 2.1.1 and passed interactive Explorer</li></ul>
+<p>drop testing on the target machine; Save-as and Reveal remain as fallbacks.</p>
+<ul><li>Long-path, removable-drive, and network-share behavior depends on the Windows</li></ul>
+<p>configuration and was not exercised in the build environment.</p>
+<ul><li>Cold start time is dominated by WebView2 first-run and antivirus scanning; it</li></ul>
+<p>should be re-measured on the release target.</p>
+<ul><li>The storyboard/sequence schema reservation is v2 only; no storyboard UI ships</li></ul>
+<p>in v1.</p>
+    </article>
+    <section class="backlinks"><p class="eyebrow">Linked from</p><ul><li><a href="index.html">Overview</a></li></ul></section>
+    <nav class="pager" aria-label="Page navigation"><a href="troubleshooting.html"><small>Previous</small><span>Troubleshooting</span></a><a class="pager-next" href="drag-out.html"><small>Next</small><span>Drag out</span></a></nav>
+  </main>
+  <aside class="rail"><nav class="toc" aria-label="On this page"><p class="eyebrow">On this page</p><a class="toc-link toc-2" href="#scope">Scope</a><a class="toc-link toc-2" href="#compose-media-and-preset-ergonomics">Compose, media, and preset ergonomics</a><a class="toc-link toc-2" href="#automated-verification">Automated verification</a><a class="toc-link toc-2" href="#multi-reference-compose">Multi-reference compose</a><a class="toc-link toc-2" href="#runtime-fixes">Runtime fixes</a><a class="toc-link toc-2" href="#ui-redesign-verification">UI redesign verification</a><a class="toc-link toc-2" href="#packaging-verification">Packaging verification</a><a class="toc-link toc-2" href="#manual-checklist">Manual checklist</a><a class="toc-link toc-3" href="#install-and-launch">Install and launch</a><a class="toc-link toc-3" href="#offline-end-to-end">Offline end-to-end</a><a class="toc-link toc-3" href="#prompt-workspace">Prompt workspace</a><a class="toc-link toc-3" href="#filesystem-edge-cases">Filesystem edge cases</a><a class="toc-link toc-3" href="#ui">UI</a><a class="toc-link toc-2" href="#measurements">Measurements</a><a class="toc-link toc-2" href="#known-limitations">Known limitations</a></nav></aside>
+</div>
+<script src="assets/wiki.js"></script>
+</body>
+</html>

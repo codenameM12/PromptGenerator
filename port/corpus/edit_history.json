@@ -1,0 +1,4603 @@
+{
+  "module": "editHistory",
+  "source": "src/lib/media/editHistory.ts",
+  "generatedBy": "src/port/characterize.test.ts",
+  "cases": [
+    {
+      "name": "fresh history",
+      "observe": "all",
+      "actions": [
+        {
+          "kind": "create"
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "records edits and supports undo/redo",
+      "observe": "all",
+      "actions": [
+        {
+          "kind": "create"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 2,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": true,
+          "entryCount": 2,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 2,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops the redo branch after a new edit",
+      "observe": "all",
+      "actions": [
+        {
+          "kind": "create"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 180,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 270,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 2,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 180,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 3,
+          "index": 2,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 180,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": true,
+          "entryCount": 3,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 180,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 270,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 3,
+          "index": 2,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 270,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ignores duplicate states",
+      "observe": "all",
+      "actions": [
+        {
+          "kind": "create"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reset is an undoable push of defaults",
+      "observe": "all",
+      "actions": [
+        {
+          "kind": "create"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": true,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "reset"
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": true,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 2,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": true,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 3,
+          "index": 2,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": true,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "undo and redo at the boundaries are no-ops",
+      "observe": "all",
+      "actions": [
+        {
+          "kind": "create"
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": true,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "redo"
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": true,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 2,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": true,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": true,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 2,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": true,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "round trips every editable field",
+      "observe": "all",
+      "actions": [
+        {
+          "kind": "create"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": {
+              "x": 10,
+              "y": 20,
+              "width": 640,
+              "height": 480
+            },
+            "rotate": 270,
+            "flipH": true,
+            "flipV": true,
+            "fit": "pad",
+            "trim": {
+              "startMs": 1500,
+              "endMs": 4200
+            },
+            "fps": 29.97,
+            "removeAudio": true,
+            "maskPath": "cache/mask.png",
+            "format": "image/png",
+            "loopVideo": true,
+            "padColor": "#102030"
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fill",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "undo"
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": false,
+          "canRedo": false,
+          "entryCount": 1,
+          "index": 0,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": {
+              "x": 10,
+              "y": 20,
+              "width": 640,
+              "height": 480
+            },
+            "rotate": 270,
+            "flipH": true,
+            "flipV": true,
+            "fit": "pad",
+            "trim": {
+              "startMs": 1500,
+              "endMs": 4200
+            },
+            "fps": 29.97,
+            "removeAudio": true,
+            "maskPath": "cache/mask.png",
+            "format": "image/png",
+            "loopVideo": true,
+            "padColor": "#102030"
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 2,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": {
+                "x": 10,
+                "y": 20,
+                "width": 640,
+                "height": 480
+              },
+              "rotate": 270,
+              "flipH": true,
+              "flipV": true,
+              "fit": "pad",
+              "trim": {
+                "startMs": 1500,
+                "endMs": 4200
+              },
+              "fps": 29.97,
+              "removeAudio": true,
+              "maskPath": "cache/mask.png",
+              "format": "image/png",
+              "loopVideo": true,
+              "padColor": "#102030"
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": null,
+            "rotate": 0,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fill",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 3,
+          "index": 2,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": {
+                "x": 10,
+                "y": 20,
+                "width": 640,
+                "height": 480
+              },
+              "rotate": 270,
+              "flipH": true,
+              "flipV": true,
+              "fit": "pad",
+              "trim": {
+                "startMs": 1500,
+                "endMs": 4200
+              },
+              "fps": 29.97,
+              "removeAudio": true,
+              "maskPath": "cache/mask.png",
+              "format": "image/png",
+              "loopVideo": true,
+              "padColor": "#102030"
+            },
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fill",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        },
+        {
+          "current": {
+            "crop": {
+              "x": 10,
+              "y": 20,
+              "width": 640,
+              "height": 480
+            },
+            "rotate": 270,
+            "flipH": true,
+            "flipV": true,
+            "fit": "pad",
+            "trim": {
+              "startMs": 1500,
+              "endMs": 4200
+            },
+            "fps": 29.97,
+            "removeAudio": true,
+            "maskPath": "cache/mask.png",
+            "format": "image/png",
+            "loopVideo": true,
+            "padColor": "#102030"
+          },
+          "canUndo": true,
+          "canRedo": true,
+          "entryCount": 3,
+          "index": 1,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": {
+                "x": 10,
+                "y": 20,
+                "width": 640,
+                "height": 480
+              },
+              "rotate": 270,
+              "flipH": true,
+              "flipV": true,
+              "fit": "pad",
+              "trim": {
+                "startMs": 1500,
+                "endMs": 4200
+              },
+              "fps": 29.97,
+              "removeAudio": true,
+              "maskPath": "cache/mask.png",
+              "format": "image/png",
+              "loopVideo": true,
+              "padColor": "#102030"
+            },
+            {
+              "crop": null,
+              "rotate": 0,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fill",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "caps the history at 100 entries",
+      "observe": "final",
+      "actions": [
+        {
+          "kind": "create"
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 1,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 2,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 3,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 4,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 5,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 6,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 7,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 8,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 9,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 10,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 11,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 12,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 13,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 14,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 15,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 16,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 17,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 18,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 19,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 20,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 21,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 22,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 23,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 24,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 25,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 26,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 27,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 28,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 29,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 30,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 31,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 32,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 33,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 34,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 35,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 36,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 37,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 38,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 39,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 40,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 41,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 42,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 43,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 44,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 45,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 46,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 47,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 48,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 49,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 50,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 51,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 52,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 53,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 54,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 55,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 56,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 57,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 58,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 59,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 60,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 61,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 62,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 63,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 64,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 65,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 66,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 67,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 68,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 69,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 70,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 71,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 72,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 73,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 74,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 75,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 76,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 77,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 78,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 79,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 80,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 81,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 82,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 83,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 84,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 85,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 86,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 87,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 88,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 89,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 90,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 91,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 92,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 93,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 94,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 95,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 96,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 97,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 98,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 99,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 100,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        },
+        {
+          "kind": "push",
+          "ops": {
+            "crop": null,
+            "rotate": 101,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          }
+        }
+      ],
+      "observations": [
+        {
+          "current": {
+            "crop": null,
+            "rotate": 101,
+            "flipH": false,
+            "flipV": false,
+            "fit": "fit",
+            "trim": null,
+            "fps": null,
+            "removeAudio": false,
+            "maskPath": null,
+            "format": null,
+            "loopVideo": false,
+            "padColor": null
+          },
+          "canUndo": true,
+          "canRedo": false,
+          "entryCount": 100,
+          "index": 99,
+          "entries": [
+            {
+              "crop": null,
+              "rotate": 2,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 3,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 4,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 5,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 6,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 7,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 8,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 9,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 10,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 11,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 12,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 13,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 14,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 15,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 16,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 17,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 18,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 19,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 20,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 21,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 22,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 23,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 24,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 25,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 26,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 27,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 28,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 29,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 30,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 31,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 32,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 33,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 34,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 35,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 36,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 37,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 38,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 39,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 40,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 41,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 42,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 43,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 44,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 45,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 46,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 47,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 48,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 49,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 50,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 51,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 52,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 53,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 54,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 55,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 56,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 57,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 58,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 59,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 60,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 61,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 62,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 63,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 64,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 65,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 66,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 67,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 68,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 69,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 70,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 71,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 72,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 73,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 74,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 75,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 76,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 77,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 78,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 79,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 80,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 81,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 82,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 83,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 84,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 85,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 86,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 87,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 88,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 89,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 90,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 91,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 92,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 93,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 94,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 95,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 96,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 97,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 98,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 99,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 100,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            },
+            {
+              "crop": null,
+              "rotate": 101,
+              "flipH": false,
+              "flipV": false,
+              "fit": "fit",
+              "trim": null,
+              "fps": null,
+              "removeAudio": false,
+              "maskPath": null,
+              "format": null,
+              "loopVideo": false,
+              "padColor": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

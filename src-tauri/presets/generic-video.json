@@ -1,0 +1,65 @@
+{
+  "id": "generic-video",
+  "name": "Generic video",
+  "kind": "video",
+  "version": "1.0.0",
+  "description": "Model-agnostic video prompt",
+  "document": {
+    "schema": 1,
+    "id": "generic-video",
+    "name": "Generic video",
+    "kind": "video",
+    "version": "1.0.0",
+    "description": "Model-agnostic video prompt",
+    "mode": "compose",
+    "systemPrompt": "You write cinematic video prompts. Describe subject, action, camera movement, lighting, and style in a compact paragraph. Keep one continuous shot unless the brief asks otherwise.",
+    "guidance": "Prefer physical camera language and a single shot.",
+    "sections": ["subject", "action", "camera", "lighting", "style"],
+    "outputSchema": {
+      "type": "object",
+      "required": ["prompt", "params"],
+      "properties": {
+        "prompt": { "type": "string" },
+        "negative": { "type": "string" },
+        "params": { "type": "object" }
+      }
+    },
+    "params": {
+      "duration_s": {
+        "type": "enum",
+        "values": [5, 10],
+        "default": 5,
+        "label": "Duration"
+      },
+      "aspect_ratio": {
+        "type": "enum",
+        "values": ["16:9", "9:16", "1:1"],
+        "default": "16:9",
+        "label": "Aspect ratio"
+      },
+      "fps": {
+        "type": "enum",
+        "values": [24, 30, 60],
+        "default": 24,
+        "label": "Frame rate"
+      }
+    },
+    "limits": {
+      "promptChars": 2000,
+      "negativeChars": 500,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 900
+    },
+    "resolutions": [
+      [1280, 720],
+      [720, 1280],
+      [1024, 1024]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": true,
+    "checklist": ["subject", "camera", "lighting"],
+    "examples": [],
+    "referenceSlots": 0,
+    "instructionStyle": false
+  }
+}

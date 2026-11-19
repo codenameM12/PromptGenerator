@@ -1,0 +1,32 @@
+[package]
+name = "prompt-studio-native"
+version = "0.1.0"
+description = "Native eframe/egui UI for Prompt Studio (port in progress)"
+edition = "2024"
+
+[[bin]]
+name = "prompt-studio-native"
+path = "src/main.rs"
+
+[dependencies]
+eframe = { version = "0.37", features = ["persistence"] }
+egui = "0.37"
+rfd = "0.15"
+arboard = "3"
+image = "0.25"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+dunce = "1"
+prompt-studio = { path = "../src-tauri" }
+
+[dev-dependencies]
+tempfile = "3"
+
+# The UI is immediate-mode: unoptimised egui/image code makes every frame and
+# every thumbnail decode cost far more than it should. Optimise the app lightly
+# and its dependencies fully so a debug build stays interactive.
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

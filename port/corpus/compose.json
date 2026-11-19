@@ -1,0 +1,5212 @@
+{
+  "module": "compose",
+  "source": "src/features/compose/ComposePanel.tsx",
+  "generatedBy": "src/port/characterize_compose.test.ts",
+  "scenarios": [
+    {
+      "name": "compose text only",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "toggleTextOnly",
+            "value": true
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setBrief",
+            "value": "a red fox at dusk"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a red fox at dusk",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "compose"
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": null,
+                  "editId": null,
+                  "references": [],
+                  "parentId": null,
+                  "description": null,
+                  "brief": "a red fox at dusk",
+                  "instruction": null,
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": null,
+                  "seed": null,
+                  "variations": 1,
+                  "bypassCache": false,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a red fox at dusk",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "describe then compose ordered references",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "toggleAsset",
+            "assetId": "asset-2"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              },
+              {
+                "assetId": "asset-2",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "describe",
+            "force": false
+          },
+          "calls": [
+            {
+              "method": "pipeline_describe",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "editId": "edit-1",
+                  "framePaths": [],
+                  "mode": "image",
+                  "hint": null,
+                  "forceRefresh": false
+                }
+              }
+            },
+            {
+              "method": "pipeline_describe",
+              "args": {
+                "request": {
+                  "assetId": "asset-2",
+                  "editId": null,
+                  "framePaths": [],
+                  "mode": "image",
+                  "hint": null,
+                  "forceRefresh": false
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "id": "desc-1",
+              "mode": "image",
+              "text": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+              "cached": false,
+              "model": "lfm3-vl-2b"
+            },
+            {
+              "id": "desc-1",
+              "mode": "image",
+              "text": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+              "cached": false,
+              "model": "lfm3-vl-2b"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              },
+              {
+                "assetId": "asset-2",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [
+              ["asset-1", "A red fox stands in deep snow at dusk, lit by a low amber sun."],
+              ["asset-2", "A red fox stands in deep snow at dusk, lit by a low amber sun."]
+            ],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setWeight",
+            "assetId": "asset-2",
+            "value": 0.5
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              },
+              {
+                "assetId": "asset-2",
+                "weight": 0.5
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [
+              ["asset-1", "A red fox stands in deep snow at dusk, lit by a low amber sun."],
+              ["asset-2", "A red fox stands in deep snow at dusk, lit by a low amber sun."]
+            ],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "compose"
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": "asset-1",
+                  "editId": "edit-1",
+                  "references": [
+                    {
+                      "assetId": "asset-1",
+                      "editId": "edit-1",
+                      "weight": 1,
+                      "name": "fox.png",
+                      "description": "A red fox stands in deep snow at dusk, lit by a low amber sun."
+                    },
+                    {
+                      "assetId": "asset-2",
+                      "editId": null,
+                      "weight": 0.5,
+                      "name": "wolf.png",
+                      "description": "A red fox stands in deep snow at dusk, lit by a low amber sun."
+                    }
+                  ],
+                  "parentId": null,
+                  "description": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+                  "brief": null,
+                  "instruction": null,
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": null,
+                  "seed": null,
+                  "variations": 1,
+                  "bypassCache": false,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              },
+              {
+                "assetId": "asset-2",
+                "weight": 0.5
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [
+              ["asset-1", "A red fox stands in deep snow at dusk, lit by a low amber sun."],
+              ["asset-2", "A red fox stands in deep snow at dusk, lit by a low amber sun."]
+            ],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "guidance conflicts and run controls",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "toggleTextOnly",
+            "value": true
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setBrief",
+            "value": "a fox in snow"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setGlobalGuidance",
+            "value": "cinematic"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setRunGuidance",
+            "value": "flat lighting"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "flat lighting",
+            "effectiveGuidance": "cinematic. flat lighting",
+            "conflicts": [
+              "Global guidance says “cinematic” while Run guidance says “flat lighting”.",
+              "Preset guidance says “cinematic” while Run guidance says “flat lighting”."
+            ],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setLocked",
+            "value": "sharp focus, no blur"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "flat lighting",
+            "effectiveGuidance": "cinematic. flat lighting",
+            "conflicts": [
+              "Global guidance says “cinematic” while Run guidance says “flat lighting”.",
+              "Preset guidance says “cinematic” while Run guidance says “flat lighting”."
+            ],
+            "locked": "sharp focus, no blur",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setLanguage",
+            "value": "French"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "flat lighting",
+            "effectiveGuidance": "cinematic. flat lighting",
+            "conflicts": [
+              "Global guidance says “cinematic” while Run guidance says “flat lighting”.",
+              "Preset guidance says “cinematic” while Run guidance says “flat lighting”."
+            ],
+            "locked": "sharp focus, no blur",
+            "language": "French",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setVariations",
+            "value": 3
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "flat lighting",
+            "effectiveGuidance": "cinematic. flat lighting",
+            "conflicts": [
+              "Global guidance says “cinematic” while Run guidance says “flat lighting”.",
+              "Preset guidance says “cinematic” while Run guidance says “flat lighting”."
+            ],
+            "locked": "sharp focus, no blur",
+            "language": "French",
+            "variations": 3,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setSeed",
+            "value": "42"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "flat lighting",
+            "effectiveGuidance": "cinematic. flat lighting",
+            "conflicts": [
+              "Global guidance says “cinematic” while Run guidance says “flat lighting”.",
+              "Preset guidance says “cinematic” while Run guidance says “flat lighting”."
+            ],
+            "locked": "sharp focus, no blur",
+            "language": "French",
+            "variations": 3,
+            "seed": "42",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setBypassCache",
+            "value": true
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "flat lighting",
+            "effectiveGuidance": "cinematic. flat lighting",
+            "conflicts": [
+              "Global guidance says “cinematic” while Run guidance says “flat lighting”.",
+              "Preset guidance says “cinematic” while Run guidance says “flat lighting”."
+            ],
+            "locked": "sharp focus, no blur",
+            "language": "French",
+            "variations": 3,
+            "seed": "42",
+            "bypassCache": true,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "compose"
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": null,
+                  "editId": null,
+                  "references": [],
+                  "parentId": null,
+                  "description": null,
+                  "brief": "a fox in snow",
+                  "instruction": null,
+                  "guidance": {
+                    "global": "cinematic",
+                    "preset": null,
+                    "run": "flat lighting"
+                  },
+                  "locked": ["sharp focus", "no blur"],
+                  "existingPrompt": null,
+                  "seed": 42,
+                  "variations": 3,
+                  "bypassCache": true,
+                  "outputLanguage": "French",
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a fox in snow",
+            "hint": "",
+            "globalGuidance": "cinematic",
+            "runGuidance": "flat lighting",
+            "effectiveGuidance": "cinematic. flat lighting",
+            "conflicts": [
+              "Global guidance says “cinematic” while Run guidance says “flat lighting”.",
+              "Preset guidance says “cinematic” while Run guidance says “flat lighting”."
+            ],
+            "locked": "sharp focus, no blur",
+            "language": "French",
+            "variations": 3,
+            "seed": "42",
+            "bypassCache": true,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "refine a stored generation",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setMode",
+            "mode": "refine"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "refine",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "chooseRefineSource",
+            "id": "gen-source"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "refine",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setRefineInstruction",
+            "value": "make it colder"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "refine",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "refine"
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": null,
+                  "editId": null,
+                  "references": [],
+                  "parentId": "gen-source",
+                  "description": null,
+                  "brief": null,
+                  "instruction": "make it colder",
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": "an old prompt",
+                  "seed": null,
+                  "variations": 1,
+                  "bypassCache": false,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "refine",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "batch queue selected assets",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setMode",
+            "mode": "batch"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "batch",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "batchSelectAll"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "batch",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": ["asset-1", "asset-2"],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "batchQueue"
+          },
+          "calls": [
+            {
+              "method": "pipeline_describe",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "editId": null,
+                  "framePaths": [],
+                  "mode": "image",
+                  "hint": null,
+                  "forceRefresh": false
+                }
+              }
+            },
+            {
+              "method": "pipeline_describe",
+              "args": {
+                "request": {
+                  "assetId": "asset-2",
+                  "editId": null,
+                  "framePaths": [],
+                  "mode": "image",
+                  "hint": null,
+                  "forceRefresh": false
+                }
+              }
+            },
+            {
+              "method": "jobs_enqueue",
+              "args": {
+                "request": {
+                  "kind": "compose",
+                  "items": [
+                    {
+                      "presetId": "mmh3",
+                      "assetId": "asset-1",
+                      "editId": null,
+                      "parentId": null,
+                      "description": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+                      "brief": null,
+                      "instruction": null,
+                      "guidance": {
+                        "global": null,
+                        "preset": null,
+                        "run": null
+                      },
+                      "locked": [],
+                      "params": {},
+                      "existingPrompt": null,
+                      "seed": null,
+                      "variations": 1,
+                      "bypassCache": false,
+                      "outputLanguage": null
+                    },
+                    {
+                      "presetId": "mmh3",
+                      "assetId": "asset-2",
+                      "editId": null,
+                      "parentId": null,
+                      "description": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+                      "brief": null,
+                      "instruction": null,
+                      "guidance": {
+                        "global": null,
+                        "preset": null,
+                        "run": null
+                      },
+                      "locked": [],
+                      "params": {},
+                      "existingPrompt": null,
+                      "seed": null,
+                      "variations": 1,
+                      "bypassCache": false,
+                      "outputLanguage": null
+                    }
+                  ],
+                  "priority": 0,
+                  "note": "Batch: 2 asset(s)"
+                }
+              }
+            },
+            {
+              "method": "jobs_get",
+              "args": {
+                "id": "job-1"
+              }
+            }
+          ],
+          "responses": [
+            {
+              "id": "desc-1",
+              "mode": "image",
+              "text": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+              "cached": false,
+              "model": "lfm3-vl-2b"
+            },
+            {
+              "id": "desc-1",
+              "mode": "image",
+              "text": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+              "cached": false,
+              "model": "lfm3-vl-2b"
+            },
+            {
+              "job": {
+                "id": "job-1",
+                "kind": "compose",
+                "state": "queued",
+                "progress": 0,
+                "totalItems": 2,
+                "completedItems": 0,
+                "failedItems": 0,
+                "cancelledItems": 0,
+                "queuedItems": 1,
+                "attempts": 0,
+                "priority": 0,
+                "note": null,
+                "currentItem": null,
+                "createdAt": "2026-11-05T12:00:00Z",
+                "startedAt": null,
+                "finishedAt": null,
+                "error": null,
+                "items": []
+              },
+              "reused": false
+            },
+            null
+          ],
+          "state": {
+            "mode": "batch",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": ["asset-1", "asset-2"],
+            "batchJobId": "job-1",
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "regenerate bypasses cache with the previous seed",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "toggleTextOnly",
+            "value": true
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setBrief",
+            "value": "a red fox"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a red fox",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "compose"
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": null,
+                  "editId": null,
+                  "references": [],
+                  "parentId": null,
+                  "description": null,
+                  "brief": "a red fox",
+                  "instruction": null,
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": null,
+                  "seed": null,
+                  "variations": 1,
+                  "bypassCache": false,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a red fox",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "regenerate",
+            "seed": 42
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": null,
+                  "editId": null,
+                  "references": [],
+                  "parentId": null,
+                  "description": null,
+                  "brief": "a red fox",
+                  "instruction": null,
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": null,
+                  "seed": 42,
+                  "variations": 1,
+                  "bypassCache": true,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "a red fox",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "keyboard shortcuts",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "toggleTextOnly",
+            "value": true
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setBrief",
+            "value": "shortcut brief"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "shortcut brief",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "shortcut",
+            "key": "Enter",
+            "ctrl": true,
+            "shift": false,
+            "meta": false,
+            "modal": false,
+            "textFocused": false
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": null,
+                  "editId": null,
+                  "references": [],
+                  "parentId": null,
+                  "description": null,
+                  "brief": "shortcut brief",
+                  "instruction": null,
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": null,
+                  "seed": null,
+                  "variations": 1,
+                  "bypassCache": false,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "shortcut brief",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "shortcut",
+            "key": "Escape",
+            "ctrl": false,
+            "shift": false,
+            "meta": false,
+            "modal": false,
+            "textFocused": false
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "shortcut brief",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "toggleTextOnly",
+            "value": false
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "shortcut brief",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "shortcut",
+            "key": "Enter",
+            "ctrl": true,
+            "shift": true,
+            "meta": false,
+            "modal": false,
+            "textFocused": false
+          },
+          "calls": [
+            {
+              "method": "pipeline_describe",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "editId": "edit-1",
+                  "framePaths": [],
+                  "mode": "image",
+                  "hint": null,
+                  "forceRefresh": false
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "id": "desc-1",
+              "mode": "image",
+              "text": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+              "cached": false,
+              "model": "lfm3-vl-2b"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "shortcut brief",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [
+              ["asset-1", "A red fox stands in deep snow at dusk, lit by a low amber sun."]
+            ],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "edit a description before composing",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "describe",
+            "force": false
+          },
+          "calls": [
+            {
+              "method": "pipeline_describe",
+              "args": {
+                "request": {
+                  "assetId": "asset-1",
+                  "editId": "edit-1",
+                  "framePaths": [],
+                  "mode": "image",
+                  "hint": null,
+                  "forceRefresh": false
+                }
+              }
+            }
+          ],
+          "responses": [
+            {
+              "id": "desc-1",
+              "mode": "image",
+              "text": "A red fox stands in deep snow at dusk, lit by a low amber sun.",
+              "cached": false,
+              "model": "lfm3-vl-2b"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [
+              ["asset-1", "A red fox stands in deep snow at dusk, lit by a low amber sun."]
+            ],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "editDescription",
+            "assetId": "asset-1"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [
+              ["asset-1", "A red fox stands in deep snow at dusk, lit by a low amber sun."]
+            ],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setDescriptionDraft",
+            "assetId": "asset-1",
+            "value": "a corrected fox"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [
+              ["asset-1", "A red fox stands in deep snow at dusk, lit by a low amber sun."]
+            ],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "saveDescription",
+            "assetId": "asset-1"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [["asset-1", "a corrected fox"]],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "compose"
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": "asset-1",
+                  "editId": "edit-1",
+                  "references": [
+                    {
+                      "assetId": "asset-1",
+                      "editId": "edit-1",
+                      "weight": 1,
+                      "name": "fox.png",
+                      "description": "a corrected fox"
+                    }
+                  ],
+                  "parentId": null,
+                  "description": "a corrected fox",
+                  "brief": null,
+                  "instruction": null,
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": null,
+                  "seed": null,
+                  "variations": 1,
+                  "bypassCache": false,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [["asset-1", "a corrected fox"]],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "reset clears the workspace without IPC",
+      "steps": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            },
+            {
+              "method": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            },
+            {
+              "id": "mmh3",
+              "name": "mmh3",
+              "kind": "video",
+              "version": "1.0.0",
+              "hash": "hash",
+              "builtin": true,
+              "document": {
+                "schema": 1,
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "",
+                "mode": "compose",
+                "systemPrompt": "Write a prompt",
+                "guidance": "cinematic",
+                "sections": ["subject"],
+                "outputSchema": null,
+                "params": {},
+                "limits": {
+                  "promptChars": 200,
+                  "negativeChars": 100,
+                  "maxInputTokens": 1000,
+                  "maxOutputTokens": 100
+                },
+                "resolutions": [[1280, 720]],
+                "dimensionMultiple": 16,
+                "supportsNegative": true,
+                "checklist": [],
+                "examples": [],
+                "referenceSlots": 0,
+                "instructionStyle": false
+              }
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": false,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "toggleTextOnly",
+            "value": true
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setBrief",
+            "value": "to be cleared"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "to be cleared",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "compose"
+          },
+          "calls": [
+            {
+              "method": "pipeline_compose",
+              "args": {
+                "request": {
+                  "presetId": "mmh3",
+                  "assetId": null,
+                  "editId": null,
+                  "references": [],
+                  "parentId": null,
+                  "description": null,
+                  "brief": "to be cleared",
+                  "instruction": null,
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "locked": [],
+                  "existingPrompt": null,
+                  "seed": null,
+                  "variations": 1,
+                  "bypassCache": false,
+                  "outputLanguage": null,
+                  "includeImages": false,
+                  "params": {}
+                }
+              }
+            },
+            {
+              "method": "assets_list",
+              "args": {}
+            },
+            {
+              "method": "presets_list",
+              "args": {}
+            },
+            {
+              "method": "datasets_list",
+              "args": {}
+            },
+            {
+              "method": "library_query",
+              "args": {
+                "query": {
+                  "text": null,
+                  "presetId": null,
+                  "kind": null,
+                  "model": null,
+                  "favorite": null,
+                  "status": null,
+                  "tags": [],
+                  "collectionId": null,
+                  "from": null,
+                  "to": null,
+                  "ids": [],
+                  "offset": 0,
+                  "limit": 50,
+                  "sort": "newest"
+                }
+              }
+            },
+            {
+              "method": "edits_latest",
+              "args": {
+                "assetIds": ["asset-1", "asset-2"]
+              }
+            },
+            {
+              "method": "models_status",
+              "args": {}
+            }
+          ],
+          "responses": [
+            [
+              {
+                "id": "gen-1",
+                "prompt": "a red fox at dusk",
+                "negative": "blurry",
+                "params": {
+                  "aspect_ratio": "16:9"
+                },
+                "warnings": [],
+                "seed": 42,
+                "model": "gemma",
+                "presetId": "mmh3",
+                "presetVersion": "1.0.0",
+                "cached": false,
+                "latencyMs": 900
+              }
+            ],
+            [
+              {
+                "id": "asset-1",
+                "kind": "image",
+                "path": "C:\\media\\fox.png",
+                "displayName": "fox.png",
+                "hash": "hash-1",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              },
+              {
+                "id": "asset-2",
+                "kind": "image",
+                "path": "C:\\media\\wolf.png",
+                "displayName": "wolf.png",
+                "hash": "hash-2",
+                "width": 1024,
+                "height": 768,
+                "fps": null,
+                "durationMs": null,
+                "codec": "png",
+                "hasAudio": false,
+                "thumbnailPath": null,
+                "proxyPath": null,
+                "missing": false,
+                "favorite": false,
+                "createdAt": "2026-11-05T12:00:00Z"
+              }
+            ],
+            [
+              {
+                "id": "mmh3",
+                "name": "mmh3",
+                "kind": "video",
+                "version": "1.0.0",
+                "description": "Video target",
+                "builtin": true
+              }
+            ],
+            [],
+            {
+              "items": [
+                {
+                  "id": "gen-source",
+                  "prompt": "an old prompt",
+                  "presetId": "mmh3",
+                  "status": "succeeded"
+                }
+              ],
+              "total": 1,
+              "offset": 0,
+              "limit": 50
+            },
+            [
+              {
+                "assetId": "asset-1",
+                "editId": "edit-1",
+                "outputPath": "C:\\media\\edited\\fox.png",
+                "width": 1008,
+                "height": 560
+              }
+            ],
+            {
+              "reachable": false,
+              "models": [],
+              "loaded": [],
+              "describerModel": null,
+              "composerModel": null,
+              "keepWarm": "none"
+            }
+          ],
+          "state": {
+            "mode": "compose",
+            "selection": [
+              {
+                "assetId": "asset-1",
+                "weight": 1
+              }
+            ],
+            "textOnly": true,
+            "brief": "to be cleared",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": "a red fox at dusk",
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        },
+        {
+          "action": {
+            "kind": "reset"
+          },
+          "calls": [],
+          "responses": [],
+          "state": {
+            "mode": "compose",
+            "selection": [],
+            "textOnly": true,
+            "brief": "",
+            "hint": "",
+            "globalGuidance": "",
+            "runGuidance": "",
+            "effectiveGuidance": "cinematic",
+            "conflicts": [],
+            "locked": "",
+            "language": "",
+            "variations": 1,
+            "seed": "",
+            "bypassCache": false,
+            "descriptions": [],
+            "result": null,
+            "error": null,
+            "busy": false,
+            "batchAssetIds": [],
+            "batchJobId": null,
+            "copied": null
+          }
+        }
+      ]
+    }
+  ]
+}

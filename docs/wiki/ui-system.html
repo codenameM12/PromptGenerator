@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Interface system · Prompt Studio docs</title>
+<meta name="description" content="Prompt Studio documentation: Interface system" />
+<link rel="stylesheet" href="assets/wiki.css" />
+</head>
+<body data-page="ui-system.html">
+<a class="skip" href="#content">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">PS</span>
+      <span><strong>Prompt Studio</strong><small>Documentation</small></span>
+    </a>
+    <label class="search">
+      <span class="visually-hidden">Filter pages</span>
+      <input id="nav-filter" type="search" placeholder="Filter pages…" autocomplete="off" />
+    </label>
+    <nav class="nav" aria-label="Documentation"><a class="nav-link" href="index.html" data-title="overview start here"><span>Overview</span><small>Start here</small></a>
+<a class="nav-link" href="user-guide.html" data-title="user guide day-to-day use"><span>User guide</span><small>Day-to-day use</small></a>
+<a class="nav-link" href="presets.html" data-title="presets targets"><span>Presets</span><small>Targets</small></a>
+<a class="nav-link" href="troubleshooting.html" data-title="troubleshooting fix problems"><span>Troubleshooting</span><small>Fix problems</small></a>
+<a class="nav-link" href="release-notes.html" data-title="release notes verification"><span>Release notes</span><small>Verification</small></a>
+<a class="nav-link" href="drag-out.html" data-title="drag out files"><span>Drag out</span><small>Files</small></a>
+<a class="nav-link is-current" href="ui-system.html" data-title="interface system design"><span>Interface system</span><small>Design</small></a></nav>
+    <p class="sidebar-foot">Offline wiki · built from the Markdown guides</p>
+  </aside>
+  <main id="content" class="content">
+    <header class="page-head">
+      <p class="eyebrow">Design</p>
+      <h1>Interface system</h1>
+    </header>
+    <article class="prose">
+<h1 id="interface-system">Interface system</h1>
+<p>Prompt Studio uses one visual system across the workbench. Every colour, type face, size, spacing step, radius, border, motion duration, and control size is a token in <code>src/styles/tokens.css</code>. Feature stylesheets hold layout only. The shared primitives and the page floor live in <code>src/styles/base.css</code>.</p>
+<p>The stylesheet opens with the Hallmark stamp and the pre-emit critique:</p>
+<pre class="code"><code>/* Hallmark · shape: app screen · genre: modern-minimal · theme: workbench (by request)
+ * nav: section rail with a slim status bar · signature: one amber signal on the active section and the primary action · states: default, hover, focus-visible, active, disabled, busy, invalid, error
+ * axes: P4 H5 E5 S4 R5 V4 · contrast: pass · v2.0.0 */</code></pre>
+<h2 id="shape">Shape</h2>
+<p>The shell is a persistent left rail of seven sections (Compose, Media, Library, Jobs, Presets, Runtime, Datasets), a slim top bar for runtime health and storage, and one capped workspace. Compose is the default view. Visited views stay mounted and hidden, so selected media, compose inputs, filters, and editor state survive navigation.</p>
+<p>The content column is capped at 1280 px. At wider windows the gutters grow; at 1100 px dense two-column areas stack. <code>html</code> and <code>body</code> use <code>overflow-x: clip</code>.</p>
+<h2 id="tokens">Tokens</h2>
+<h3 id="surfaces-and-colour">Surfaces and colour</h3>
+<div class="table-wrap"><table><thead><tr><th>Token</th><th>Use</th></tr></thead><tbody><tr><td><code>--color-paper</code></td><td>page and media canvas</td></tr><tr><td><code>--color-paper-2</code></td><td>wells, cards, raised view surfaces</td></tr><tr><td><code>--color-paper-3</code></td><td>controls, chips, compact strips</td></tr><tr><td><code>--color-paper-4</code></td><td>hovered controls, active rail and tabs</td></tr><tr><td><code>--color-rule</code></td><td>default hairline</td></tr><tr><td><code>--color-rule-strong</code></td><td>hovered and dashed boundaries</td></tr><tr><td><code>--color-ink</code></td><td>primary text and headings</td></tr><tr><td><code>--color-ink-2</code></td><td>secondary text and form values</td></tr><tr><td><code>--color-muted</code></td><td>labels, metadata, captions</td></tr><tr><td><code>--color-faint</code></td><td>placeholders and empty canvas text</td></tr><tr><td><code>--color-accent</code></td><td>primary action, active marker, progress</td></tr><tr><td><code>--color-accent-strong</code></td><td>primary hover</td></tr><tr><td><code>--color-accent-ink</code></td><td>text on the accent</td></tr><tr><td><code>--color-focus</code></td><td>focus-visible ring</td></tr><tr><td><code>--color-selection</code></td><td>text selection and crop overlay</td></tr><tr><td><code>--color-success</code></td><td>succeeded states</td></tr><tr><td><code>--color-warning</code></td><td>warnings and interrupted states</td></tr><tr><td><code>--color-warning-surface</code></td><td>warning callout background</td></tr><tr><td><code>--color-danger</code></td><td>errors and destructive actions</td></tr><tr><td><code>--color-danger-surface</code></td><td>error callout background</td></tr><tr><td><code>--color-info</code></td><td>informational callouts</td></tr><tr><td><code>--color-info-surface</code></td><td>informational callout background</td></tr></tbody></table></div>
+<h3 id="type">Type</h3>
+<div class="table-wrap"><table><thead><tr><th>Token</th><th>Use</th></tr></thead><tbody><tr><td><code>--font-sans</code></td><td>every label, heading, control, and body line</td></tr><tr><td><code>--font-mono</code></td><td>prompts, JSON, parameters, code-like values</td></tr><tr><td><code>--text-xs</code></td><td>metadata, badges, table heads</td></tr><tr><td><code>--text-sm</code></td><td>dense body and labels</td></tr><tr><td><code>--text-md</code></td><td>controls and default form text</td></tr><tr><td><code>--text-base</code></td><td>page body</td></tr><tr><td><code>--text-lg</code></td><td>view head and top-bar title</td></tr><tr><td><code>--text-xl</code></td><td>panel title</td></tr><tr><td><code>--leading-tight</code></td><td>headings</td></tr><tr><td><code>--leading-body</code></td><td>running text and prompt bodies</td></tr><tr><td><code>--weight-normal</code></td><td>running text</td></tr><tr><td><code>--weight-medium</code></td><td>selected and emphasis text</td></tr><tr><td><code>--weight-strong</code></td><td>headings and primary actions</td></tr></tbody></table></div>
+<h3 id="space-shape-and-motion">Space, shape, and motion</h3>
+<div class="table-wrap"><table><thead><tr><th>Token</th><th>Value</th></tr></thead><tbody><tr><td><code>--space-3xs</code></td><td>2 px</td></tr><tr><td><code>--space-2xs</code></td><td>4 px</td></tr><tr><td><code>--space-xs</code></td><td>8 px</td></tr><tr><td><code>--space-sm</code></td><td>12 px</td></tr><tr><td><code>--space-md</code></td><td>16 px</td></tr><tr><td><code>--space-lg</code></td><td>24 px</td></tr><tr><td><code>--space-xl</code></td><td>32 px</td></tr><tr><td><code>--space-2xl</code></td><td>48 px</td></tr><tr><td><code>--radius-xs</code></td><td>4 px</td></tr><tr><td><code>--radius-sm</code></td><td>6 px</td></tr><tr><td><code>--radius-md</code></td><td>8 px</td></tr><tr><td><code>--radius-lg</code></td><td>12 px</td></tr><tr><td><code>--radius-pill</code></td><td>999 px</td></tr><tr><td><code>--border-width</code></td><td>1 px</td></tr><tr><td><code>--border</code></td><td>1 px solid rule</td></tr><tr><td><code>--dur-micro</code></td><td>120 ms</td></tr><tr><td><code>--dur-short</code></td><td>180 ms</td></tr><tr><td><code>--ease-out</code></td><td>cubic-bezier(0.22, 1, 0.36, 1)</td></tr><tr><td><code>--control-sm</code></td><td>28 px</td></tr><tr><td><code>--control-md</code></td><td>32 px</td></tr><tr><td><code>--control-lg</code></td><td>38 px</td></tr><tr><td><code>--rail-width</code></td><td>208 px</td></tr><tr><td><code>--rail-width-compact</code></td><td>176 px</td></tr><tr><td><code>--container-max</code></td><td>1280 px</td></tr></tbody></table></div>
+<h2 id="primitives">Primitives</h2>
+<p><code>base.css</code> owns the shared vocabulary. Feature stylesheets position these classes and must not redefine their colour, type, radius, or state treatments.</p>
+<div class="table-wrap"><table><thead><tr><th>Primitive</th><th>Class or element</th><th>Notes</th></tr></thead><tbody><tr><td>Button</td><td><code>button</code>, <code>.btn</code></td><td>default secondary</td></tr><tr><td>Primary action</td><td><code>.primary</code>, <code>.btn--primary</code></td><td>one per view; amber fill</td></tr><tr><td>Quiet action</td><td><code>.btn--ghost</code></td><td>rail and inline actions</td></tr><tr><td>Destructive</td><td><code>.danger</code>, <code>.btn--danger</code></td><td>outline, never louder than the primary</td></tr><tr><td>Field</td><td><code>input</code>, <code>select</code>, <code>textarea</code></td><td>constant border, 32 px minimum height</td></tr><tr><td>Check and radio</td><td><code>input[type=checkbox]</code>, <code>input[type=radio]</code></td><td>accent colour</td></tr><tr><td>Panel</td><td><code>.panel</code></td><td>only for independently interactive content</td></tr><tr><td>Badge</td><td><code>.badge</code> plus <code>--success/--warning/--danger/--info</code></td><td>status text and shape</td></tr><tr><td>Progress</td><td><code>.progress</code>, <code>.progress__bar</code></td><td>fill uses <code>transform: scaleX</code></td></tr><tr><td>Empty state</td><td><code>.empty-state</code></td><td>dashed boundary, one next action</td></tr><tr><td>Error callout</td><td><code>.alert</code></td><td>danger surface, always with text</td></tr><tr><td>Info callout</td><td><code>.notice</code>, <code>.notice--warning</code></td><td>info or warning surface</td></tr><tr><td>Layout row</td><td><code>.row</code>, <code>.row--inputs</code></td><td>wrapping sibling controls</td></tr><tr><td>Hidden label</td><td><code>.visually-hidden</code></td><td>landmark or table heading for assistive tech</td></tr></tbody></table></div>
+<h2 id="states">States</h2>
+<p>Every interactive control provides the states that apply to it:</p>
+<ul><li><strong>Default</strong>: <code>--color-paper-3</code> on the page, ink text.</li><li><strong>Hover</strong>: one step lighter plus a stronger rule; no movement except a 1 px</li></ul>
+<p>press on the active state.</p>
+<ul><li><strong>Focus-visible</strong>: a 2 px <code>--color-focus</code> outline with 2 px offset, shown</li></ul>
+<p>immediately and never transitioned away.</p>
+<ul><li><strong>Active</strong>: 1 px <code>translateY</code> press, no layout change.</li><li><strong>Disabled</strong>: native <code>disabled</code>, <code>opacity: 0.55</code>, <code>cursor: not-allowed</code>.</li><li><strong>Busy</strong>: disabled plus a label that names the running stage.</li><li><strong>Invalid</strong>: <code>aria-invalid=&quot;true&quot;</code> paints the danger border and surface.</li><li><strong>Error</strong>: an <code>.alert</code> with <code>role=&quot;alert&quot;</code>, associated to the field with</li></ul>
+<p><code>aria-describedby</code> where the field owns the failure.</p>
+<p>Labels are sentence case, untracked. Status is text plus a badge shape; no decorative status dot. Metadata is separated into labelled spans, never joined with middle dots.</p>
+<h2 id="motion">Motion</h2>
+<p>Only <code>transform</code> and <code>opacity</code> animate. Hover and press use <code>--dur-micro</code> and <code>--ease-out</code>; progress fill uses <code>--dur-short</code>. There is no <code>transition: all</code>, no width, height, top, or left animation. <code>prefers-reduced-motion: reduce</code> collapses every transition to 0.01 ms and keeps all content visible.</p>
+<h2 id="adding-a-value">Adding a value</h2>
+<ol><li>Add the token to the single <code>:root</code> block in <code>src/styles/tokens.css</code>, in the</li></ol>
+<p>matching group.</p>
+<ol><li>Consume it with <code>var(--token)</code> from <code>base.css</code> or a feature stylesheet.</li><li>Never add a literal colour, gradient, or <code>font-family</code> outside</li></ol>
+<p><code>tokens.css</code>.</p>
+<ol><li>Run <code>npm run audit:tokens</code>; it fails on literals, gradients, tracked</li></ol>
+<p>capitals, <code>transition: all</code>, layout-property animation, and unused tokens.</p>
+<ol><li>Update this file when a token or primitive is added or removed.</li></ol>
+<h2 id="verification">Verification</h2>
+<ul><li><code>npm run audit:tokens</code> reports a clean stylesheet scan.</li><li>Renderer tests cover navigation persistence, Compose modes, guidance, refine,</li></ul>
+<p>batch, media, editor, library, and jobs.</p>
+<ul><li>Viewport review uses 1100, 1280, 1440, and 1920 px widths.</li><li>Keyboard focus, field-error association, disabled/busy states, and reduced</li></ul>
+<p>motion are checked across all seven views. Results are recorded below.</p>
+<h3 id="accessibility-checks">Accessibility checks</h3>
+<p>Recorded on 2026-11-06:</p>
+<ul><li>Focus-visible: shared 2 px ring with offset on buttons, fields, tabs, rail</li></ul>
+<p>items, clickable library cards, summary, and canvas.</p>
+<ul><li>Field errors: the Compose error summary uses <code>role=&quot;alert&quot;</code> and the preset</li></ul>
+<p>field and brief field reference it with <code>aria-describedby</code>; editor and panel errors also use <code>role=&quot;alert&quot;</code>.</p>
+<ul><li>Disabled and busy: every async action disables its control and names the</li></ul>
+<p>running stage in the label.</p>
+<ul><li>Reduced motion: a single media query collapses transitions and keeps content</li></ul>
+<p>visible; no animation or reveal is required to read a screen.</p>
+<h3 id="viewport-review">Viewport review</h3>
+<p>The 28 screenshots in <a href="../ui-screens"><code>docs/ui-screens</code></a> cover Compose, Media, Library, Jobs, Presets, Runtime, and Datasets at 1100×700, 1280×800, 1440×900, and 1920×1080. They were captured against the Vite preview, so the LM Studio offline banner and IPC error alerts are expected; the layout states below them are the reviewed surface.</p>
+<p>Measured at every combination:</p>
+<ul><li><code>document.documentElement.scrollWidth</code> equals <code>window.innerWidth</code>, so there is</li></ul>
+<p>no horizontal page scroll.</p>
+<ul><li><code>.workspace.scrollWidth</code> equals <code>.workspace.clientWidth</code>, so the workspace has</li></ul>
+<p>no horizontal overflow.</p>
+<ul><li>No button, input, select, textarea, or role-button element extends past the</li></ul>
+<p>workspace edge. The only wide element is the <code>.visually-hidden</code> heading, which is clipped by design.</p>
+<ul><li>At 1920 the content column stays at 1280 px and the gutters grow; at 1100</li></ul>
+<p>Compose, Library, Presets, Editor, and Dataset two-column areas stack.</p>
+<h3 id="stylesheet-lint">Stylesheet lint</h3>
+<p><code>node &lt;hallmark&gt;/scripts/sloplint.mjs src/App.css --scope app --genre modern-minimal</code> follows the local imports and reports: <strong>0 FAIL, 0 REFLEX, 0 WARN</strong>. The run also checks the imported token and base stylesheets.</p>
+    </article>
+    <section class="backlinks"><p class="eyebrow">Linked from</p><ul><li><a href="index.html">Overview</a></li></ul></section>
+    <nav class="pager" aria-label="Page navigation"><a href="drag-out.html"><small>Previous</small><span>Drag out</span></a><span></span></nav>
+  </main>
+  <aside class="rail"><nav class="toc" aria-label="On this page"><p class="eyebrow">On this page</p><a class="toc-link toc-2" href="#shape">Shape</a><a class="toc-link toc-2" href="#tokens">Tokens</a><a class="toc-link toc-3" href="#surfaces-and-colour">Surfaces and colour</a><a class="toc-link toc-3" href="#type">Type</a><a class="toc-link toc-3" href="#space-shape-and-motion">Space, shape, and motion</a><a class="toc-link toc-2" href="#primitives">Primitives</a><a class="toc-link toc-2" href="#states">States</a><a class="toc-link toc-2" href="#motion">Motion</a><a class="toc-link toc-2" href="#adding-a-value">Adding a value</a><a class="toc-link toc-2" href="#verification">Verification</a><a class="toc-link toc-3" href="#accessibility-checks">Accessibility checks</a><a class="toc-link toc-3" href="#viewport-review">Viewport review</a><a class="toc-link toc-3" href="#stylesheet-lint">Stylesheet lint</a></nav></aside>
+</div>
+<script src="assets/wiki.js"></script>
+</body>
+</html>

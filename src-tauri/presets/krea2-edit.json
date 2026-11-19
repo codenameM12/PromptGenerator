@@ -1,0 +1,45 @@
+{
+  "id": "krea2-edit",
+  "name": "krea2 edit",
+  "kind": "edit",
+  "version": "1.0.0",
+  "description": "Instruction-style edits for Krea 2 Edit",
+  "document": {
+    "schema": 1,
+    "id": "krea2-edit",
+    "name": "krea2 edit",
+    "kind": "edit",
+    "version": "1.0.0",
+    "description": "Instruction-style edits for Krea 2 Edit",
+    "mode": "edit",
+    "systemPrompt": "You write edit instructions for Krea 2 Edit. State exactly what changes in the source image and explicitly list what must stay the same. Do not re-describe the whole scene.",
+    "guidance": "Reference the source image implicitly and keep the instruction short.",
+    "sections": ["change", "preserve"],
+    "outputSchema": {
+      "type": "object",
+      "required": ["prompt"],
+      "properties": {
+        "prompt": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "params": {},
+    "limits": {
+      "promptChars": 800,
+      "negativeChars": 0,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 400
+    },
+    "resolutions": [
+      [1024, 1024],
+      [1344, 768],
+      [768, 1344]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": ["change", "preserve"],
+    "examples": [],
+    "referenceSlots": 1,
+    "instructionStyle": true
+  }
+}

@@ -1,0 +1,1117 @@
+{
+  "module": "workspaceDraft",
+  "source": "src/lib/useWorkspaceDraft.ts",
+  "generatedBy": "src/port/characterize_workspace_draft.test.ts",
+  "scenarios": [
+    {
+      "name": "load, autosave, clear",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "load": {
+              "ok": true,
+              "value": {
+                "assetId": "asset-1",
+                "editOps": {
+                  "crop": {
+                    "x": 10,
+                    "y": 20,
+                    "width": 300,
+                    "height": 200
+                  },
+                  "rotate": 0,
+                  "flipH": false,
+                  "flipV": false,
+                  "fit": "fit",
+                  "trim": null,
+                  "fps": null,
+                  "removeAudio": false,
+                  "maskPath": null,
+                  "format": null,
+                  "loopVideo": false,
+                  "padColor": null
+                },
+                "selectedPresetId": "krea2",
+                "guidance": {
+                  "global": null,
+                  "preset": null,
+                  "run": null
+                },
+                "updatedAtMs": 1
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_get_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 1
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "save",
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 2
+            }
+          },
+          "calls": [],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 2
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "flushSave",
+            "result": {
+              "ok": true,
+              "value": {
+                "assetId": "asset-1",
+                "editOps": {
+                  "crop": {
+                    "x": 10,
+                    "y": 20,
+                    "width": 300,
+                    "height": 200
+                  },
+                  "rotate": 0,
+                  "flipH": false,
+                  "flipV": false,
+                  "fit": "fit",
+                  "trim": null,
+                  "fps": null,
+                  "removeAudio": false,
+                  "maskPath": null,
+                  "format": null,
+                  "loopVideo": false,
+                  "padColor": null
+                },
+                "selectedPresetId": "krea2",
+                "guidance": {
+                  "global": null,
+                  "preset": null,
+                  "run": null
+                },
+                "updatedAtMs": 2
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_save_draft",
+              "args": {
+                "request": {
+                  "draft": {
+                    "assetId": "asset-1",
+                    "editOps": {
+                      "crop": {
+                        "x": 10,
+                        "y": 20,
+                        "width": 300,
+                        "height": 200
+                      },
+                      "rotate": 0,
+                      "flipH": false,
+                      "flipV": false,
+                      "fit": "fit",
+                      "trim": null,
+                      "fps": null,
+                      "removeAudio": false,
+                      "maskPath": null,
+                      "format": null,
+                      "loopVideo": false,
+                      "padColor": null
+                    },
+                    "selectedPresetId": "krea2",
+                    "guidance": {
+                      "global": null,
+                      "preset": null,
+                      "run": null
+                    },
+                    "updatedAtMs": 2
+                  }
+                }
+              }
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 2
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "clear",
+            "result": {
+              "ok": true
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_clear_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": null,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "load rejects with an Error",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "load": {
+              "ok": false,
+              "cause": {},
+              "message": "load failed"
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_get_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": null,
+            "error": "load failed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "load rejects with a structured IPC error",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "load": {
+              "ok": false,
+              "cause": {
+                "code": "validation",
+                "message": "raw",
+                "userMessage": "friendly load error"
+              },
+              "message": "friendly load error"
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_get_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": null,
+            "error": "friendly load error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "save rejects, then a save succeeds",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "load": {
+              "ok": true,
+              "value": {
+                "assetId": "asset-1",
+                "editOps": {
+                  "crop": {
+                    "x": 10,
+                    "y": 20,
+                    "width": 300,
+                    "height": 200
+                  },
+                  "rotate": 0,
+                  "flipH": false,
+                  "flipV": false,
+                  "fit": "fit",
+                  "trim": null,
+                  "fps": null,
+                  "removeAudio": false,
+                  "maskPath": null,
+                  "format": null,
+                  "loopVideo": false,
+                  "padColor": null
+                },
+                "selectedPresetId": "krea2",
+                "guidance": {
+                  "global": null,
+                  "preset": null,
+                  "run": null
+                },
+                "updatedAtMs": 1
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_get_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 1
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "save",
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 3
+            }
+          },
+          "calls": [],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 3
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "flushSave",
+            "result": {
+              "ok": false,
+              "cause": {},
+              "message": "save failed"
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_save_draft",
+              "args": {
+                "request": {
+                  "draft": {
+                    "assetId": "asset-1",
+                    "editOps": {
+                      "crop": {
+                        "x": 10,
+                        "y": 20,
+                        "width": 300,
+                        "height": 200
+                      },
+                      "rotate": 0,
+                      "flipH": false,
+                      "flipV": false,
+                      "fit": "fit",
+                      "trim": null,
+                      "fps": null,
+                      "removeAudio": false,
+                      "maskPath": null,
+                      "format": null,
+                      "loopVideo": false,
+                      "padColor": null
+                    },
+                    "selectedPresetId": "krea2",
+                    "guidance": {
+                      "global": null,
+                      "preset": null,
+                      "run": null
+                    },
+                    "updatedAtMs": 3
+                  }
+                }
+              }
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 3
+            },
+            "error": "save failed"
+          }
+        },
+        {
+          "action": {
+            "kind": "save",
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 4
+            }
+          },
+          "calls": [],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 4
+            },
+            "error": "save failed"
+          }
+        },
+        {
+          "action": {
+            "kind": "flushSave",
+            "result": {
+              "ok": true,
+              "value": {
+                "assetId": "asset-1",
+                "editOps": {
+                  "crop": {
+                    "x": 10,
+                    "y": 20,
+                    "width": 300,
+                    "height": 200
+                  },
+                  "rotate": 0,
+                  "flipH": false,
+                  "flipV": false,
+                  "fit": "fit",
+                  "trim": null,
+                  "fps": null,
+                  "removeAudio": false,
+                  "maskPath": null,
+                  "format": null,
+                  "loopVideo": false,
+                  "padColor": null
+                },
+                "selectedPresetId": "krea2",
+                "guidance": {
+                  "global": null,
+                  "preset": null,
+                  "run": null
+                },
+                "updatedAtMs": 4
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_save_draft",
+              "args": {
+                "request": {
+                  "draft": {
+                    "assetId": "asset-1",
+                    "editOps": {
+                      "crop": {
+                        "x": 10,
+                        "y": 20,
+                        "width": 300,
+                        "height": 200
+                      },
+                      "rotate": 0,
+                      "flipH": false,
+                      "flipV": false,
+                      "fit": "fit",
+                      "trim": null,
+                      "fps": null,
+                      "removeAudio": false,
+                      "maskPath": null,
+                      "format": null,
+                      "loopVideo": false,
+                      "padColor": null
+                    },
+                    "selectedPresetId": "krea2",
+                    "guidance": {
+                      "global": null,
+                      "preset": null,
+                      "run": null
+                    },
+                    "updatedAtMs": 4
+                  }
+                }
+              }
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 4
+            },
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "clear rejects (no catch, state unchanged)",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "load": {
+              "ok": true,
+              "value": {
+                "assetId": "asset-1",
+                "editOps": {
+                  "crop": {
+                    "x": 10,
+                    "y": 20,
+                    "width": 300,
+                    "height": 200
+                  },
+                  "rotate": 0,
+                  "flipH": false,
+                  "flipV": false,
+                  "fit": "fit",
+                  "trim": null,
+                  "fps": null,
+                  "removeAudio": false,
+                  "maskPath": null,
+                  "format": null,
+                  "loopVideo": false,
+                  "padColor": null
+                },
+                "selectedPresetId": "krea2",
+                "guidance": {
+                  "global": null,
+                  "preset": null,
+                  "run": null
+                },
+                "updatedAtMs": 1
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_get_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 1
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "clear",
+            "result": {
+              "ok": false,
+              "cause": {},
+              "message": "clear failed"
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_clear_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 1
+            },
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "unmount cancels a pending save",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "load": {
+              "ok": true,
+              "value": {
+                "assetId": "asset-1",
+                "editOps": {
+                  "crop": {
+                    "x": 10,
+                    "y": 20,
+                    "width": 300,
+                    "height": 200
+                  },
+                  "rotate": 0,
+                  "flipH": false,
+                  "flipV": false,
+                  "fit": "fit",
+                  "trim": null,
+                  "fps": null,
+                  "removeAudio": false,
+                  "maskPath": null,
+                  "format": null,
+                  "loopVideo": false,
+                  "padColor": null
+                },
+                "selectedPresetId": "krea2",
+                "guidance": {
+                  "global": null,
+                  "preset": null,
+                  "run": null
+                },
+                "updatedAtMs": 1
+              }
+            }
+          },
+          "calls": [
+            {
+              "command": "workspace_get_draft",
+              "args": {}
+            }
+          ],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 1
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "save",
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 5
+            }
+          },
+          "calls": [],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 5
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "unmount"
+          },
+          "calls": [],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 5
+            },
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "flushSave",
+            "result": {
+              "ok": true,
+              "value": {
+                "assetId": "asset-1",
+                "editOps": {
+                  "crop": {
+                    "x": 10,
+                    "y": 20,
+                    "width": 300,
+                    "height": 200
+                  },
+                  "rotate": 0,
+                  "flipH": false,
+                  "flipV": false,
+                  "fit": "fit",
+                  "trim": null,
+                  "fps": null,
+                  "removeAudio": false,
+                  "maskPath": null,
+                  "format": null,
+                  "loopVideo": false,
+                  "padColor": null
+                },
+                "selectedPresetId": "krea2",
+                "guidance": {
+                  "global": null,
+                  "preset": null,
+                  "run": null
+                },
+                "updatedAtMs": 5
+              }
+            }
+          },
+          "calls": [],
+          "state": {
+            "draft": {
+              "assetId": "asset-1",
+              "editOps": {
+                "crop": {
+                  "x": 10,
+                  "y": 20,
+                  "width": 300,
+                  "height": 200
+                },
+                "rotate": 0,
+                "flipH": false,
+                "flipV": false,
+                "fit": "fit",
+                "trim": null,
+                "fps": null,
+                "removeAudio": false,
+                "maskPath": null,
+                "format": null,
+                "loopVideo": false,
+                "padColor": null
+              },
+              "selectedPresetId": "krea2",
+              "guidance": {
+                "global": null,
+                "preset": null,
+                "run": null
+              },
+              "updatedAtMs": 5
+            },
+            "error": null
+          }
+        }
+      ]
+    }
+  ]
+}

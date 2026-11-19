@@ -1,0 +1,1438 @@
+{
+  "module": "presets_runtime",
+  "sources": ["src/features/presets/PresetPanel.tsx", "src/features/settings/RuntimePanel.tsx"],
+  "generatedBy": "src/port/characterize_presets_runtime.test.ts",
+  "fixtures": {
+    "documents": {
+      "mmh3": {
+        "schema": 1,
+        "id": "mmh3",
+        "name": "mmh3",
+        "kind": "video",
+        "version": "1.0.0",
+        "description": "Video target",
+        "mode": "compose",
+        "systemPrompt": "Write a video prompt.",
+        "guidance": null,
+        "sections": ["subject", "action", "camera", "lighting", "style"],
+        "outputSchema": null,
+        "params": {},
+        "limits": {
+          "promptChars": 1800,
+          "negativeChars": 400,
+          "maxInputTokens": 6000,
+          "maxOutputTokens": 800
+        },
+        "resolutions": [[1280, 720]],
+        "dimensionMultiple": 16,
+        "supportsNegative": false,
+        "checklist": ["subject", "camera"],
+        "examples": [],
+        "referenceSlots": 0,
+        "instructionStyle": false
+      },
+      "custom": {
+        "schema": 1,
+        "id": "custom",
+        "name": "mmh3",
+        "kind": "video",
+        "version": "1.0.0",
+        "description": "Video target",
+        "mode": "compose",
+        "systemPrompt": "Write a video prompt.",
+        "guidance": null,
+        "sections": ["subject", "action", "camera", "lighting", "style"],
+        "outputSchema": null,
+        "params": {},
+        "limits": {
+          "promptChars": 1800,
+          "negativeChars": 400,
+          "maxInputTokens": 6000,
+          "maxOutputTokens": 800
+        },
+        "resolutions": [[1280, 720]],
+        "dimensionMultiple": 16,
+        "supportsNegative": false,
+        "checklist": ["subject", "camera"],
+        "examples": [],
+        "referenceSlots": 0,
+        "instructionStyle": false
+      }
+    },
+    "presets_get": {
+      "id": "mmh3",
+      "name": "mmh3",
+      "kind": "video",
+      "version": "1.0.0",
+      "hash": "preset-hash",
+      "builtin": true,
+      "document": {
+        "schema": 1,
+        "id": "mmh3",
+        "name": "mmh3",
+        "kind": "video",
+        "version": "1.0.0",
+        "description": "Video target",
+        "mode": "compose",
+        "systemPrompt": "Write a video prompt.",
+        "guidance": null,
+        "sections": ["subject", "camera"],
+        "outputSchema": null,
+        "params": {},
+        "limits": {
+          "promptChars": 1800,
+          "negativeChars": 400,
+          "maxInputTokens": 6000,
+          "maxOutputTokens": 800
+        },
+        "resolutions": [[1280, 720]],
+        "dimensionMultiple": 16,
+        "supportsNegative": true,
+        "checklist": [],
+        "examples": [],
+        "referenceSlots": 0,
+        "instructionStyle": false
+      }
+    },
+    "presets_list": [
+      {
+        "id": "mmh3",
+        "name": "mmh3",
+        "kind": "video",
+        "version": "1.0.0",
+        "description": "Video target",
+        "builtin": true
+      }
+    ],
+    "settings_get": {
+      "endpoint": "http://127.0.0.1:1234",
+      "hasToken": false,
+      "describerModel": "lfm3-vl-2b",
+      "composerModel": "gemma4-12b-qat-uncensored-hauhaucs-balanced",
+      "describerSystemPrompt": null,
+      "composerSystemPrompt": null,
+      "describerConcurrency": 2,
+      "ttlSeconds": 600,
+      "keepWarm": "none",
+      "theme": "dark",
+      "namingTemplate": "{preset}_{asset}_{date}",
+      "outputRoot": null
+    },
+    "models_list": [
+      {
+        "id": "lfm3-vl-2b",
+        "kind": "llm",
+        "loaded": false,
+        "contextLength": 8192,
+        "path": null,
+        "vision": true,
+        "reasoning": false,
+        "maxOutput": 4096,
+        "quantization": "Q4_K_M"
+      }
+    ],
+    "models_status": {
+      "reachable": true,
+      "models": [],
+      "loaded": [],
+      "describerModel": "lfm3-vl-2b",
+      "composerModel": "gemma4-12b-qat-uncensored-hauhaucs-balanced",
+      "keepWarm": "none"
+    }
+  },
+  "scenarios": [
+    {
+      "name": "presets mount and live compile",
+      "panel": "presets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "id": "mmh3"
+          },
+          "calls": [
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "mmh3",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "noop"
+          },
+          "calls": [],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "presets duplicate",
+      "panel": "presets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "id": "mmh3"
+          },
+          "calls": [
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "mmh3",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "duplicate",
+            "id": "mmh3"
+          },
+          "calls": [
+            {
+              "command": "presets_duplicate",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "mmh3",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "presets save",
+      "panel": "presets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "id": "custom"
+          },
+          "calls": [
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "custom"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "custom",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": false,
+            "hasCompiled": true,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "save",
+            "id": "custom"
+          },
+          "calls": [
+            {
+              "command": "presets_save",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "custom",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  }
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "custom"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "custom",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": false,
+            "hasCompiled": true,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "presets delete",
+      "panel": "presets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "id": "custom"
+          },
+          "calls": [
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "custom"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "custom",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": false,
+            "hasCompiled": true,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "delete",
+            "id": "custom"
+          },
+          "calls": [
+            {
+              "command": "presets_delete",
+              "args": {
+                "request": {
+                  "id": "custom",
+                  "confirmInUse": true
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "custom"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "custom",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": false,
+            "hasCompiled": true,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "presets import",
+      "panel": "presets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "id": "mmh3"
+          },
+          "calls": [
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "mmh3",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "import",
+            "path": "C:\\presets\\mmh3.json"
+          },
+          "calls": [
+            {
+              "command": "presets_import",
+              "args": {
+                "request": {
+                  "id": "",
+                  "path": "C:\\presets\\mmh3.json"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "mmh3",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "presets export",
+      "panel": "presets",
+      "events": [
+        {
+          "action": {
+            "kind": "mount",
+            "id": "mmh3"
+          },
+          "calls": [
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "mmh3",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "export",
+            "id": "mmh3"
+          },
+          "calls": [
+            {
+              "command": "presets_export",
+              "args": {
+                "request": {
+                  "id": "mmh3",
+                  "path": "C:\\presets\\mmh3.json"
+                }
+              }
+            },
+            {
+              "command": "presets_list",
+              "args": {}
+            },
+            {
+              "command": "presets_get",
+              "args": {
+                "id": "mmh3"
+              }
+            },
+            {
+              "command": "presets_compile",
+              "args": {
+                "request": {
+                  "document": {
+                    "schema": 1,
+                    "id": "mmh3",
+                    "name": "mmh3",
+                    "kind": "video",
+                    "version": "1.0.0",
+                    "description": "Video target",
+                    "mode": "compose",
+                    "systemPrompt": "Write a video prompt.",
+                    "guidance": null,
+                    "sections": ["subject", "action", "camera", "lighting", "style"],
+                    "outputSchema": null,
+                    "params": {},
+                    "limits": {
+                      "promptChars": 1800,
+                      "negativeChars": 400,
+                      "maxInputTokens": 6000,
+                      "maxOutputTokens": 800
+                    },
+                    "resolutions": [[1280, 720]],
+                    "dimensionMultiple": 16,
+                    "supportsNegative": false,
+                    "checklist": ["subject", "camera"],
+                    "examples": [],
+                    "referenceSlots": 0,
+                    "instructionStyle": false
+                  },
+                  "guidance": {
+                    "global": null,
+                    "preset": null,
+                    "run": null
+                  },
+                  "description": {
+                    "subject": "a red fox in fresh snow",
+                    "action": "turns toward the camera",
+                    "camera": "low angle, 35mm lens",
+                    "lighting": "blue hour, soft rim light",
+                    "composition": "centered portrait",
+                    "style": "cinematic photograph",
+                    "change": "replace the coat with a red leather jacket",
+                    "preserve": "the face, pose, and background"
+                  },
+                  "locked": [],
+                  "params": {}
+                }
+              }
+            }
+          ],
+          "state": {
+            "builtinNote": true,
+            "hasCompiled": true,
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtime mount",
+      "panel": "runtime",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "noop"
+          },
+          "calls": [],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtime save roles",
+      "panel": "runtime",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setRoles"
+          },
+          "calls": [
+            {
+              "command": "models_set_roles",
+              "args": {
+                "request": {
+                  "describer": "lfm3-vl-2b",
+                  "composer": "gemma4-12b-qat-uncensored-hauhaucs-balanced"
+                }
+              }
+            },
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtime load describer",
+      "panel": "runtime",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "load",
+            "role": "describer"
+          },
+          "calls": [
+            {
+              "command": "models_load",
+              "args": {
+                "request": {
+                  "role": "describer",
+                  "model": "lfm3-vl-2b",
+                  "contextLength": 8192,
+                  "ttlSeconds": 600,
+                  "gpuOffload": 1
+                }
+              }
+            },
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtime save policy",
+      "panel": "runtime",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "setPolicy"
+          },
+          "calls": [
+            {
+              "command": "models_set_policy",
+              "args": {
+                "request": {
+                  "keepWarm": "none",
+                  "describerConcurrency": 2,
+                  "ttlSeconds": 600
+                }
+              }
+            },
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtime unload all",
+      "panel": "runtime",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "unloadAll",
+            "force": false
+          },
+          "calls": [
+            {
+              "command": "models_unload_all",
+              "args": {
+                "force": false
+              }
+            },
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtime save instructions",
+      "panel": "runtime",
+      "events": [
+        {
+          "action": {
+            "kind": "mount"
+          },
+          "calls": [
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        },
+        {
+          "action": {
+            "kind": "settingsUpdate"
+          },
+          "calls": [
+            {
+              "command": "settings_update",
+              "args": {
+                "patch": {
+                  "describerSystemPrompt": "",
+                  "composerSystemPrompt": ""
+                }
+              }
+            },
+            {
+              "command": "models_list",
+              "args": {}
+            },
+            {
+              "command": "models_status",
+              "args": {}
+            },
+            {
+              "command": "settings_get",
+              "args": {}
+            }
+          ],
+          "state": {
+            "online": true,
+            "describer": "lfm3-vl-2b",
+            "error": null
+          }
+        }
+      ]
+    }
+  ]
+}

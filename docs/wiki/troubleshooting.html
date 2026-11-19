@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Troubleshooting · Prompt Studio docs</title>
+<meta name="description" content="Prompt Studio documentation: Troubleshooting" />
+<link rel="stylesheet" href="assets/wiki.css" />
+</head>
+<body data-page="troubleshooting.html">
+<a class="skip" href="#content">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">PS</span>
+      <span><strong>Prompt Studio</strong><small>Documentation</small></span>
+    </a>
+    <label class="search">
+      <span class="visually-hidden">Filter pages</span>
+      <input id="nav-filter" type="search" placeholder="Filter pages…" autocomplete="off" />
+    </label>
+    <nav class="nav" aria-label="Documentation"><a class="nav-link" href="index.html" data-title="overview start here"><span>Overview</span><small>Start here</small></a>
+<a class="nav-link" href="user-guide.html" data-title="user guide day-to-day use"><span>User guide</span><small>Day-to-day use</small></a>
+<a class="nav-link" href="presets.html" data-title="presets targets"><span>Presets</span><small>Targets</small></a>
+<a class="nav-link is-current" href="troubleshooting.html" data-title="troubleshooting fix problems"><span>Troubleshooting</span><small>Fix problems</small></a>
+<a class="nav-link" href="release-notes.html" data-title="release notes verification"><span>Release notes</span><small>Verification</small></a>
+<a class="nav-link" href="drag-out.html" data-title="drag out files"><span>Drag out</span><small>Files</small></a>
+<a class="nav-link" href="ui-system.html" data-title="interface system design"><span>Interface system</span><small>Design</small></a></nav>
+    <p class="sidebar-foot">Offline wiki · built from the Markdown guides</p>
+  </aside>
+  <main id="content" class="content">
+    <header class="page-head">
+      <p class="eyebrow">Fix problems</p>
+      <h1>Troubleshooting</h1>
+    </header>
+    <article class="prose">
+<h1 id="troubleshooting">Troubleshooting</h1>
+<h2 id="lm-studio-is-offline">LM Studio is offline</h2>
+<p><strong>Symptoms:</strong> status shows _offline_, runtime panel says no models, jobs wait or fail with <code>network</code>.</p>
+<ol><li>Start the LM Studio local server on <code>http://127.0.0.1:1234</code>.</li><li>Check the endpoint in <strong>Settings</strong>; only local HTTP endpoints are accepted.</li><li>If a token is required, set it in settings. The token is DPAPI-encrypted in</li></ol>
+<p><code>token.bin</code> and never written to <code>settings.json</code>.</p>
+<ol><li>Press <strong>Refresh</strong> in the runtime panel.</li></ol>
+<p>The app never sends requests to the internet.</p>
+<h2 id="model-not-found">Model not found</h2>
+<p>The error includes closest model ids. Rename the role to match LM Studio exactly, or load the model in LM Studio and refresh. Both roles default to <code>lfm3-vl-2b</code> and <code>gemma4-12b-qat-uncensored-hauhaucs-balanced</code>.</p>
+<p>If a configured role model is missing from the available list, the compose workspace warns before the run and <strong>Suggest roles</strong> offers the closest capability-ranked alternatives. Capability badges come from LM Studio's reported fields only; when a field is absent the model shows <strong>Vision unknown</strong> rather than guessing from the name.</p>
+<h2 id="context-overflow">Context overflow</h2>
+<p>The request exceeded the loaded context window. Lower the preset's <code>maxInputTokens</code>/<code>maxOutputTokens</code>, use fewer sampled frames, or load the model with a larger context. The error is marked non-retryable; retrying the same request will fail again.</p>
+<h2 id="compose-returns-invalid-json">Compose returns invalid JSON</h2>
+<p>The pipeline repairs trailing commas and retries once with validation feedback. If it still fails, the generation is stored as <code>invalid</code> with the raw response and warning. Inspect it in the library and retry manually after adjusting the preset or guidance.</p>
+<p>If the raw response is empty, the composer model is likely reasoning-capable and spent the whole output budget on hidden reasoning. Current builds send <code>reasoning_effort: &quot;none&quot;</code> on every chat request so the JSON lands in <code>content</code>. Older builds should be updated, or reasoning can be turned off for the composer model in LM Studio. Keep <code>maxOutputTokens</code> large enough for the JSON, not the reasoning trace.</p>
+<h2 id="generation-is-slow-or-vram-is-full">Generation is slow or VRAM is full</h2>
+<ul><li>Use <strong>Keep warm = None</strong> and <strong>Unload all</strong> when switching workloads.</li><li>The composer is serialized by design; queue length is not a bug.</li><li>Lower context length or GPU offload in the runtime panel.</li><li>Close other GPU applications before loading a 12B composer.</li></ul>
+<h2 id="avast-quarantines-the-portable-exe">Avast quarantines the portable exe</h2>
+<p><strong>Symptoms:</strong> double-clicking <code>Prompt Studio.exe</code> stops the app and the file disappears. Avast shows a chest entry for <code>Prompt Studio.exe</code> with <code>IDP.HELU.PSD11</code>.</p>
+<p>This is a behavior-shield false positive on a freshly built unsigned executable. It also blocks recreating that exact filename. The portable <strong>zip</strong> carries a working copy named <code>PromptStudio-new.exe</code>; the extracted portable folder currently has no executable until an Avast exception exists. Use the desktop <strong>Prompt Studio App</strong> shortcut meanwhile — it launches the release build directly.</p>
+<p>To use the original name:</p>
+<ol><li>Add an Avast exception for the portable folder</li></ol>
+<p>(<code>...\dist-portable\Prompt Studio</code>) in <strong>Menu &gt; Settings &gt; General &gt; Exceptions</strong>.</p>
+<ol><li>Open <strong>Protection &gt; Quarantine</strong>, select <code>Prompt Studio.exe</code>, and choose</li></ol>
+<p><strong>Restore</strong> (add the exception when prompted).</p>
+<ol><li>If the name is still blocked, rebuild and copy the exe again after the</li></ol>
+<p>exception exists.</p>
+<p>Submit the file to Avast as a false positive so future builds are not flagged.</p>
+<p>On this machine Avast also quarantined a renamed copy in the portable folder. The build-output executable <code>src-tauri\target\release\prompt-studio.exe</code> is on Avast's exception list and runs. A <code>portable.txt</code> beside it and a <code>data</code> junction to <code>dist-portable\Prompt Studio\data</code> keep the same database. The desktop <strong>Prompt Studio App</strong> shortcut launches that executable. Use it until the portable folder has an Avast exception.</p>
+<h2 id="rebuild-says-access-is-denied">Rebuild says <code>Access is denied</code></h2>
+<p>A previous <code>prompt-studio.exe</code> is still running. Close the app or stop the process, then rebuild. Incremental-cache warnings from Cargo are harmless; the build still succeeds.</p>
+<h2 id="blank-window-in-development">Blank window in development</h2>
+<ul><li>Confirm Vite is serving <code>http://localhost:1420</code>.</li><li>Install the WebView2 runtime.</li><li>If <code>npm run tauri dev</code> fails to open a window after building, start</li></ul>
+<p><code>src-tauri\target\debug\prompt-studio.exe</code> directly while Vite runs.</p>
+<h2 id="sidecars-or-ffprobe-missing">Sidecars or ffprobe missing</h2>
+<p>Both binaries must be present with the Tauri target triple suffix:</p>
+<pre class="code"><code>src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
+src-tauri/binaries/ffprobe-x86_64-pc-windows-msvc.exe</code></pre>
+<p>Debug builds write the check result to <code>%TEMP%\prompt-studio-sidecar-check.txt</code>. Release builds resolve the binaries next to the executable; reinstall or re-copy them if missing.</p>
+<h2 id="edited-file-is-not-in-the-expected-folder">Edited file is not in the expected folder</h2>
+<p>Edits go to <code>&lt;source parent&gt;\edited\</code> unless an alternate output root is set. A collision gets <code> (1)</code>, <code> (2)</code>, and so on. Originals are never modified. If the source is on a read-only or disconnected drive, the edit fails and no partial file is left behind.</p>
+<h2 id="drag-out-does-nothing">Drag-out does nothing</h2>
+<p>Native drag uses <code>tauri-plugin-drag</code>. If the OS/WebView2 combination rejects it, the UI reports the failure. Use <strong>Save as</strong> or <strong>Reveal</strong> instead. Prepared files are under the cache <code>drag/</code> folder and are cleaned after 24 hours. A missing source cancels preparation with a clear message; cached results remain available.</p>
+<h2 id="dataset-import-rejects-rows">Dataset import rejects rows</h2>
+<ul><li>Every row needs a mapped prompt.</li><li>Media paths must stay inside the dataset root; <code>..</code> escapes are rejected.</li><li>Invalid UTF-8 falls back to Windows-1252; the preview shows which encoding was</li></ul>
+<p>used.</p>
+<ul><li>Files larger than 256 MB are refused before loading. Split them.</li><li>Blank TXT lines are skipped, not treated as empty prompts.</li><li>CSV/TSV requires a header row.</li></ul>
+<h2 id="dataset-run-seems-stuck">Dataset run seems stuck</h2>
+<p>Check <strong>Jobs</strong>. Compositions are serialized, so a 200-row batch runs one at a time. Succeeded rows are skipped on resume. If the app exited mid-run, open the job, press <strong>Retry</strong>, and only incomplete items run.</p>
+<h2 id="library-search-returns-nothing">Library search returns nothing</h2>
+<p>FTS tokens are matched as quoted whole words. Try fewer terms. Trash items are hidden unless the Trash view is active. Check the status filter and active collection/tag filters.</p>
+<h2 id="restore-to-workspace-refuses">Restore-to-workspace refuses</h2>
+<p>The generation has no source asset (for example, a text-only compose). Text-only results can be copied from the library, but there is no media/edit stack to restore.</p>
+<h2 id="database-is-from-a-newer-build">Database is from a newer build</h2>
+<p>The app refuses to open a database written by a newer binary and leaves it untouched. Install the newer build or restore a backup made by this version. Pre-migration backups are written automatically before upgrades.</p>
+<h2 id="portable-data-is-not-beside-the-executable">Portable data is not beside the executable</h2>
+<p>Portable mode requires <code>portable.txt</code> next to the executable, or <code>PROMPT_STUDIO_PORTABLE=1</code>. If that folder is not writable, the app falls back to per-user data and reports the reason in the status panel.</p>
+<h2 id="collect-diagnostics">Collect diagnostics</h2>
+<p>Use <strong>Diagnostics</strong> to export a redacted zip, then attach it to a bug report. Tokens and prompt text are excluded by default. The zip contains app/OS versions, settings with secrets removed, database summary, and recent errors.</p>
+    </article>
+    <section class="backlinks"><p class="eyebrow">Linked from</p><ul><li><a href="index.html">Overview</a></li></ul></section>
+    <nav class="pager" aria-label="Page navigation"><a href="presets.html"><small>Previous</small><span>Presets</span></a><a class="pager-next" href="release-notes.html"><small>Next</small><span>Release notes</span></a></nav>
+  </main>
+  <aside class="rail"><nav class="toc" aria-label="On this page"><p class="eyebrow">On this page</p><a class="toc-link toc-2" href="#lm-studio-is-offline">LM Studio is offline</a><a class="toc-link toc-2" href="#model-not-found">Model not found</a><a class="toc-link toc-2" href="#context-overflow">Context overflow</a><a class="toc-link toc-2" href="#compose-returns-invalid-json">Compose returns invalid JSON</a><a class="toc-link toc-2" href="#generation-is-slow-or-vram-is-full">Generation is slow or VRAM is full</a><a class="toc-link toc-2" href="#avast-quarantines-the-portable-exe">Avast quarantines the portable exe</a><a class="toc-link toc-2" href="#rebuild-says-access-is-denied">Rebuild says Access is denied</a><a class="toc-link toc-2" href="#blank-window-in-development">Blank window in development</a><a class="toc-link toc-2" href="#sidecars-or-ffprobe-missing">Sidecars or ffprobe missing</a><a class="toc-link toc-2" href="#edited-file-is-not-in-the-expected-folder">Edited file is not in the expected folder</a><a class="toc-link toc-2" href="#drag-out-does-nothing">Drag-out does nothing</a><a class="toc-link toc-2" href="#dataset-import-rejects-rows">Dataset import rejects rows</a><a class="toc-link toc-2" href="#dataset-run-seems-stuck">Dataset run seems stuck</a><a class="toc-link toc-2" href="#library-search-returns-nothing">Library search returns nothing</a><a class="toc-link toc-2" href="#restore-to-workspace-refuses">Restore-to-workspace refuses</a><a class="toc-link toc-2" href="#database-is-from-a-newer-build">Database is from a newer build</a><a class="toc-link toc-2" href="#portable-data-is-not-beside-the-executable">Portable data is not beside the executable</a><a class="toc-link toc-2" href="#collect-diagnostics">Collect diagnostics</a></nav></aside>
+</div>
+<script src="assets/wiki.js"></script>
+</body>
+</html>

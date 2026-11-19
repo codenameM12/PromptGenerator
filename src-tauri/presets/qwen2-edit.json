@@ -1,0 +1,88 @@
+{
+  "id": "qwen2-edit",
+  "name": "qwen2 edit",
+  "kind": "edit",
+  "version": "1.0.0",
+  "description": "Qwen-Image-Edit target — stable instruction-style edits",
+  "document": {
+    "schema": 1,
+    "id": "qwen2-edit",
+    "name": "qwen2 edit",
+    "kind": "edit",
+    "version": "1.0.1",
+    "description": "Qwen-Image-Edit target — stable instruction-style edits",
+    "mode": "edit",
+    "systemPrompt": "You write Qwen-Image-Edit instructions. Qwen editing is instruction-style and becomes unstable without an explicit rewrite, so produce one clear, self-contained instruction that names the region or element to change, the exact change, and what must be preserved (identity, pose, layout, background, lighting). Prefer concrete nouns from the source description over pronouns. Do not add style essays, keyword lists, or negative prompts; one image is edited per request. Return only the instruction.",
+    "guidance": "Qwen edit guide: name the element, state the change, state what stays the same. Concrete nouns, no pronouns, no negative prompt, single image.",
+    "sections": [
+      "target element",
+      "change",
+      "preserve"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {},
+    "limits": {
+      "promptChars": 4000,
+      "negativeChars": 500,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 450
+    },
+    "resolutions": [
+      [
+        1024,
+        1024
+      ],
+      [
+        1536,
+        1536
+      ],
+      [
+        1024,
+        1536
+      ],
+      [
+        1536,
+        1024
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        720,
+        1280
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "target element",
+      "change",
+      "preserve"
+    ],
+    "examples": [
+      {
+        "input": "a white ceramic mug on a desk, make it teal",
+        "output": {
+          "prompt": "Change the colour of the ceramic mug on the desk from white to deep teal. Keep the desk, laptop, window light, and the mug's position and shape unchanged.",
+          "params": {}
+        }
+      }
+    ],
+    "referenceSlots": 3,
+    "instructionStyle": true
+  }
+}

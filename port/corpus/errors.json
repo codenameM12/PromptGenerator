@@ -1,0 +1,253 @@
+{
+  "module": "errors",
+  "source": "src/lib/errors.ts",
+  "generatedBy": "src/port/characterize_errors.test.ts",
+  "cases": [
+    {
+      "label": "0: error",
+      "input": {
+        "kind": "error",
+        "message": "boom"
+      },
+      "output": "boom"
+    },
+    {
+      "label": "1: error",
+      "input": {
+        "kind": "error",
+        "message": ""
+      },
+      "output": ""
+    },
+    {
+      "label": "2: string",
+      "input": {
+        "kind": "string",
+        "value": "network failed"
+      },
+      "output": "network failed"
+    },
+    {
+      "label": "3: string",
+      "input": {
+        "kind": "string",
+        "value": "   "
+      },
+      "output": "\"   \""
+    },
+    {
+      "label": "4: string",
+      "input": {
+        "kind": "string",
+        "value": ""
+      },
+      "output": "\"\""
+    },
+    {
+      "label": "5: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "code": "validation",
+          "category": "validation",
+          "message": "Crop 10+10 at 0,0 exceeds the source 8x8",
+          "userMessage": "Crop 10+10 at 0,0 exceeds the source 8x8",
+          "retryable": false,
+          "details": null
+        }
+      },
+      "output": "Crop 10+10 at 0,0 exceeds the source 8x8"
+    },
+    {
+      "label": "6: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "message": "model missing"
+        }
+      },
+      "output": "model missing"
+    },
+    {
+      "label": "7: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "userMessage": "  ",
+          "message": "real reason"
+        }
+      },
+      "output": "real reason"
+    },
+    {
+      "label": "8: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "data": {
+            "message": "nested reason"
+          }
+        }
+      },
+      "output": "nested reason"
+    },
+    {
+      "label": "9: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "data": {
+            "userMessage": "nested user reason"
+          }
+        }
+      },
+      "output": "nested user reason"
+    },
+    {
+      "label": "10: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "userMessage": 42,
+          "message": "fallback"
+        }
+      },
+      "output": "fallback"
+    },
+    {
+      "label": "11: value",
+      "input": {
+        "kind": "value",
+        "value": {}
+      },
+      "output": "Unknown error"
+    },
+    {
+      "label": "12: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "a": 1
+        }
+      },
+      "output": "{\"a\":1}"
+    },
+    {
+      "label": "13: value",
+      "input": {
+        "kind": "value",
+        "value": null
+      },
+      "output": "Unknown error"
+    },
+    {
+      "label": "14: undefined",
+      "input": {
+        "kind": "undefined"
+      },
+      "output": "Unknown error"
+    },
+    {
+      "label": "15: value",
+      "input": {
+        "kind": "value",
+        "value": 42
+      },
+      "output": "42"
+    },
+    {
+      "label": "16: value",
+      "input": {
+        "kind": "value",
+        "value": false
+      },
+      "output": "false"
+    },
+    {
+      "label": "17: value",
+      "input": {
+        "kind": "value",
+        "value": [1, 2]
+      },
+      "output": "[1,2]"
+    },
+    {
+      "label": "18: circular",
+      "input": {
+        "kind": "circular"
+      },
+      "output": "Unknown error"
+    },
+    {
+      "label": "19: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "data": {
+            "data": {
+              "message": "deep"
+            }
+          }
+        }
+      },
+      "output": "{\"data\":{\"data\":{\"message\":\"deep\"}}}"
+    },
+    {
+      "label": "20: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "userMessage": {
+            "message": "nested structured"
+          }
+        }
+      },
+      "output": "nested structured"
+    },
+    {
+      "label": "21: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "message": "",
+          "userMessage": ""
+        }
+      },
+      "output": "{\"message\":\"\",\"userMessage\":\"\"}"
+    },
+    {
+      "label": "22: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "userMessage": "primary",
+          "message": "secondary",
+          "data": {
+            "message": "tertiary"
+          }
+        }
+      },
+      "output": "primary"
+    },
+    {
+      "label": "23: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "data": "direct data string"
+        }
+      },
+      "output": "direct data string"
+    },
+    {
+      "label": "24: value",
+      "input": {
+        "kind": "value",
+        "value": {
+          "data": 7
+        }
+      },
+      "output": "{\"data\":7}"
+    }
+  ]
+}
