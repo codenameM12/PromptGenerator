@@ -171,8 +171,10 @@ impl NativeApp {
             .collect();
         if self.vm.active == ViewId::Characters {
             // Files dropped on a name (or on the open panel) go to that one.
-            let pointer = ctx.input(|input| input.pointer.latest_pos());
-            let target = pointer.and_then(|pos| {
+            // Windows sends no pointer positions during a file drag, so the
+            // position may be missing or stale; the open one is the fallback.
+            let pointer = ctx.input(|input| input.pointer.hover_pos().or(input.pointer.latest_pos()));
+            let under_pointer = pointer.and_then(|pos| {
                 self.vm
                     .characters
                     .drop_zones
@@ -180,6 +182,7 @@ impl NativeApp {
                     .find(|(rect, _)| rect.contains(pos))
                     .map(|(_, id)| id.clone())
             });
+            let target = under_pointer.or_else(|| self.vm.characters.selected.clone());
             match target {
                 Some(id) => {
                     match self.backend.call(
@@ -192,13 +195,14 @@ impl NativeApp {
                             self.vm.characters.selected = Some(id);
                             self.vm.characters.detail = None;
                             self.vm.characters_version += 1;
+                            ctx.request_repaint();
                         }
                         Err(error) => self.vm.status = crate::errors::error_text_of(&error),
                     }
                 }
                 None => {
                     self.vm.status =
-                        "Drop onto a name in the list to add images to it".to_string();
+                        "Select a name first, then drop files or folders to add them to it".to_string();
                 }
             }
             return;

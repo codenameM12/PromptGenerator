@@ -359,24 +359,29 @@ pub fn ui(
                                     {
                                         select = Some(asset.id.clone());
                                     }
-                                    let meta = media_meta(asset);
-                                    if !meta.is_empty() {
-                                        ui.add(
-                                            egui::Label::new(
-                                                egui::RichText::new(meta).color(theme.faint),
-                                            )
-                                            .truncate(),
-                                        );
-                                    }
-                                    if asset.missing {
-                                        ui.label(
-                                            egui::RichText::new("source offline")
-                                                .color(theme.warning),
-                                        );
-                                    }
-                                    if crate::widgets::trash_button(ui, theme, &asset.id, "Move to trash").clicked() {
-                                        remove = Some(asset.id.clone());
-                                    }
+                                    ui.horizontal(|ui| {
+                                        if crate::widgets::trash_button(ui, theme, &asset.id, "Move to trash").clicked() {
+                                            remove = Some(asset.id.clone());
+                                        }
+                                        let mut meta = media_meta(asset);
+                                        if asset.missing {
+                                            meta = format!("offline {meta}");
+                                        }
+                                        if !meta.is_empty() {
+                                            ui.add(
+                                                egui::Label::new(
+                                                    egui::RichText::new(meta)
+                                                        .size(11.0)
+                                                        .color(if asset.missing {
+                                                            theme.warning
+                                                        } else {
+                                                            theme.faint
+                                                        }),
+                                                )
+                                                .truncate(),
+                                            );
+                                        }
+                                    });
                                 });
                             }
                         });

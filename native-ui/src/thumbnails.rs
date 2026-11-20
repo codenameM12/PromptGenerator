@@ -15,7 +15,7 @@ use image::imageops::FilterType;
 
 use crate::backend::Asset;
 
-pub const GRID_THUMB: Vec2 = Vec2 { x: 168.0, y: 112.0 };
+pub const GRID_THUMB: Vec2 = Vec2 { x: 116.0, y: 78.0 };
 pub const PICKER_THUMB: Vec2 = Vec2 { x: 72.0, y: 54.0 };
 
 struct Job {

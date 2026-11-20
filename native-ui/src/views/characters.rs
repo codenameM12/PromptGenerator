@@ -275,85 +275,98 @@ fn draw_detail(
         .id_salt("characters-images")
         .auto_shrink([false, false])
         .show(ui, |ui| {
-            for image in &images {
-                let image_id = text_of(image, "id").to_string();
-                let draft = vm
-                    .characters
-                    .drafts
-                    .entry(image_id.clone())
-                    .or_insert_with(|| {
-                        (
+            // Compact cards in rows sized to the width, so more fit together.
+            const CARD_WIDTH: f32 = 168.0;
+            let spacing = ui.spacing().item_spacing.x;
+            let columns = (((ui.available_width() + spacing) / (CARD_WIDTH + spacing + 10.0))
+                .floor() as usize)
+                .max(1);
+            for row in images.chunks(columns) {
+                ui.horizontal_top(|ui| {
+                    for image in row {
+                        let image_id = text_of(image, "id").to_string();
+                        let draft = vm
+                            .characters
+                            .drafts
+                            .entry(image_id.clone())
+                            .or_insert_with(|| {
+                                (
+                                    text_of(image, "fileName").to_string(),
+                                    text_of(image, "role").to_string(),
+                                    text_of(image, "description").to_string(),
+                                    image.get("isDefault").and_then(Value::as_bool).unwrap_or(false),
+                                )
+                            });
+                        let saved = (
                             text_of(image, "fileName").to_string(),
                             text_of(image, "role").to_string(),
                             text_of(image, "description").to_string(),
                             image.get("isDefault").and_then(Value::as_bool).unwrap_or(false),
-                        )
-                    });
-                let saved = (
-                    text_of(image, "fileName").to_string(),
-                    text_of(image, "role").to_string(),
-                    text_of(image, "description").to_string(),
-                    image.get("isDefault").and_then(Value::as_bool).unwrap_or(false),
-                );
-                let changed = *draft != saved;
-                let stored_path = text_of(image, "path").to_string();
-                theme.output_frame().show(ui, |ui| {
-                    ui.set_width(ui.available_width());
-                    ui.horizontal_top(|ui| {
-                        let preview = Asset {
-                            id: image_id.clone(),
-                            kind: AssetKind::Image,
-                            path: stored_path.clone(),
-                            display_name: draft.0.clone(),
-                            hash: String::new(),
-                            width: None,
-                            height: None,
-                            fps: None,
-                            duration_ms: None,
-                            codec: None,
-                            has_audio: false,
-                            thumbnail_path: Some(stored_path.clone()),
-                            proxy_path: None,
-                            missing: false,
-                            favorite: false,
-                            created_at: String::new(),
-                        };
-                        thumbnails.paint(ui, &preview, PICKER_THUMB);
-                        ui.vertical(|ui| {
-                            ui.horizontal(|ui| {
-                                ui.label("Name");
+                        );
+                        let changed = *draft != saved;
+                        let stored_path = text_of(image, "path").to_string();
+                        theme.output_frame().show(ui, |ui| {
+                            ui.set_width(CARD_WIDTH);
+                            ui.vertical(|ui| {
+                                let preview = Asset {
+                                    id: image_id.clone(),
+                                    kind: AssetKind::Image,
+                                    path: stored_path.clone(),
+                                    display_name: draft.0.clone(),
+                                    hash: String::new(),
+                                    width: None,
+                                    height: None,
+                                    fps: None,
+                                    duration_ms: None,
+                                    codec: None,
+                                    has_audio: false,
+                                    thumbnail_path: Some(stored_path.clone()),
+                                    proxy_path: None,
+                                    missing: false,
+                                    favorite: false,
+                                    created_at: String::new(),
+                                };
+                                thumbnails.paint(ui, &preview, egui::vec2(CARD_WIDTH, 96.0));
                                 ui.add(
                                     egui::TextEdit::singleline(&mut draft.0)
-                                        .desired_width(150.0)
+                                        .hint_text("Name")
+                                        .desired_width(CARD_WIDTH)
                                         .frame(theme.text_edit_frame()),
                                 );
-                                ui.label("Role");
                                 ui.add(
                                     egui::TextEdit::singleline(&mut draft.1)
-                                        .hint_text("front, profile...")
-                                        .desired_width(130.0)
+                                        .hint_text("Role (front, profile...)")
+                                        .desired_width(CARD_WIDTH)
                                         .frame(theme.text_edit_frame()),
                                 );
-                            });
-                            ui.add(
-                                egui::TextEdit::multiline(&mut draft.2)
-                                    .hint_text("Description of this image (optional)")
-                                    .desired_rows(2)
-                                    .desired_width(f32::INFINITY)
-                                    .frame(theme.text_edit_frame()),
-                            );
-                            ui.horizontal(|ui| {
-                                ui.checkbox(&mut draft.3, "Default");
-                                if ui.add_enabled(changed, egui::Button::new("Save")).clicked() {
-                                    save = Some(image_id.clone());
-                                }
-                                if crate::widgets::trash_button(ui, theme, &image_id, "Remove image").clicked() {
-                                    remove = Some(image_id.clone());
-                                }
+                                egui::CollapsingHeader::new(if draft.2.trim().is_empty() {
+                                    "Description"
+                                } else {
+                                    "Description (set)"
+                                })
+                                .id_salt(("characters-desc", image_id.as_str()))
+                                .show(ui, |ui| {
+                                    ui.add(
+                                        egui::TextEdit::multiline(&mut draft.2)
+                                            .desired_rows(3)
+                                            .desired_width(CARD_WIDTH)
+                                            .frame(theme.text_edit_frame()),
+                                    );
+                                });
+                                ui.horizontal(|ui| {
+                                    ui.checkbox(&mut draft.3, "Default");
+                                    if ui.add_enabled(changed, egui::Button::new("Save")).clicked() {
+                                        save = Some(image_id.clone());
+                                    }
+                                    if crate::widgets::trash_button(ui, theme, &image_id, "Remove image").clicked() {
+                                        remove = Some(image_id.clone());
+                                    }
+                                });
                             });
                         });
-                    });
+                    }
                 });
+                ui.add_space(theme.space_xs);
             }
         });
     if let Some(image_id) = save
