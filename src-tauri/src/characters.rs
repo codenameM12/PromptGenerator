@@ -30,7 +30,11 @@ pub fn resolve(data_dir: &Path, stored: &str) -> PathBuf {
     if path.is_absolute() {
         path.to_path_buf()
     } else {
-        data_dir.join(path)
+        // Rebuild from components so separators match the platform's.
+        stored
+            .split(['/', '\\'])
+            .filter(|part| !part.is_empty())
+            .fold(data_dir.to_path_buf(), |full, part| full.join(part))
     }
 }
 

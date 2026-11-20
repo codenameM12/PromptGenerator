@@ -403,7 +403,7 @@ fn non_empty(value: &str) -> Value {
 
 /// `pipeline_describe` returns one `Description` object; the typed adapter
 /// returns a list. Accept both so a live run and a replayed run agree.
-fn describe_text(value: &Value) -> String {
+pub(crate) fn describe_text(value: &Value) -> String {
     if let Some(items) = value.as_array() {
         return items
             .iter()

@@ -73,6 +73,75 @@ fn autoname(sink: Sink, vm: &mut ViewModel, image_id: &str) {
     }
 }
 
+/// Describes the given images with the describer model, saves the text as
+/// each description, then names the image from it.
+fn describe_images(sink: Sink, vm: &mut ViewModel, character_id: &str, image_ids: &[String]) {
+    let mut done = 0;
+    for image_id in image_ids {
+        let loaded = sink(
+            "characters_load",
+            json!({ "id": character_id, "imageIds": [image_id] }),
+        );
+        let asset_id = match loaded {
+            Ok(value) => value["images"][0]["assetId"].as_str().map(str::to_string),
+            Err(error) => {
+                vm.characters.error = Some(error);
+                return;
+            }
+        };
+        let Some(asset_id) = asset_id else { continue };
+        let described = sink(
+            "pipeline_describe",
+            json!({ "request": {
+                "assetId": asset_id,
+                "editId": Value::Null,
+                "framePaths": [],
+                "mode": "image",
+                "hint": Value::Null,
+                "forceRefresh": false,
+                "tag": "<image1>"
+            }}),
+        );
+        let text = match described {
+            Ok(value) => crate::views::compose::describe_text(&value),
+            Err(error) => {
+                vm.characters.error = Some(error);
+                return;
+            }
+        };
+        if text.trim().is_empty() {
+            vm.characters.error = Some("The describer returned no text".to_string());
+            return;
+        }
+        let saved = vm
+            .characters
+            .detail
+            .as_ref()
+            .and_then(|detail| detail.get("images").and_then(Value::as_array))
+            .and_then(|images| images.iter().find(|image| text_of(image, "id") == image_id))
+            .cloned()
+            .unwrap_or(Value::Null);
+        let updated = sink(
+            "characters_image_update",
+            json!({
+                "imageId": image_id,
+                "fileName": text_of(&saved, "fileName"),
+                "role": text_of(&saved, "role"),
+                "description": text.trim(),
+                "isDefault": saved.get("isDefault").and_then(Value::as_bool).unwrap_or(false),
+            }),
+        );
+        if let Err(error) = updated {
+            vm.characters.error = Some(error);
+            return;
+        }
+        autoname(sink, vm, image_id);
+        done += 1;
+    }
+    vm.characters.notice = Some(format!("Described {done} image(s)"));
+    vm.characters.error = None;
+}
+
 fn draw_list(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, sink: Sink) {
     ui.horizontal(|ui| {
         let response = ui.add(
@@ -289,14 +358,61 @@ fn draw_detail(
     let mut remove: Option<String> = None;
     let mut save: Option<String> = None;
     let mut rename_now: Option<String> = None;
+    let mut describe: Vec<String> = Vec::new();
+    let mut save_all = false;
+    ui.horizontal_wrapped(|ui| {
+        if ui.button("Select all defaults").clicked() {
+            for image in &images {
+                if let Some(draft) = vm.characters.drafts.get_mut(text_of(image, "id")) {
+                    draft.3 = true;
+                }
+            }
+        }
+        if ui.button("Clear defaults").clicked() {
+            for image in &images {
+                if let Some(draft) = vm.characters.drafts.get_mut(text_of(image, "id")) {
+                    draft.3 = false;
+                }
+            }
+        }
+        if ui.button("Save all changes").clicked() {
+            save_all = true;
+        }
+        let missing: Vec<String> = images
+            .iter()
+            .filter(|image| text_of(image, "description").trim().is_empty())
+            .map(|image| text_of(image, "id").to_string())
+            .collect();
+        if ui
+            .add_enabled(
+                !missing.is_empty(),
+                egui::Button::new(format!("Describe missing ({})", missing.len())),
+            )
+            .on_hover_text("Runs the describer on images without a description, then names them")
+            .clicked()
+        {
+            describe = missing;
+        }
+        if ui
+            .button("Describe all")
+            .on_hover_text("Re-describes every image and renames them")
+            .clicked()
+        {
+            describe = images
+                .iter()
+                .map(|image| text_of(image, "id").to_string())
+                .collect();
+        }
+    });
     egui::ScrollArea::vertical()
         .id_salt("characters-images")
         .auto_shrink([false, false])
         .show(ui, |ui| {
             // Compact cards in rows sized to the width, so more fit together.
-            const CARD_WIDTH: f32 = 168.0;
+            const CARD_WIDTH: f32 = 236.0;
+            const INNER: f32 = CARD_WIDTH - 12.0;
             let spacing = ui.spacing().item_spacing.x;
-            let columns = (((ui.available_width() + spacing) / (CARD_WIDTH + spacing + 10.0))
+            let columns = (((ui.available_width() + spacing) / (CARD_WIDTH + spacing + 30.0))
                 .floor() as usize)
                 .max(1);
             for row in images.chunks(columns) {
@@ -344,17 +460,17 @@ fn draw_detail(
                                     favorite: false,
                                     created_at: String::new(),
                                 };
-                                thumbnails.paint(ui, &preview, egui::vec2(CARD_WIDTH, 96.0));
+                                thumbnails.paint(ui, &preview, egui::vec2(INNER, 132.0));
                                 ui.add(
                                     egui::TextEdit::singleline(&mut draft.0)
                                         .hint_text("Name")
-                                        .desired_width(CARD_WIDTH)
+                                        .desired_width(INNER)
                                         .frame(theme.text_edit_frame()),
                                 );
                                 ui.add(
                                     egui::TextEdit::singleline(&mut draft.1)
                                         .hint_text("Role (front, profile...)")
-                                        .desired_width(CARD_WIDTH)
+                                        .desired_width(INNER)
                                         .frame(theme.text_edit_frame()),
                                 );
                                 egui::CollapsingHeader::new(if draft.2.trim().is_empty() {
@@ -367,11 +483,11 @@ fn draw_detail(
                                     ui.add(
                                         egui::TextEdit::multiline(&mut draft.2)
                                             .desired_rows(3)
-                                            .desired_width(CARD_WIDTH)
+                                            .desired_width(INNER)
                                             .frame(theme.text_edit_frame()),
                                     );
                                 });
-                                ui.horizontal(|ui| {
+                                ui.horizontal_wrapped(|ui| {
                                     ui.checkbox(&mut draft.3, "Default");
                                     if ui.add_enabled(changed, egui::Button::new("Save")).clicked() {
                                         save = Some(image_id.clone());
@@ -385,6 +501,13 @@ fn draw_detail(
                                         .clicked()
                                     {
                                         rename_now = Some(image_id.clone());
+                                    }
+                                    if ui
+                                        .button("Describe")
+                                        .on_hover_text("Describe this image with the describer model")
+                                        .clicked()
+                                    {
+                                        describe = vec![image_id.clone()];
                                     }
                                     if crate::widgets::trash_button(ui, theme, &image_id, "Remove image").clicked() {
                                         remove = Some(image_id.clone());
@@ -428,6 +551,43 @@ fn draw_detail(
         }
         refresh_list(sink, vm);
         load_detail(sink, vm, &id);
+    }
+    if save_all {
+        let changed: Vec<(String, (String, String, String, bool))> = images
+            .iter()
+            .filter_map(|image| {
+                let image_id = text_of(image, "id").to_string();
+                let draft = vm.characters.drafts.get(&image_id)?.clone();
+                let saved = (
+                    text_of(image, "fileName").to_string(),
+                    text_of(image, "role").to_string(),
+                    text_of(image, "description").to_string(),
+                    image.get("isDefault").and_then(Value::as_bool).unwrap_or(false),
+                );
+                (draft != saved).then_some((image_id, draft))
+            })
+            .collect();
+        let count = changed.len();
+        for (image_id, draft) in changed {
+            let _ = run(
+                sink,
+                vm,
+                "characters_image_update",
+                json!({ "imageId": image_id, "fileName": draft.0, "role": draft.1,
+                        "description": draft.2, "isDefault": draft.3 }),
+                "Image saved",
+            );
+        }
+        vm.characters.notice = Some(format!("Saved {count} image(s)"));
+        refresh_list(sink, vm);
+        load_detail(sink, vm, &id);
+    }
+    if !describe.is_empty() {
+        describe_images(sink, vm, &id, &describe);
+        refresh_list(sink, vm);
+        load_detail(sink, vm, &id);
+        vm.media_reload += 1;
+        vm.edits_version += 1;
     }
     if let Some(image_id) = rename_now {
         autoname(sink, vm, &image_id);

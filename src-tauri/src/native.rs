@@ -2009,7 +2009,7 @@ impl NativeState {
             let path = image["path"].as_str().unwrap_or_default().to_string();
             let asset = imported
                 .iter()
-                .find(|result| result.path == path)
+                .find(|result| same_path(&result.path, &path))
                 .and_then(|result| result.asset_id.clone());
             if let Some(asset_id) = asset {
                 image["assetId"] = json!(asset_id);
@@ -2994,4 +2994,10 @@ mod tests {
         assert!(started.get("jobId").and_then(Value::as_str).is_some());
         let _ = std::fs::remove_dir_all(directory);
     }
+}
+
+/// Windows paths compare equal regardless of separator style or letter case.
+fn same_path(a: &str, b: &str) -> bool {
+    let norm = |value: &str| value.replace('/', "\\").to_lowercase();
+    norm(a) == norm(b)
 }
