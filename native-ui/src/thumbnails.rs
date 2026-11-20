@@ -182,7 +182,7 @@ fn thumbnail_path(asset: &Asset) -> Option<PathBuf> {
         .is_some_and(|extension| {
             matches!(
                 extension.to_ascii_lowercase().as_str(),
-                "png" | "jpg" | "jpeg" | "webp" | "bmp" | "gif"
+                "png" | "jpg" | "jpeg" | "jfif" | "jpe" | "webp" | "bmp" | "gif"
             )
         })
         .then_some(source)

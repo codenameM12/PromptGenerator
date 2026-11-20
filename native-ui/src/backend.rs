@@ -226,7 +226,7 @@ impl StubBackend {
 
     fn classify(path: &str) -> AssetKind {
         let lower = path.to_ascii_lowercase();
-        if [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".avif"]
+        if [".png", ".jpg", ".jpeg", ".jfif", ".jpe", ".webp", ".gif", ".bmp", ".avif"]
             .iter()
             .any(|ext| lower.ends_with(ext))
         {

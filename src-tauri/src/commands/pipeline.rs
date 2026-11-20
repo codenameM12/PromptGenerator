@@ -736,7 +736,7 @@ fn still_frame(
         .and_then(|extension| extension.to_str())
         .unwrap_or_default()
         .to_ascii_lowercase();
-    if matches!(extension.as_str(), "png" | "jpg" | "jpeg") {
+    if matches!(extension.as_str(), "png" | "jpg" | "jpeg" | "jfif" | "jpe") {
         return Ok(source);
     }
 

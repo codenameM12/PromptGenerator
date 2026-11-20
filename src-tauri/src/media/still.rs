@@ -8,7 +8,7 @@ use image::{DynamicImage, ImageDecoder, ImageReader};
 
 use super::probe::ProbeData;
 
-const FORMATS: &[&str] = &["png", "jpg", "jpeg", "webp", "bmp", "gif"];
+const FORMATS: &[&str] = &["png", "jpg", "jpeg", "jfif", "jpe", "webp", "bmp", "gif"];
 const THUMB_WIDTH: u32 = 512;
 
 pub fn read(source: &Path, thumbnail: &Path) -> Option<ProbeData> {
@@ -66,4 +66,27 @@ pub fn read(source: &Path, thumbnail: &Path) -> Option<ProbeData> {
         container: None,
         frame_count: None,
     })
+}
+
+#[cfg(test)]
+mod jfif_tests {
+    use super::*;
+
+    #[test]
+    fn jfif_files_are_read_as_jpeg_and_get_a_thumbnail() {
+        let dir = std::env::temp_dir().join(format!("ps-jfif-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).expect("dir");
+        let source = dir.join("photo.jfif");
+        let image = image::RgbImage::from_pixel(40, 30, image::Rgb([200, 40, 40]));
+        let mut file = std::fs::File::create(&source).expect("file");
+        image::codecs::jpeg::JpegEncoder::new(&mut file)
+            .encode_image(&image)
+            .expect("encode");
+        drop(file);
+        let thumbnail = dir.join("thumb.jpg");
+        let probe = read(&source, &thumbnail).expect("jfif should decode");
+        assert_eq!((probe.width, probe.height), (40, 30));
+        assert!(thumbnail.is_file());
+        let _ = std::fs::remove_dir_all(dir);
+    }
 }

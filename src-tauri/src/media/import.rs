@@ -20,7 +20,7 @@ use super::still;
 use super::thumbnail;
 
 const IMAGE_EXTENSIONS: &[&str] = &[
-    "png", "jpg", "jpeg", "webp", "avif", "gif", "bmp", "tif", "tiff",
+    "png", "jpg", "jpeg", "jfif", "jpe", "webp", "avif", "gif", "bmp", "tif", "tiff",
 ];
 const VIDEO_EXTENSIONS: &[&str] = &["mp4", "mov", "mkv", "webm", "avi", "m4v"];
 

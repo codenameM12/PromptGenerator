@@ -4,7 +4,7 @@
 use std::path::PathBuf;
 
 const MEDIA_FILTER: &[&str] = &[
-    "png", "jpg", "jpeg", "webp", "gif", "bmp", "avif", "mp4", "m4v", "webm", "mov",
+    "png", "jpg", "jpeg", "jfif", "jpe", "webp", "gif", "bmp", "avif", "mp4", "m4v", "webm", "mov",
 ];
 
 pub fn pick_import_files() -> Option<Vec<PathBuf>> {

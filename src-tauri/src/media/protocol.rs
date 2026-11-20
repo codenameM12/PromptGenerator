@@ -190,7 +190,7 @@ fn content_type(path: &Path) -> &'static str {
         .as_deref()
     {
         Some("png") => "image/png",
-        Some("jpg") | Some("jpeg") => "image/jpeg",
+        Some("jpg") | Some("jpeg") | Some("jfif") | Some("jpe") => "image/jpeg",
         Some("webp") => "image/webp",
         Some("gif") => "image/gif",
         Some("bmp") => "image/bmp",
