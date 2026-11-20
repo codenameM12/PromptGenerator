@@ -121,7 +121,42 @@ pub fn delete(connection: &Connection, data_dir: &Path, id: &str) -> Result<(), 
     Ok(())
 }
 
-/// Copies each file into `<data>/characters/<id>/` and records it.
+const IMAGE_EXTENSIONS: &[&str] = &[
+    "png", "jpg", "jpeg", "jfif", "jpe", "webp", "bmp", "gif", "tif", "tiff", "avif",
+];
+const MAX_IMPORT: usize = 500;
+
+/// Files and folders in, image files out. Folders are scanned recursively.
+pub fn expand_sources(inputs: &[String]) -> Vec<String> {
+    fn visit(path: &Path, out: &mut Vec<String>) {
+        if out.len() >= MAX_IMPORT {
+            return;
+        }
+        if path.is_dir() {
+            let mut entries: Vec<PathBuf> = fs::read_dir(path)
+                .map(|iter| iter.filter_map(Result::ok).map(|entry| entry.path()).collect())
+                .unwrap_or_default();
+            entries.sort();
+            for entry in entries {
+                visit(&entry, out);
+            }
+        } else if path
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .is_some_and(|ext| IMAGE_EXTENSIONS.contains(&ext.to_ascii_lowercase().as_str()))
+        {
+            out.push(path.to_string_lossy().to_string());
+        }
+    }
+    let mut out = Vec::new();
+    for input in inputs {
+        visit(Path::new(input), &mut out);
+    }
+    out
+}
+
+/// Copies each file into `<data>/characters/<id>/` and records it. Folders
+/// are expanded to the image files inside them.
 pub fn add_images(
     connection: &Connection,
     data_dir: &Path,
@@ -129,6 +164,7 @@ pub fn add_images(
     sources: &[String],
 ) -> Result<Value, CommandError> {
     get(connection, character_id)?;
+    let sources = &expand_sources(sources);
     let folder = characters_dir(data_dir).join(character_id);
     fs::create_dir_all(&folder).map_err(|error| CommandError::from_io(&error))?;
     let mut position: i64 = connection.query_row(
@@ -356,6 +392,25 @@ mod tests {
         let one = pick_images(connection, &id, &[second.clone()], None).unwrap();
         assert_eq!(one.len(), 1);
         assert_eq!(one[0]["id"], second.as_str());
+    }
+
+    #[test]
+    fn folders_are_expanded_to_their_image_files() {
+        let database = database();
+        let connection = database.connection();
+        let data = temp_dir("data3");
+        let root = temp_dir("src3");
+        let nested = root.join("sub");
+        fs::create_dir_all(&nested).unwrap();
+        fs::write(root.join("a.jfif"), [1u8; 4]).unwrap();
+        fs::write(nested.join("b.PNG"), [2u8; 4]).unwrap();
+        fs::write(nested.join("notes.txt"), b"x").unwrap();
+        let single = root.join("a.jfif").to_string_lossy().to_string();
+        let found = expand_sources(&[root.to_string_lossy().to_string(), single.clone()]);
+        assert_eq!(found.len(), 3, "{found:?}");
+        let id = create(connection, "Pack").unwrap()["id"].as_str().unwrap().to_string();
+        let got = add_images(connection, &data, &id, &[root.to_string_lossy().to_string()]).unwrap();
+        assert_eq!(got["images"].as_array().unwrap().len(), 2);
     }
 
     #[test]

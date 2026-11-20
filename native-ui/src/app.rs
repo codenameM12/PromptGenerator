@@ -169,6 +169,40 @@ impl NativeApp {
             .iter()
             .map(|path| path.to_string_lossy().to_string())
             .collect();
+        if self.vm.active == ViewId::Characters {
+            // Files dropped on a name (or on the open panel) go to that one.
+            let pointer = ctx.input(|input| input.pointer.latest_pos());
+            let target = pointer.and_then(|pos| {
+                self.vm
+                    .characters
+                    .drop_zones
+                    .iter()
+                    .find(|(rect, _)| rect.contains(pos))
+                    .map(|(_, id)| id.clone())
+            });
+            match target {
+                Some(id) => {
+                    match self.backend.call(
+                        "characters_add_images",
+                        serde_json::json!({ "id": id, "paths": paths }),
+                    ) {
+                        Ok(_) => {
+                            self.vm.status = format!("Added {} dropped item(s) to the set", paths.len());
+                            self.vm.characters.loaded = false;
+                            self.vm.characters.selected = Some(id);
+                            self.vm.characters.detail = None;
+                            self.vm.characters_version += 1;
+                        }
+                        Err(error) => self.vm.status = crate::errors::error_text_of(&error),
+                    }
+                }
+                None => {
+                    self.vm.status =
+                        "Drop onto a name in the list to add images to it".to_string();
+                }
+            }
+            return;
+        }
         match crate::import::import_paths(self.backend.as_ref(), &self.access, &paths) {
             Ok(results) => {
                 self.vm.status = format!("Imported {} item(s)", results.len());
@@ -176,8 +210,9 @@ impl NativeApp {
                     Ok(assets) => {
                         self.vm.asset_count = assets.len();
                         self.vm.assets = assets;
-                        // Compose pickers reload on this signal.
+                        // Compose pickers and the Media grid reload on these signals.
                         self.vm.edits_version += 1;
+                        self.vm.media_reload += 1;
                     }
                     Err(error) => self.vm.status = crate::errors::error_text_of(&error),
                 }

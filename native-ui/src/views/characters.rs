@@ -87,6 +87,7 @@ fn draw_list(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, sink: Sink) {
     }
     let list = vm.characters.list.clone();
     let mut clicked: Option<String> = None;
+    let mut zones: Vec<(egui::Rect, String)> = Vec::new();
     egui::ScrollArea::vertical()
         .id_salt("characters-list")
         .auto_shrink([false, false])
@@ -120,11 +121,13 @@ fn draw_list(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, sink: Sink) {
                         ui.add(egui::Button::selectable(selected, job))
                     })
                     .inner;
+                zones.push((response.rect, id.clone()));
                 if response.clicked() {
                     clicked = Some(id);
                 }
             }
         });
+    vm.characters.drop_zones.extend(zones);
     if let Some(id) = clicked {
         vm.characters.selected = Some(id.clone());
         load_detail(sink, vm, &id);
@@ -170,6 +173,19 @@ fn draw_detail(
                 load_detail(sink, vm, &id);
             }
         }
+        if ui.button("Import folder…").clicked()
+            && let Some(folder) = crate::platform::dialogs::pick_import_folder()
+            && run(
+                sink,
+                vm,
+                "characters_add_images",
+                json!({ "id": id, "paths": [folder.to_string_lossy()] }),
+                "Folder imported",
+            )
+        {
+            refresh_list(sink, vm);
+            load_detail(sink, vm, &id);
+        }
         let confirm_id = egui::Id::new(("characters-delete", id.as_str()));
         let armed = ui.data(|data| data.get_temp::<bool>(confirm_id)).unwrap_or(false);
         if armed {
@@ -193,6 +209,10 @@ fn draw_detail(
             ui.data_mut(|data| data.insert_temp(confirm_id, true));
         }
     });
+    ui.label(
+        egui::RichText::new("Tip: drop image files or folders on a name, or on this panel, to add them.")
+            .color(theme.faint),
+    );
     ui.add_space(theme.space_xs);
 
     ui.label(egui::RichText::new("Name").color(theme.ink_2));
@@ -381,7 +401,13 @@ pub fn ui(
     if !vm.characters.loaded {
         vm.characters.loaded = true;
         refresh_list(sink, vm);
+        if let Some(id) = vm.characters.selected.clone()
+            && vm.characters.detail.is_none()
+        {
+            load_detail(sink, vm, &id);
+        }
     }
+    vm.characters.drop_zones.clear();
     ui.heading("Characters");
     ui.label(
         egui::RichText::new(
@@ -397,6 +423,10 @@ pub fn ui(
     }
     ui.add_space(theme.space_xs);
     let height = (ui.available_height() - 6.0).max(200.0);
+    let detail_area = egui::Rect::from_min_size(
+        egui::pos2(ui.cursor().min.x + 270.0, ui.cursor().min.y),
+        egui::vec2((ui.available_width() - 270.0).max(100.0), height),
+    );
     ui.horizontal_top(|ui| {
         ui.allocate_ui_with_layout(
             egui::vec2(260.0, height),
@@ -416,5 +446,8 @@ pub fn ui(
                 draw_detail(ui, vm, theme, sink, thumbnails);
             },
         );
+        if let Some(selected) = vm.characters.selected.clone() {
+            vm.characters.drop_zones.push((detail_area, selected));
+        }
     });
 }

@@ -196,6 +196,8 @@ pub struct CharactersState {
     pub description_draft: String,
     /// Unsaved per-image edits: (name, role, description, default).
     pub drafts: std::collections::HashMap<String, (String, String, String, bool)>,
+    /// Screen areas (and character ids) that accept dropped files this frame.
+    pub drop_zones: Vec<(egui::Rect, String)>,
     pub notice: Option<String>,
     pub error: Option<String>,
 }

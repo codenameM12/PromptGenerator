@@ -242,6 +242,17 @@ pub fn ui(
         }
 
         ui.heading("Media");
+        if vm.drop_hint {
+            ui.label(
+                egui::RichText::new("Drop files or folders here to import them")
+                    .color(theme.accent),
+            );
+        } else {
+            ui.label(
+                egui::RichText::new("Tip: drag files or folders onto the window to import.")
+                    .color(theme.faint),
+            );
+        }
         ui.add_space(theme.space_xs);
         ui.horizontal(|ui| {
             if ui.button("Add files…").clicked()

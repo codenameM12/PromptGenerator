@@ -107,3 +107,8 @@ the word "character"**: only the user's own names and descriptions are sent.
 | Compose: add set, shuffle, remove, send toggles, indicator, Describe buttons, slot blocking, neutral reference notes | Built, unit-tested |
 | Library: filter by set | Built |
 | Compose no longer auto-describes or demands descriptions | Built (the parity corpus passes) |
+
+### Drops and folders (Characters, Media)
+- Characters: "Import images…" and "Import folder…"; folders are scanned recursively for image files (max 500).
+- Dropping files or folders on a name in the Characters list (or on the open panel) adds them to that one. Elsewhere on that tab nothing is imported and the footer says where to drop.
+- Media: drops import as before, now with a visible hint, and the grid reloads after a drop.
