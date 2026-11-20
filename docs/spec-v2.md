@@ -112,3 +112,7 @@ the word "character"**: only the user's own names and descriptions are sent.
 - Characters: "Import images…" and "Import folder…"; folders are scanned recursively for image files (max 500).
 - Dropping files or folders on a name in the Characters list (or on the open panel) adds them to that one. Elsewhere on that tab nothing is imported and the footer says where to drop.
 - Media: drops import as before, now with a visible hint, and the grid reloads after a drop.
+
+### Runtime: GPU
+- Keep warm stays a setting and defaults to None.
+- Compose has a "Free GPU" button (force-unloads every model LM Studio holds, including ones loaded outside the app). It is disabled while a run is active.

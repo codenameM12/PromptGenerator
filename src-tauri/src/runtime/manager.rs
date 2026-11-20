@@ -341,6 +341,15 @@ impl ModelManager {
             ));
         }
 
+        // Free everything LM Studio holds, including models loaded by hand or
+        // before this app started, not only the ones this session loaded.
+        if let Ok(models) = self.backend.list_models().await
+            && let Ok(mut state) = self.state.lock()
+        {
+            for entry in models.into_iter().filter(|entry| entry.loaded) {
+                state.loaded.insert(entry.id);
+            }
+        }
         let loaded: Vec<String> = self
             .state
             .lock()
@@ -809,6 +818,15 @@ mod tests {
             drop(manager.clone().acquire(ModelRole::Composer).await.expect("composer"));
         }
         assert_eq!(load_count(&backend, "lfm3-vl-2b"), 2);
+    }
+
+    #[tokio::test]
+    async fn unload_all_also_frees_models_loaded_outside_the_app() {
+        let backend = Arc::new(FakeBackend::new());
+        backend.loaded.lock().expect("loaded").insert("loaded-by-hand".into());
+        let manager = manager(backend.clone(), KeepWarm::None, 2);
+        manager.unload_all(true).await.expect("unload all");
+        assert!(backend.loaded().is_empty());
     }
 
     #[tokio::test]

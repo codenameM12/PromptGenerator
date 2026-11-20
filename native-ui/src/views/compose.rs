@@ -155,6 +155,9 @@ pub struct ComposeFlow {
     /// Set when media was added, so the shell reloads the Media tab.
     #[serde(default)]
     pub media_dirty: bool,
+    /// Short confirmation shown under the buttons (for example after Free GPU).
+    #[serde(default)]
+    pub notice: Option<String>,
 }
 
 impl Default for ComposeFlow {
@@ -187,6 +190,7 @@ impl Default for ComposeFlow {
             authored: std::collections::HashMap::new(),
             reference_slots: None,
             media_dirty: false,
+            notice: None,
             seen_characters: None,
             field_values: std::collections::HashMap::new(),
             descriptions: Vec::new(),
@@ -587,6 +591,7 @@ pub enum ComposeAction {
     DescribeAsset {
         asset_id: String,
     },
+    FreeGpu,
     Describe {
         force: bool,
     },
@@ -701,6 +706,16 @@ pub fn dispatch(flow: &mut ComposeFlow, action: ComposeAction, call: CallSink) {
         ComposeAction::Describe { force } => run_describe_flow(flow, force, call),
         ComposeAction::DescribeAsset { asset_id } => {
             run_describe_filtered(flow, true, Some(asset_id.as_str()), call)
+        }
+        ComposeAction::FreeGpu => {
+            flow.error = None;
+            match call("models_unload_all", json!({ "force": true })) {
+                Ok(_) => flow.notice = Some("Models unloaded. The GPU is free.".into()),
+                Err(error) => {
+                    flow.notice = None;
+                    flow.error = Some(error);
+                }
+            }
         }
         ComposeAction::AddSet { id } => add_set(flow, &id, None, call),
         ComposeAction::ShuffleSet { id } => {
@@ -1256,6 +1271,7 @@ fn run_compose_flow(
     flow.busy = true;
     flow.busy_stage = Some("Composing prompt".into());
     flow.error = None;
+    flow.notice = None;
     flow.results.clear();
     flow.copied = None;
 
@@ -1648,6 +1664,9 @@ pub fn ui(
                     }
                     if let Some(error) = &flow.error {
                         ui.label(egui::RichText::new(error).color(theme.danger));
+                    }
+                    if let Some(notice) = &flow.notice {
+                        ui.label(egui::RichText::new(notice).color(theme.success));
                     }
                 });
 
@@ -2639,6 +2658,13 @@ fn draw_actions(
             .clicked()
         {
             dispatch(flow, ComposeAction::Cancel, sink);
+        }
+        if ui
+            .add_enabled(!busy, egui::Button::new("Free GPU"))
+            .on_hover_text("Unload every model from LM Studio so the GPU memory is free")
+            .clicked()
+        {
+            dispatch(flow, ComposeAction::FreeGpu, sink);
         }
         let empty = flow.results.is_empty()
             && flow.brief.trim().is_empty()
