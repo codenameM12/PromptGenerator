@@ -2,6 +2,7 @@
 //! products). Images are copied into the workspace, never linked to the
 //! source file. See docs/spec-v2.md.
 
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -273,6 +274,114 @@ pub fn update_image(
     Ok(())
 }
 
+fn name_words(text: &str) -> impl Iterator<Item = String> + '_ {
+    text.split(|ch: char| !ch.is_alphanumeric() && ch != '\'' && ch != '-')
+        .filter(|word| !word.is_empty())
+        .map(str::to_lowercase)
+}
+
+fn file_safe(title: &str) -> String {
+    title
+        .chars()
+        .filter(|ch| ch.is_alphanumeric() || *ch == ' ' || *ch == '-')
+        .collect::<String>()
+        .trim()
+        .to_string()
+}
+
+/// Names an image after its description: a short title that avoids every word
+/// already used by the other images of the same set. Renames the app's own
+/// copy of the file (never the original) and keeps Media items that point at
+/// it working. Returns `{ renamed: false }` when there is no description.
+pub fn autoname_image(
+    connection: &Connection,
+    data_dir: &Path,
+    image_id: &str,
+    titler: &dyn Fn(&str, &HashSet<String>) -> String,
+) -> Result<Value, CommandError> {
+    let row = connection
+        .query_row(
+            "SELECT character_id, description, stored_path FROM character_images WHERE id = ?1",
+            params![image_id],
+            |row| {
+                Ok((
+                    row.get::<_, String>(0)?,
+                    row.get::<_, String>(1)?,
+                    row.get::<_, String>(2)?,
+                ))
+            },
+        )
+        .optional()?
+        .ok_or_else(|| CommandError::not_found("Image not found"))?;
+    let (character_id, description, stored) = row;
+    if description.trim().is_empty() {
+        return Ok(json!({ "renamed": false }));
+    }
+    let used: HashSet<String> = {
+        let mut statement = connection.prepare(
+            "SELECT file_name FROM character_images WHERE character_id = ?1 AND id != ?2",
+        )?;
+        let names = statement.query_map(params![character_id, image_id], |row| {
+            row.get::<_, String>(0)
+        })?;
+        let mut words = HashSet::new();
+        for name in names {
+            words.extend(name_words(&name?));
+        }
+        words
+    };
+    let title = file_safe(&titler(description.trim(), &used));
+    if title.is_empty() {
+        return Ok(json!({ "renamed": false }));
+    }
+
+    let old_full = resolve(data_dir, &stored);
+    let extension = old_full
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("png")
+        .to_string();
+    let folder = old_full
+        .parent()
+        .map(Path::to_path_buf)
+        .unwrap_or_else(|| characters_dir(data_dir).join(&character_id));
+    let mut candidate = folder.join(format!("{title}.{extension}"));
+    let mut suffix = 2;
+    while candidate.exists() && candidate != old_full {
+        candidate = folder.join(format!("{title} {suffix}.{extension}"));
+        suffix += 1;
+    }
+    if candidate != old_full {
+        fs::rename(&old_full, &candidate).map_err(|error| CommandError::from_io(&error))?;
+    }
+    let relative = candidate
+        .strip_prefix(data_dir)
+        .map(|path| path.to_string_lossy().replace('\\', "/"))
+        .unwrap_or_else(|_| candidate.to_string_lossy().to_string());
+    connection.execute(
+        "UPDATE character_images SET file_name = ?2, stored_path = ?3 WHERE id = ?1",
+        params![image_id, title, relative],
+    )?;
+    // Media items imported from this copy must follow the file.
+    let old_text = old_full.to_string_lossy().to_string();
+    let new_text = candidate.to_string_lossy().to_string();
+    for (from, to) in [
+        (old_text.clone(), new_text.clone()),
+        (old_text.replace('/', "\\"), new_text.replace('/', "\\")),
+        (old_text.replace('\\', "/"), new_text.replace('\\', "/")),
+    ] {
+        connection.execute(
+            "UPDATE assets SET source_path = ?2, display_name = ?3 WHERE source_path = ?1",
+            params![from, to, format!("{title}.{extension}")],
+        )?;
+    }
+    Ok(json!({
+        "renamed": true,
+        "fileName": title,
+        "path": new_text,
+    }))
+}
+
 pub fn remove_image(
     connection: &Connection,
     data_dir: &Path,
@@ -491,6 +600,60 @@ mod tests {
         delete(connection, &data, &id).expect("delete");
         assert!(used.exists(), "a file Media still uses must stay");
         assert!(!unused.exists());
+    }
+
+    #[test]
+    fn autoname_renames_the_copy_and_avoids_words_used_by_siblings() {
+        let database = database();
+        let connection = database.connection();
+        let data = temp_dir("data5");
+        let source = temp_dir("src5");
+        let id = create(connection, "Mira").unwrap()["id"].as_str().unwrap().to_string();
+        let got = add_images(connection, &data, &id, &sample_files(&source, 2)).unwrap();
+        let first = got["images"][0]["id"].as_str().unwrap().to_string();
+        let second = got["images"][1]["id"].as_str().unwrap().to_string();
+        let original = source.join("shot0.png");
+        update_image(connection, &first, "shot0", "", "red coat smiling woman", false).unwrap();
+        update_image(connection, &second, "shot1", "", "red coat walking street", false).unwrap();
+        // A Media item imported from the first copy.
+        let first_path = resolve(&data, got["images"][0]["path"].as_str().unwrap());
+        connection
+            .execute(
+                "INSERT INTO assets (id, hash, kind, source_path, display_name, created_at)
+                 VALUES ('a1', 'h1', 'image', ?1, 'x', '2026-01-01T00:00:00Z')",
+                params![first_path.to_string_lossy()],
+            )
+            .unwrap();
+
+        // Stand-in titler: the first content words not excluded.
+        let titler = |text: &str, exclude: &HashSet<String>| {
+            text.split_whitespace()
+                .filter(|word| !exclude.contains(&word.to_lowercase()))
+                .take(3)
+                .collect::<Vec<_>>()
+                .join(" ")
+        };
+        let one = autoname_image(connection, &data, &first, &titler).unwrap();
+        assert_eq!(one["fileName"], "red coat smiling");
+        let renamed = PathBuf::from(one["path"].as_str().unwrap());
+        assert!(renamed.exists());
+        assert!(!first_path.exists());
+        assert!(original.exists(), "the original is never touched");
+        let asset_path: String = connection
+            .query_row("SELECT source_path FROM assets WHERE id = 'a1'", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(asset_path, renamed.to_string_lossy());
+
+        // The sibling cannot reuse "red" or "coat" or "smiling".
+        let two = autoname_image(connection, &data, &second, &titler).unwrap();
+        let name = two["fileName"].as_str().unwrap().to_lowercase();
+        assert!(!name.contains("red") && !name.contains("coat"), "{name}");
+        assert_eq!(name, "walking street");
+        // No description: nothing happens.
+        let third = create(connection, "Empty").unwrap()["id"].as_str().unwrap().to_string();
+        let got = add_images(connection, &data, &third, &sample_files(&source, 1)).unwrap();
+        let none = autoname_image(connection, &data, got["images"][0]["id"].as_str().unwrap(), &titler).unwrap();
+        assert_eq!(none["renamed"], false);
     }
 
     #[test]

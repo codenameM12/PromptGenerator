@@ -161,7 +161,6 @@ impl NativeState {
         let _ = std::thread::Builder::new()
             .name("title-worker".into())
             .spawn(move || {
-                let mut model = crate::title::TitleModel::load().ok();
                 loop {
                     let pending = state
                         .database
@@ -174,10 +173,8 @@ impl NativeState {
                         continue;
                     }
                     for (id, prompt) in pending {
-                        let (title, source) = match model.as_mut() {
-                            Some(model) => (model.title(&prompt), "model"),
-                            None => (crate::title::fallback_title(&prompt), "fallback"),
-                        };
+                        let (title, source) =
+                            crate::title::shared_title(&prompt, &Default::default());
                         if let Ok(guard) = state.database.lock() {
                             let _ = titles::set(guard.connection(), &id, &title, source);
                         }
@@ -628,6 +625,22 @@ impl NativeState {
                 })
             }
             "characters_load" => self.characters_load(&args),
+            "characters_image_autoname" => {
+                let image_id: String = arg(&args, "imageId")?;
+                let data_dir = self.paths.data_dir.clone();
+                let renamed = self.db(|connection| {
+                    crate::characters::autoname_image(
+                        connection,
+                        &data_dir,
+                        &image_id,
+                        &|text, exclude| crate::title::shared_title(text, exclude).0,
+                    )
+                })?;
+                if let Some(path) = renamed.get("path").and_then(Value::as_str) {
+                    self.access.allow_path(Path::new(path));
+                }
+                Ok(renamed)
+            }
             "characters_link_generations" => {
                 let characters: Vec<String> = arg(&args, "characterIds")?;
                 let generations: Vec<String> = arg(&args, "generationIds")?;

@@ -56,6 +56,23 @@ fn run(sink: Sink, vm: &mut ViewModel, command: &str, args: Value, notice: &str)
     }
 }
 
+/// Names the image after its description (short title, words not used by the
+/// set's other images) and renames the app's own copy of the file.
+fn autoname(sink: Sink, vm: &mut ViewModel, image_id: &str) {
+    match sink("characters_image_autoname", json!({ "imageId": image_id })) {
+        Ok(value) => {
+            if value.get("renamed").and_then(Value::as_bool) == Some(true) {
+                vm.characters.notice = Some(format!(
+                    "Renamed to \"{}\"",
+                    text_of(&value, "fileName")
+                ));
+                vm.characters.error = None;
+            }
+        }
+        Err(error) => vm.characters.error = Some(error),
+    }
+}
+
 fn draw_list(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, sink: Sink) {
     ui.horizontal(|ui| {
         let response = ui.add(
@@ -271,6 +288,7 @@ fn draw_detail(
         .unwrap_or_default();
     let mut remove: Option<String> = None;
     let mut save: Option<String> = None;
+    let mut rename_now: Option<String> = None;
     egui::ScrollArea::vertical()
         .id_salt("characters-images")
         .auto_shrink([false, false])
@@ -358,6 +376,16 @@ fn draw_detail(
                                     if ui.add_enabled(changed, egui::Button::new("Save")).clicked() {
                                         save = Some(image_id.clone());
                                     }
+                                    if ui
+                                        .add_enabled(
+                                            !changed && !draft.2.trim().is_empty(),
+                                            egui::Button::new("Name"),
+                                        )
+                                        .on_hover_text("Name this image (and its file) from its description")
+                                        .clicked()
+                                    {
+                                        rename_now = Some(image_id.clone());
+                                    }
                                     if crate::widgets::trash_button(ui, theme, &image_id, "Remove image").clicked() {
                                         remove = Some(image_id.clone());
                                     }
@@ -385,6 +413,24 @@ fn draw_detail(
             "Image saved",
         )
     {
+        // A newly written description names the file after itself, unless the
+        // name was typed by hand in this same save.
+        let before = images
+            .iter()
+            .find(|image| text_of(image, "id") == image_id)
+            .cloned()
+            .unwrap_or(Value::Null);
+        let description_changed =
+            draft.2.trim() != text_of(&before, "description").trim() && !draft.2.trim().is_empty();
+        let name_typed = draft.0.trim() != text_of(&before, "fileName").trim();
+        if description_changed && !name_typed {
+            autoname(sink, vm, &image_id);
+        }
+        refresh_list(sink, vm);
+        load_detail(sink, vm, &id);
+    }
+    if let Some(image_id) = rename_now {
+        autoname(sink, vm, &image_id);
         refresh_list(sink, vm);
         load_detail(sink, vm, &id);
     }

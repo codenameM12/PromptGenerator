@@ -2,7 +2,9 @@
 //! embedded with all-MiniLM-L6-v2 (ONNX, int8) and ranked by cosine similarity
 //! to the whole prompt. Without the model files a plain heuristic is used.
 
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
+use std::sync::{Mutex, OnceLock};
 
 use ort::session::{Session, builder::GraphOptimizationLevel};
 use ort::value::Tensor;
@@ -147,15 +149,22 @@ impl TitleModel {
 
     /// A 4-5 word title for `text`. Falls back to the heuristic on any error.
     pub fn title(&mut self, text: &str) -> String {
-        self.try_title(text)
-            .unwrap_or_else(|_| fallback_title(text))
+        self.title_excluding(text, &HashSet::new())
     }
 
-    fn try_title(&mut self, text: &str) -> Result<String, String> {
+    /// Like `title`, but never uses a word in `exclude` (lower-case), so a set
+    /// of titles stays distinct.
+    pub fn title_excluding(&mut self, text: &str, exclude: &HashSet<String>) -> String {
+        self.try_title(text, exclude)
+            .unwrap_or_else(|_| fallback_title_excluding(text, exclude))
+    }
+
+    fn try_title(&mut self, text: &str, exclude: &HashSet<String>) -> Result<String, String> {
         let words = words_of(text);
-        let candidates = candidates(&words);
+        let mut candidates = candidates(&words);
+        candidates.retain(|candidate| !candidate.words.iter().any(|word| exclude.contains(word)));
         if candidates.len() < 2 {
-            return Ok(fallback_title(text));
+            return Ok(fallback_title_excluding(text, exclude));
         }
         // Separate batches: the prompt is long, the phrases are short, and a
         // shared batch would pad every phrase to the prompt's length.
@@ -301,9 +310,13 @@ fn title_case(words: &[String]) -> String {
 
 /// First content words of the prompt; used when the model is unavailable.
 pub fn fallback_title(text: &str) -> String {
+    fallback_title_excluding(text, &HashSet::new())
+}
+
+pub fn fallback_title_excluding(text: &str, exclude: &HashSet<String>) -> String {
     let picked: Vec<String> = words_of(text)
         .into_iter()
-        .filter(|word| is_content(word))
+        .filter(|word| is_content(word) && !exclude.contains(word))
         .take(TITLE_WORDS)
         .collect();
     if picked.is_empty() {
@@ -313,6 +326,21 @@ pub fn fallback_title(text: &str) -> String {
             .join(" ")
     } else {
         title_case(&picked)
+    }
+}
+
+static SHARED: OnceLock<Mutex<Option<TitleModel>>> = OnceLock::new();
+
+/// One process-wide model, loaded on first use, shared by the Library title
+/// worker and the Characters renaming. Returns the title and its source.
+pub fn shared_title(text: &str, exclude: &HashSet<String>) -> (String, &'static str) {
+    let cell = SHARED.get_or_init(|| Mutex::new(TitleModel::load().ok()));
+    let Ok(mut guard) = cell.lock() else {
+        return (fallback_title_excluding(text, exclude), "fallback");
+    };
+    match guard.as_mut() {
+        Some(model) => (model.title_excluding(text, exclude), "model"),
+        None => (fallback_title_excluding(text, exclude), "fallback"),
     }
 }
 
@@ -331,6 +359,22 @@ mod tests {
             "Cinematic Portrait Old Fisherman Golden"
         );
         assert_eq!(fallback_title("the and of"), "the and of");
+    }
+
+    #[test]
+    fn excluded_words_never_appear() {
+        let exclude: HashSet<String> = ["fisherman", "wooden"].iter().map(|w| w.to_string()).collect();
+        let text = "An old fisherman on a wooden pier mending a net in warm light";
+        let plain = fallback_title(text);
+        assert!(plain.to_lowercase().contains("fisherman"));
+        let title = fallback_title_excluding(text, &exclude);
+        assert!(!title.to_lowercase().contains("fisherman"), "{title}");
+        assert!(!title.to_lowercase().contains("wooden"), "{title}");
+        if let Some(mut model) = model() {
+            let title = model.title_excluding(text, &exclude);
+            assert!(!title.to_lowercase().contains("fisherman"), "{title}");
+            assert!(!title.to_lowercase().contains("wooden"), "{title}");
+        }
     }
 
     #[test]

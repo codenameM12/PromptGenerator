@@ -116,3 +116,7 @@ the word "character"**: only the user's own names and descriptions are sent.
 ### Runtime: GPU
 - Keep warm stays a setting and defaults to None.
 - Compose has a "Free GPU" button (force-unloads every model LM Studio holds, including ones loaded outside the app). It is disabled while a run is active.
+
+### Naming images from their descriptions (Characters)
+- Saving a new description names the image: the Library title model picks 4-5 words, never using a word already in another image name of the same set. The app copy of the file is renamed (the original is never touched) and Media items pointing at it follow.
+- A "Name" button does the same on demand. A name typed by hand in the same save is kept.
