@@ -13,7 +13,9 @@ use crate::single_instance::SingleInstance;
 use crate::theme::Theme;
 use crate::thumbnails::ThumbnailCache;
 use crate::view_model::{ViewId, ViewModel};
-use crate::views::{compose, datasets, jobs, library, media, presets, rail, runtime};
+use crate::views::{
+    characters, compose, datasets, jobs, library, media, presets, rail, runtime,
+};
 
 pub struct NativeApp {
     pub vm: ViewModel,
@@ -311,6 +313,13 @@ impl eframe::App for NativeApp {
                 ViewId::Runtime => {
                     runtime::ui(central, &mut self.vm, &self.theme, self.backend.as_ref())
                 }
+                ViewId::Characters => characters::ui(
+                    central,
+                    &mut self.vm,
+                    &self.theme,
+                    self.backend.as_ref(),
+                    &mut self.thumbnails,
+                ),
                 ViewId::Datasets => {
                     datasets::ui(central, &mut self.vm, &self.theme, self.backend.as_ref())
                 }

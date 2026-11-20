@@ -561,6 +561,65 @@ impl NativeState {
                 let request: crate::commands::library::CompareRequest = parse(&request)?;
                 self.library_compare(&request)
             }
+            "characters_list" => self.db(crate::characters::list),
+            "characters_get" => {
+                let id: String = arg(&args, "id")?;
+                self.db(|connection| crate::characters::get(connection, &id))
+            }
+            "characters_create" => {
+                let name: String = arg(&args, "name")?;
+                self.db(|connection| crate::characters::create(connection, &name))
+            }
+            "characters_update" => {
+                let id: String = arg(&args, "id")?;
+                let name: String = arg(&args, "name")?;
+                let description: String = arg(&args, "description")?;
+                self.db(|connection| crate::characters::update(connection, &id, &name, &description))
+            }
+            "characters_delete" => {
+                let id: String = arg(&args, "id")?;
+                let data_dir = self.paths.data_dir.clone();
+                self.db(|connection| crate::characters::delete(connection, &data_dir, &id))
+            }
+            "characters_add_images" => {
+                let id: String = arg(&args, "id")?;
+                let paths: Vec<String> = arg(&args, "paths")?;
+                let data_dir = self.paths.data_dir.clone();
+                self.db(|connection| crate::characters::add_images(connection, &data_dir, &id, &paths))
+            }
+            "characters_image_update" => {
+                let image_id: String = arg(&args, "imageId")?;
+                let file_name: String = arg(&args, "fileName")?;
+                let role: String = arg(&args, "role")?;
+                let description: String = arg(&args, "description")?;
+                let is_default: bool = arg(&args, "isDefault")?;
+                self.db(|connection| {
+                    crate::characters::update_image(
+                        connection,
+                        &image_id,
+                        &file_name,
+                        &role,
+                        &description,
+                        is_default,
+                    )
+                })
+            }
+            "characters_image_remove" => {
+                let image_id: String = arg(&args, "imageId")?;
+                self.db(|connection| crate::characters::remove_image(connection, &image_id))
+            }
+            "characters_load" => self.characters_load(&args),
+            "characters_link_generations" => {
+                let characters: Vec<String> = arg(&args, "characterIds")?;
+                let generations: Vec<String> = arg(&args, "generationIds")?;
+                self.db(|connection| {
+                    crate::characters::link_generations(connection, &characters, &generations)
+                })
+            }
+            "characters_generation_ids" => {
+                let id: String = arg(&args, "id")?;
+                self.db(|connection| crate::characters::generation_ids(connection, &id))
+            }
             "library_render_meta_get" => {
                 let id: String = arg(&args, "id")?;
                 self.db(|connection| crate::db::repository::render_meta::get(connection, &id))
@@ -1874,6 +1933,58 @@ impl NativeState {
             generations,
             assets,
         })
+    }
+
+    /// Picks a set's images (requested, defaults, else one random), registers
+    /// them as normal media (deduplicated by hash) and returns them with asset ids.
+    fn characters_load(&self, args: &Value) -> Result<Value, CommandError> {
+        let id: String = arg(args, "id")?;
+        let requested: Vec<String> = args
+            .get("imageIds")
+            .and_then(|value| serde_json::from_value(value.clone()).ok())
+            .unwrap_or_default();
+        let avoid: Option<String> = args
+            .get("avoid")
+            .and_then(Value::as_str)
+            .map(str::to_string);
+        let (head, picked) = {
+            let guard = self
+                .database
+                .lock()
+                .map_err(|_| CommandError::internal("Database lock is poisoned"))?;
+            let connection = guard.connection();
+            let head = crate::characters::get(connection, &id)?;
+            let picked =
+                crate::characters::pick_images(connection, &id, &requested, avoid.as_deref())?;
+            (head, picked)
+        };
+        let paths: Vec<String> = picked
+            .iter()
+            .filter_map(|image| image["path"].as_str().map(str::to_string))
+            .collect();
+        let imported = if paths.is_empty() {
+            Vec::new()
+        } else {
+            self.import_paths(&paths)?
+        };
+        let mut loaded = Vec::new();
+        for mut image in picked {
+            let path = image["path"].as_str().unwrap_or_default().to_string();
+            let asset = imported
+                .iter()
+                .find(|result| result.path == path)
+                .and_then(|result| result.asset_id.clone());
+            if let Some(asset_id) = asset {
+                image["assetId"] = json!(asset_id);
+                loaded.push(image);
+            }
+        }
+        Ok(json!({
+            "id": head["id"],
+            "name": head["name"],
+            "description": head["description"],
+            "images": loaded,
+        }))
     }
 
     fn library_assets_trash(&self) -> Result<Value, CommandError> {

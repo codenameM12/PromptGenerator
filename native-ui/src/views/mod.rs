@@ -1,3 +1,4 @@
+pub mod characters;
 pub mod compose;
 pub mod datasets;
 pub mod editor;

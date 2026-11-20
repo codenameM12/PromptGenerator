@@ -1,4 +1,5 @@
 pub mod builtin_presets;
+pub mod characters;
 pub mod commands;
 pub mod dataset;
 pub mod db;

@@ -54,3 +54,56 @@ licence and copyright (2026 DareDev256). The picker is a Compose panel.
 Seed lock (R9): a value in the Compose Seed field fixes the base seed, so a variant set reproduces; blank picks a random one. Seed and model are stored per result.
 
 Verified on screen by the user (2026-11-20): term chips, product forms, render details. Not yet exercised against a live model: the form inputs, term picker and render-details form were compiled and unit-tested only.
+
+## Characters tab (named sets of reference assets)
+
+Agreed 2026-11-21 after a design interview. The tab is labelled "Characters" but
+holds any named subject (a person, a product). **The composer prompt never uses
+the word "character"**: only the user's own names and descriptions are sent.
+
+### Characters tab
+- Create, rename, delete (confirmation; images go with it).
+- Fields: name, overall description.
+- Images are imported as copies into the app workspace
+  (`<data>/characters/<id>/`), not linked to the source file. Each image has a
+  display name, a role label (front, profile, expression, ...), an optional
+  description, and a "default" flag.
+- A per-character link opens Library filtered to generations that used it.
+
+### Using one in Compose
+- "Add" picker at the top of the media panel.
+- Adding loads the default images as reference thumbnails (weights editable) and
+  registers them as normal Media items (deduplicated by file hash), so temporary
+  crop/mask edits work and never touch the stored copy.
+- No defaults ticked: one random image is picked once when added; the user can
+  swap or shuffle it; Regenerate keeps it.
+- Several can be added. If loaded images exceed the preset's reference slots,
+  Compose refuses to run until the user unticks enough.
+- Removing one takes its images out of the reference list only; they stay in
+  Media with their edits.
+
+### Descriptions (all media, not only these)
+- A description is optional and is never generated automatically. Describe is a
+  per-image button plus "Describe missing". Describe mode is unchanged.
+- Each image has its own "send description" toggle; a small indicator on the
+  Compose thumbnail shows whether a description exists.
+- Each added set has an overall "send description" toggle. Compose shows the
+  overall and per-image descriptions.
+- A temporary edit keeps an authored description and shows an "edited" marker.
+- Wording to the composer is neutral: `<imageN>` tags, the user's names, role
+  labels and descriptions under a "Reference notes" heading.
+
+### Records
+- `characters`, `character_images` tables (migration 9);
+  `generation_characters(generation_id, character_id)` links results so Library
+  can filter by set.
+
+### Build state (Characters)
+
+| Part | State |
+|---|---|
+| Tables, import copies, defaults/random pick, link rows (migration 9) | Built, unit-tested |
+| Characters tab (create/rename/delete, import, roles, descriptions, defaults, Library link) | Built, compiled and parity-tested; not yet seen on screen |
+| Compose: add set, shuffle, remove, send toggles, indicator, Describe buttons, slot blocking, neutral reference notes | Built, unit-tested |
+| Library: filter by set | Built |
+| Compose no longer auto-describes or demands descriptions | Built (the parity corpus passes) |

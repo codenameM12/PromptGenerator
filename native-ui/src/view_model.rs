@@ -14,17 +14,19 @@ pub enum ViewId {
     Jobs,
     Presets,
     Runtime,
+    Characters,
     Datasets,
 }
 
 impl ViewId {
-    pub const ALL: [ViewId; 7] = [
+    pub const ALL: [ViewId; 8] = [
         ViewId::Compose,
         ViewId::Media,
         ViewId::Library,
         ViewId::Jobs,
         ViewId::Presets,
         ViewId::Runtime,
+        ViewId::Characters,
         ViewId::Datasets,
     ];
 
@@ -36,6 +38,7 @@ impl ViewId {
             ViewId::Jobs => "Jobs",
             ViewId::Presets => "Presets",
             ViewId::Runtime => "Runtime",
+            ViewId::Characters => "Characters",
             ViewId::Datasets => "Datasets",
         }
     }
@@ -115,6 +118,10 @@ pub struct LibraryState {
     pub tag_filter: String,
     pub sort: String,
     pub trash_only: bool,
+    /// Only generations that used this character (id); empty = no filter.
+    pub character_filter: String,
+    /// Generation ids that used `character_filter` (refreshed with the list).
+    pub character_ids: Vec<String>,
     /// Rows ticked for a bulk action, and the anchor for shift-range ticking.
     pub checked: std::collections::HashSet<String>,
     pub check_anchor: Option<String>,
@@ -178,6 +185,22 @@ pub struct RuntimeState {
 }
 
 #[derive(Debug, Clone, Default)]
+pub struct CharactersState {
+    pub visited: bool,
+    pub loaded: bool,
+    pub list: Vec<Value>,
+    pub selected: Option<String>,
+    pub detail: Option<Value>,
+    pub new_name: String,
+    pub name_draft: String,
+    pub description_draft: String,
+    /// Unsaved per-image edits: (name, role, description, default).
+    pub drafts: std::collections::HashMap<String, (String, String, String, bool)>,
+    pub notice: Option<String>,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, Default)]
 pub struct DatasetsState {
     pub source_path: String,
     pub mapping_profile: String,
@@ -203,6 +226,7 @@ pub struct ViewModel {
     pub presets: PresetsState,
     pub runtime: RuntimeState,
     pub datasets: DatasetsState,
+    pub characters: CharactersState,
     pub assets: Vec<Asset>,
     pub status: String,
     pub modal_open: bool,
@@ -215,6 +239,11 @@ pub struct ViewModel {
     pub asset_count: usize,
     /// Bumped whenever an edit is applied so Compose reloads the edited images.
     pub edits_version: u64,
+    /// Bumped when media was added elsewhere (a set loaded in Compose) so the
+    /// Media tab reloads its grid.
+    pub media_reload: u64,
+    /// Bumped when the Characters list changes so Compose refreshes its picker.
+    pub characters_version: u64,
 }
 
 impl Default for ViewModel {
@@ -228,6 +257,7 @@ impl Default for ViewModel {
             presets: PresetsState::default(),
             runtime: RuntimeState::default(),
             datasets: DatasetsState::default(),
+            characters: CharactersState::default(),
             assets: Vec::new(),
             status: String::new(),
             modal_open: false,
@@ -235,6 +265,8 @@ impl Default for ViewModel {
             busy: false,
             drop_hint: false,
             asset_count: 0,
+            media_reload: 0,
+            characters_version: 0,
             edits_version: 0,
         }
     }
@@ -252,6 +284,7 @@ impl ViewModel {
             ViewId::Jobs => self.jobs.visited = true,
             ViewId::Presets => self.presets.visited = true,
             ViewId::Runtime => self.runtime.visited = true,
+            ViewId::Characters => self.characters.visited = true,
             ViewId::Datasets => self.datasets.visited = true,
         }
     }
@@ -264,6 +297,7 @@ impl ViewModel {
             ViewId::Jobs => self.jobs.visited,
             ViewId::Presets => self.presets.visited,
             ViewId::Runtime => self.runtime.visited,
+            ViewId::Characters => self.characters.visited,
             ViewId::Datasets => self.datasets.visited,
         }
     }
@@ -333,9 +367,9 @@ mod tests {
     }
 
     #[test]
-    fn all_seven_views_start_known_and_visit_tracked() {
+    fn all_eight_views_start_known_and_visit_tracked() {
         let mut vm = ViewModel::default();
-        assert_eq!(ViewId::ALL.len(), 7);
+        assert_eq!(ViewId::ALL.len(), 8);
         assert!(vm.compose.visited);
         for view in ViewId::ALL {
             vm.navigate(view);

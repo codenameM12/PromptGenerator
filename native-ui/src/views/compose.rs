@@ -55,6 +55,22 @@ pub struct DescriptionView {
     pub editing: bool,
 }
 
+/// A named set of images added from the Characters tab.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LoadedSet {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub send_description: bool,
+    /// Media asset ids of the images loaded from this set.
+    pub asset_ids: Vec<String>,
+    /// True when no defaults exist and one random image was picked.
+    pub random: bool,
+    /// The set's image id behind that random pick (avoided when shuffling).
+    pub last_image: Option<String>,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ComposeFlow {
@@ -115,6 +131,30 @@ pub struct ComposeFlow {
     pub mounted: bool,
     /// Last `ViewModel::edits_version` this flow loaded, to reload after edits.
     pub seen_edits: u64,
+    /// Sets added from the Characters tab.
+    #[serde(default)]
+    pub sets: Vec<LoadedSet>,
+    /// (id, name) of every set that can be added.
+    #[serde(default)]
+    pub available_sets: Vec<(String, String)>,
+    /// Assets whose description/role is NOT sent (the default is to send it).
+    #[serde(default)]
+    pub no_send: Vec<String>,
+    /// Role label of an asset loaded from a set.
+    #[serde(default)]
+    pub roles: std::collections::HashMap<String, String>,
+    /// Authored descriptions of set images; restored after a media edit.
+    #[serde(default)]
+    pub authored: std::collections::HashMap<String, String>,
+    /// Reference slots of the selected preset (0 or None: not limited).
+    #[serde(default)]
+    pub reference_slots: Option<i64>,
+    /// Last `ViewModel::characters_version` the set list was fetched for.
+    #[serde(default)]
+    pub seen_characters: Option<u64>,
+    /// Set when media was added, so the shell reloads the Media tab.
+    #[serde(default)]
+    pub media_dirty: bool,
 }
 
 impl Default for ComposeFlow {
@@ -140,6 +180,14 @@ impl Default for ComposeFlow {
             prompt_limit: None,
             brief_fields: Vec::new(),
             selected_terms: Vec::new(),
+            sets: Vec::new(),
+            available_sets: Vec::new(),
+            no_send: Vec::new(),
+            roles: std::collections::HashMap::new(),
+            authored: std::collections::HashMap::new(),
+            reference_slots: None,
+            media_dirty: false,
+            seen_characters: None,
             field_values: std::collections::HashMap::new(),
             descriptions: Vec::new(),
             refine_source_id: String::new(),
@@ -249,6 +297,55 @@ impl ComposeFlow {
             .find(|entry| entry.asset_id == asset_id)
     }
 
+    /// Overall descriptions of added sets, tied to the image tags they cover.
+    /// Wording is neutral on purpose: only the user's own names and text.
+    pub fn reference_notes(&self) -> String {
+        let lines: Vec<String> = self
+            .sets
+            .iter()
+            .filter(|set| set.send_description && !set.description.trim().is_empty())
+            .filter_map(|set| {
+                let tags: Vec<String> = set
+                    .asset_ids
+                    .iter()
+                    .filter_map(|asset_id| {
+                        self.selection
+                            .iter()
+                            .position(|reference| &reference.asset_id == asset_id)
+                            .map(|index| format!("<image{}>", index + 1))
+                    })
+                    .collect();
+                (!tags.is_empty()).then(|| {
+                    format!("{} ({}): {}", tags.join(", "), set.name, set.description.trim())
+                })
+            })
+            .collect();
+        if lines.is_empty() {
+            String::new()
+        } else {
+            format!("Reference notes:\n{}", lines.join("\n"))
+        }
+    }
+
+    /// The text sent for one image: its role label and description, unless the
+    /// user switched sending off for it.
+    pub fn sent_description(&self, asset_id: &str) -> Option<String> {
+        if self.no_send.iter().any(|id| id == asset_id) {
+            return None;
+        }
+        let role = self.roles.get(asset_id).map(|text| text.trim()).unwrap_or("");
+        let text = self
+            .description(asset_id)
+            .map(|entry| entry.draft.trim())
+            .unwrap_or("");
+        match (role.is_empty(), text.is_empty()) {
+            (true, true) => None,
+            (false, true) => Some(role.to_string()),
+            (true, false) => Some(text.to_string()),
+            (false, false) => Some(format!("{role}: {text}")),
+        }
+    }
+
     /// The brief as sent to the composer: the typed brief plus the chosen terms.
     pub fn effective_brief(&self) -> String {
         let mut brief = self.brief.trim().to_string();
@@ -258,6 +355,13 @@ impl ComposeFlow {
             }
             brief.push_str("Style terms: ");
             brief.push_str(&self.selected_terms.join(", "));
+        }
+        let notes = self.reference_notes();
+        if !notes.is_empty() {
+            if !brief.is_empty() {
+                brief.push_str("\n\n");
+            }
+            brief.push_str(&notes);
         }
         brief
     }
@@ -463,6 +567,26 @@ pub enum ComposeAction {
     },
     ClearSelection,
     SelectAll,
+    AddSet {
+        id: String,
+    },
+    RemoveSet {
+        id: String,
+    },
+    ShuffleSet {
+        id: String,
+    },
+    SetSetDescription {
+        id: String,
+        value: bool,
+    },
+    SetAssetDescription {
+        asset_id: String,
+        value: bool,
+    },
+    DescribeAsset {
+        asset_id: String,
+    },
     Describe {
         force: bool,
     },
@@ -575,6 +699,37 @@ pub fn dispatch(flow: &mut ComposeFlow, action: ComposeAction, call: CallSink) {
                 .collect();
         }
         ComposeAction::Describe { force } => run_describe_flow(flow, force, call),
+        ComposeAction::DescribeAsset { asset_id } => {
+            run_describe_filtered(flow, true, Some(asset_id.as_str()), call)
+        }
+        ComposeAction::AddSet { id } => add_set(flow, &id, None, call),
+        ComposeAction::ShuffleSet { id } => {
+            let avoid = flow
+                .sets
+                .iter()
+                .find(|set| set.id == id)
+                .and_then(|set| set.last_image.clone());
+            add_set(flow, &id, avoid, call)
+        }
+        ComposeAction::RemoveSet { id } => {
+            if let Some(position) = flow.sets.iter().position(|set| set.id == id) {
+                let removed = flow.sets.remove(position);
+                // Only the Compose reference list changes; media stays.
+                flow.selection
+                    .retain(|reference| !removed.asset_ids.contains(&reference.asset_id));
+            }
+        }
+        ComposeAction::SetSetDescription { id, value } => {
+            if let Some(set) = flow.sets.iter_mut().find(|set| set.id == id) {
+                set.send_description = value;
+            }
+        }
+        ComposeAction::SetAssetDescription { asset_id, value } => {
+            flow.no_send.retain(|id| id != &asset_id);
+            if !value {
+                flow.no_send.push(asset_id);
+            }
+        }
         ComposeAction::Compose | ComposeAction::Refine => {
             run_compose_flow(flow, None, None, None, call)
         }
@@ -697,11 +852,7 @@ pub fn dispatch(flow: &mut ComposeFlow, action: ComposeAction, call: CallSink) {
                     if flow.mode == "batch" {
                         return;
                     }
-                    if flow.mode == "compose" && flow.uses_media() && !flow.all_described() {
-                        run_describe_flow(flow, false, call);
-                    } else {
-                        run_compose_flow(flow, None, None, None, call);
-                    }
+                    run_compose_flow(flow, None, None, None, call);
                 }
                 None => {}
             }
@@ -857,6 +1008,21 @@ pub fn load_lists(flow: &mut ComposeFlow, call: CallSink) {
     // Descriptions and results of media that no longer exists are stale.
     flow.descriptions
         .retain(|entry| available.contains(&entry.asset_id));
+    // Authored descriptions of set images survive a media edit.
+    let restore: Vec<(String, String)> = flow
+        .authored
+        .iter()
+        .filter(|(id, _)| available.contains(id) && flow.description(id).is_none())
+        .map(|(id, text)| (id.clone(), text.clone()))
+        .collect();
+    for (asset_id, text) in restore {
+        flow.descriptions.push(DescriptionView {
+            asset_id,
+            text: text.clone(),
+            draft: text,
+            editing: false,
+        });
+    }
     if flow.preset_id.is_empty()
         && let Some(first) = flow.presets.first()
     {
@@ -872,6 +1038,15 @@ pub fn load_lists(flow: &mut ComposeFlow, call: CallSink) {
 }
 
 fn run_describe_flow(flow: &mut ComposeFlow, force: bool, call: CallSink) {
+    run_describe_filtered(flow, force, None, call)
+}
+
+fn run_describe_filtered(
+    flow: &mut ComposeFlow,
+    force: bool,
+    only: Option<&str>,
+    call: CallSink,
+) {
     if flow.selection.is_empty() {
         flow.error = Some("Choose media to describe".into());
         return;
@@ -884,6 +1059,7 @@ fn run_describe_flow(flow: &mut ComposeFlow, force: bool, call: CallSink) {
                 .iter()
                 .find(|asset| asset.id == reference.asset_id)
                 .filter(|asset| force || flow.description(&asset.id).is_none())
+                .filter(|asset| only.is_none_or(|id| id == asset.id))
                 .cloned()
         })
         .collect();
@@ -952,6 +1128,94 @@ fn run_describe_flow(flow: &mut ComposeFlow, force: bool, call: CallSink) {
     flow.busy_stage = None;
 }
 
+/// Loads a set's images into Media and the Compose reference list.
+fn add_set(flow: &mut ComposeFlow, id: &str, avoid: Option<String>, call: CallSink) {
+    if avoid.is_none() && flow.sets.iter().any(|set| set.id == id) {
+        return;
+    }
+    let loaded = match call(
+        "characters_load",
+        json!({ "id": id, "avoid": avoid }),
+    ) {
+        Ok(value) => value,
+        Err(error) => {
+            flow.error = Some(error);
+            return;
+        }
+    };
+    let images = as_array(loaded.get("images").unwrap_or(&json!([])));
+    if images.is_empty() {
+        flow.error = Some("It has no images yet. Add some in the Characters tab.".into());
+        return;
+    }
+    // Shuffle replaces the previous pick.
+    if let Some(position) = flow.sets.iter().position(|set| set.id == id) {
+        let old = flow.sets.remove(position);
+        flow.selection
+            .retain(|reference| !old.asset_ids.contains(&reference.asset_id));
+    }
+    let was_empty = flow.selection.is_empty();
+    load_lists(flow, call);
+    if was_empty {
+        // load_lists auto-selects the first media item; this run is about the set.
+        flow.selection.clear();
+    }
+    let mut asset_ids = Vec::new();
+    let mut last_image = None;
+    for image in &images {
+        let Some(asset_id) = image.get("assetId").and_then(Value::as_str) else {
+            continue;
+        };
+        asset_ids.push(asset_id.to_string());
+        last_image = image.get("id").and_then(Value::as_str).map(str::to_string);
+        if !flow.selection.iter().any(|item| item.asset_id == asset_id) {
+            flow.selection.push(ReferenceSelection {
+                asset_id: asset_id.to_string(),
+                weight: 1.0,
+            });
+        }
+        let role = image.get("role").and_then(Value::as_str).unwrap_or("").trim();
+        if !role.is_empty() {
+            flow.roles.insert(asset_id.to_string(), role.to_string());
+        }
+        let text = image
+            .get("description")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+            .trim()
+            .to_string();
+        if !text.is_empty() {
+            flow.authored.insert(asset_id.to_string(), text.clone());
+            if flow.description(asset_id).is_none() {
+                flow.descriptions.push(DescriptionView {
+                    asset_id: asset_id.to_string(),
+                    text: text.clone(),
+                    draft: text,
+                    editing: false,
+                });
+            }
+        }
+    }
+    let random = !images
+        .iter()
+        .any(|image| image.get("isDefault").and_then(Value::as_bool).unwrap_or(false));
+    flow.sets.push(LoadedSet {
+        id: id.to_string(),
+        name: loaded.get("name").and_then(Value::as_str).unwrap_or("").to_string(),
+        description: loaded
+            .get("description")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+            .to_string(),
+        send_description: true,
+        asset_ids,
+        random,
+        last_image: if random { last_image } else { None },
+    });
+    flow.media_dirty = true;
+    flow.error = None;
+}
+
 fn run_compose_flow(
     flow: &mut ComposeFlow,
     bypass: Option<bool>,
@@ -977,9 +1241,15 @@ fn run_compose_flow(
         flow.error = Some("Enter a prompt brief or choose media".into());
         return;
     }
-    if !refine && flow.uses_media() && !flow.all_described() {
-        flow.error =
-            Some("Run Describe first so you can review the description before composing".into());
+    if !refine
+        && flow.uses_media()
+        && let Some(slots) = flow.reference_slots.filter(|slots| *slots > 0)
+        && flow.selection.len() as i64 > slots
+    {
+        flow.error = Some(format!(
+            "This preset takes at most {slots} reference image(s); {} are selected. Untick some.",
+            flow.selection.len()
+        ));
         return;
     }
 
@@ -999,7 +1269,7 @@ fn run_compose_flow(
                     .assets
                     .iter()
                     .find(|item| item.id == reference.asset_id);
-                let description = flow.description(&reference.asset_id);
+                let description = flow.sent_description(&reference.asset_id);
                 json!({
                     "assetId": reference.asset_id,
                     "editId": asset.and_then(|item| item.edit_id.clone())
@@ -1007,7 +1277,7 @@ fn run_compose_flow(
                     "weight": json_number(reference.weight),
                     "name": asset.map(|item| Value::String(item.display_name.clone()))
                         .unwrap_or(Value::Null),
-                    "description": description.map(|entry| non_empty(&entry.draft))
+                    "description": description.map(Value::String)
                         .unwrap_or(Value::Null)
                 })
             })
@@ -1053,6 +1323,19 @@ fn run_compose_flow(
                 flow.result_index = 0;
                 flow.prompt_draft = flow.results[0].clone();
                 flow.result_meta = as_array(&value);
+                if !flow.sets.is_empty() {
+                    let generation_ids: Vec<Value> = flow
+                        .result_meta
+                        .iter()
+                        .filter_map(|record| record.get("id").cloned())
+                        .collect();
+                    let set_ids: Vec<Value> =
+                        flow.sets.iter().map(|set| json!(set.id)).collect();
+                    let _ = call(
+                        "characters_link_generations",
+                        json!({ "characterIds": set_ids, "generationIds": generation_ids }),
+                    );
+                }
                 load_lists(flow, call);
             }
         }
@@ -1284,6 +1567,23 @@ pub fn ui(
             // selected preset's guidance from the live backend.
             dispatch(&mut flow, ComposeAction::Mount, &mut sink);
         }
+        if flow.mounted && flow.seen_characters != Some(vm.characters_version) {
+            // The Characters tab changed (or first visit): refresh the add list.
+            flow.seen_characters = Some(vm.characters_version);
+            flow.available_sets = sink("characters_list", json!({}))
+                .map(|value| {
+                    as_array(&value)
+                        .iter()
+                        .filter_map(|item| {
+                            Some((
+                                item.get("id")?.as_str()?.to_string(),
+                                item.get("name")?.as_str()?.to_string(),
+                            ))
+                        })
+                        .collect()
+                })
+                .unwrap_or_default();
+        }
         if flow.mounted && flow.seen_edits != vm.edits_version {
             // An edit was applied in Media: reload so Compose shows and uses
             // the edited image instead of the original.
@@ -1364,6 +1664,12 @@ pub fn ui(
             );
         });
 
+        if flow.media_dirty {
+            flow.media_dirty = false;
+            vm.media_reload += 1;
+            vm.edits_version += 1;
+            flow.seen_edits = vm.edits_version;
+        }
         sync_to_vm(&flow, vm);
     });
 }
@@ -1391,6 +1697,7 @@ fn preset_guidance(
             .get("limits")
             .and_then(|limits| limits.get("promptChars"))
             .and_then(Value::as_i64);
+        flow.reference_slots = spec.get("referenceSlots").and_then(Value::as_i64);
         flow.brief_fields = spec
             .get("briefFields")
             .and_then(Value::as_array)
@@ -1803,8 +2110,31 @@ fn draw_picker(
                         if asset.edited_path.is_some() {
                             label.push_str(" (edited)");
                         }
+                        let has_text = flow.sent_description(&asset.id).is_some()
+                            || flow.description(&asset.id).is_some();
+                        let sent = !flow.no_send.iter().any(|id| id == &asset.id);
+                        let mut job = egui::text::LayoutJob::default();
+                        job.append(
+                            &label,
+                            0.0,
+                            egui::TextFormat {
+                                color: theme.ink,
+                                ..Default::default()
+                            },
+                        );
+                        if has_text {
+                            job.append(
+                                if sent { "  [desc]" } else { "  [desc off]" },
+                                0.0,
+                                egui::TextFormat {
+                                    color: if sent { theme.success } else { theme.faint },
+                                    font_id: egui::FontId::proportional(11.0),
+                                    ..Default::default()
+                                },
+                            );
+                        }
                         if ui
-                            .checkbox(&mut checked, label)
+                            .checkbox(&mut checked, job)
                             .on_hover_text(&asset.display_name)
                             .clicked()
                         {
@@ -1836,6 +2166,39 @@ fn draw_picker(
                             );
                         }
                         if order.is_some() && !batch {
+                            ui.horizontal_wrapped(|ui| {
+                                let has_text = flow.sent_description(&asset.id).is_some()
+                                    || flow.description(&asset.id).is_some();
+                                if has_text {
+                                    let mut send = !flow.no_send.iter().any(|id| id == &asset.id);
+                                    if ui.checkbox(&mut send, "Send description").changed() {
+                                        dispatch(
+                                            flow,
+                                            ComposeAction::SetAssetDescription {
+                                                asset_id: asset.id.clone(),
+                                                value: send,
+                                            },
+                                            sink,
+                                        );
+                                    }
+                                }
+                                let described = flow.description(&asset.id).is_some();
+                                if ui
+                                    .add_enabled(
+                                        !flow.busy,
+                                        egui::Button::new(if described { "Re-describe" } else { "Describe" }),
+                                    )
+                                    .clicked()
+                                {
+                                    dispatch(
+                                        flow,
+                                        ComposeAction::DescribeAsset {
+                                            asset_id: asset.id.clone(),
+                                        },
+                                        sink,
+                                    );
+                                }
+                            });
                             ui.horizontal(|ui| {
                                 ui.label(egui::RichText::new("Weight").color(theme.muted));
                                 let mut value = weight;
@@ -1888,12 +2251,81 @@ fn draw_media_panel(
         ui.label(egui::RichText::new("Text only is on: media is ignored.").color(theme.faint));
         return;
     }
+    draw_sets(ui, flow, sink, theme);
     egui::ScrollArea::vertical()
         .id_salt("compose-media")
         .auto_shrink([false, false])
         .show(ui, |ui| {
             draw_picker(ui, flow, sink, theme, thumbnails, &typed_assets);
         });
+}
+
+/// Add-from-Characters picker and the sets already added.
+fn draw_sets(
+    ui: &mut Ui,
+    flow: &mut ComposeFlow,
+    sink: &mut impl FnMut(&str, Value) -> Result<Value, String>,
+    theme: &Theme,
+) {
+    if flow.available_sets.is_empty() && flow.sets.is_empty() {
+        return;
+    }
+    let mut add: Option<String> = None;
+    let mut remove: Option<String> = None;
+    let mut shuffle: Option<String> = None;
+    ui.horizontal_wrapped(|ui| {
+        egui::ComboBox::from_id_salt("compose-add-set")
+            .selected_text("Add from Characters")
+            .show_ui(ui, |ui| {
+                for (id, name) in &flow.available_sets {
+                    let added = flow.sets.iter().any(|set| &set.id == id);
+                    if ui.selectable_label(added, name).clicked() {
+                        add = Some(id.clone());
+                    }
+                }
+            });
+    });
+    let mut changes: Vec<(String, bool)> = Vec::new();
+    for set in &flow.sets {
+        ui.horizontal_wrapped(|ui| {
+            ui.label(egui::RichText::new(&set.name).color(theme.accent));
+            let mut send = set.send_description;
+            if ui
+                .add_enabled(
+                    !set.description.trim().is_empty(),
+                    egui::Checkbox::new(&mut send, "Send description"),
+                )
+                .changed()
+            {
+                changes.push((set.id.clone(), send));
+            }
+            if set.random && ui.button("Shuffle").on_hover_text("Pick another random image").clicked() {
+                shuffle = Some(set.id.clone());
+            }
+            if ui.button("Remove").on_hover_text("Take it out of Compose (media stays)").clicked() {
+                remove = Some(set.id.clone());
+            }
+        });
+        if !set.description.trim().is_empty() {
+            ui.add(
+                egui::Label::new(egui::RichText::new(set.description.trim()).color(theme.muted).size(12.5))
+                    .wrap(),
+            );
+        }
+    }
+    for (id, value) in changes {
+        dispatch(flow, ComposeAction::SetSetDescription { id, value }, sink);
+    }
+    if let Some(id) = add {
+        dispatch(flow, ComposeAction::AddSet { id }, sink);
+    }
+    if let Some(id) = shuffle {
+        dispatch(flow, ComposeAction::ShuffleSet { id }, sink);
+    }
+    if let Some(id) = remove {
+        dispatch(flow, ComposeAction::RemoveSet { id }, sink);
+    }
+    ui.separator();
 }
 
 fn draw_descriptions(
@@ -2182,9 +2614,6 @@ fn draw_actions(
             match flow.mode.as_str() {
                 "describe" => dispatch(flow, ComposeAction::Describe { force: false }, sink),
                 "batch" => dispatch(flow, ComposeAction::BatchQueue, sink),
-                "compose" if flow.uses_media() && !flow.all_described() => {
-                    dispatch(flow, ComposeAction::Describe { force: false }, sink)
-                }
                 _ => dispatch(flow, ComposeAction::Compose, sink),
             }
         }
@@ -2565,5 +2994,67 @@ Style terms: macro, soft light"
         assert_eq!(flow.effective_brief(), "Style terms: macro, soft light");
         flow.selected_terms.clear();
         assert_eq!(flow.effective_brief(), "");
+    }
+}
+
+#[cfg(test)]
+mod set_tests {
+    use super::*;
+
+    fn flow_with_set() -> ComposeFlow {
+        let mut flow = ComposeFlow::default();
+        flow.selection = vec![
+            ReferenceSelection { asset_id: "a1".into(), weight: 1.0 },
+            ReferenceSelection { asset_id: "a2".into(), weight: 1.0 },
+        ];
+        flow.sets = vec![LoadedSet {
+            id: "s1".into(),
+            name: "Mira".into(),
+            description: "tall, red coat".into(),
+            send_description: true,
+            asset_ids: vec!["a1".into(), "a2".into()],
+            random: false,
+            last_image: None,
+        }];
+        flow
+    }
+
+    #[test]
+    fn notes_use_tags_names_and_never_the_word_character() {
+        let flow = flow_with_set();
+        let brief = flow.effective_brief();
+        assert_eq!(brief, "Reference notes:
+<image1>, <image2> (Mira): tall, red coat");
+        assert!(!brief.to_lowercase().contains("character"));
+    }
+
+    #[test]
+    fn notes_are_off_when_the_toggle_is_off_or_images_are_unselected() {
+        let mut flow = flow_with_set();
+        flow.sets[0].send_description = false;
+        assert_eq!(flow.effective_brief(), "");
+        flow.sets[0].send_description = true;
+        flow.selection.retain(|item| item.asset_id == "a2");
+        assert_eq!(flow.effective_brief(), "Reference notes:
+<image1> (Mira): tall, red coat");
+        flow.selection.clear();
+        assert_eq!(flow.effective_brief(), "");
+    }
+
+    #[test]
+    fn image_description_combines_role_and_respects_the_toggle() {
+        let mut flow = ComposeFlow::default();
+        flow.roles.insert("a1".into(), "front".into());
+        assert_eq!(flow.sent_description("a1").as_deref(), Some("front"));
+        flow.descriptions.push(DescriptionView {
+            asset_id: "a1".into(),
+            text: "smiling".into(),
+            draft: "smiling".into(),
+            editing: false,
+        });
+        assert_eq!(flow.sent_description("a1").as_deref(), Some("front: smiling"));
+        flow.no_send.push("a1".into());
+        assert_eq!(flow.sent_description("a1"), None);
+        assert_eq!(flow.sent_description("other"), None);
     }
 }

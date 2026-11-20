@@ -22,6 +22,9 @@ pub struct MediaFlow {
     /// Set once the shell issued the live mount refresh.
     #[serde(default)]
     pub mounted: bool,
+    /// Last `ViewModel::media_reload` this grid loaded.
+    #[serde(default)]
+    pub seen_reload: u64,
 }
 
 impl Default for MediaFlow {
@@ -32,6 +35,7 @@ impl Default for MediaFlow {
             error: None,
             status: String::new(),
             mounted: false,
+            seen_reload: 0,
         }
     }
 }
@@ -227,6 +231,10 @@ pub fn ui(
         let mut flow = cell.borrow_mut();
         if !flow.mounted {
             flow.mounted = true;
+            dispatch(&mut flow, MediaAction::Mount, &mut sink);
+        }
+        if flow.seen_reload != vm.media_reload {
+            flow.seen_reload = vm.media_reload;
             dispatch(&mut flow, MediaAction::Mount, &mut sink);
         }
         if !vm.assets.is_empty() && flow.assets.len() != vm.assets.len() {

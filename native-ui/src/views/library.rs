@@ -369,7 +369,13 @@ fn live_query(vm: &ViewModel, offset: i64) -> Value {
             "collectionId": Value::Null,
             "from": Value::Null,
             "to": Value::Null,
-            "ids": [],
+            "ids": if vm.library.character_filter.is_empty() {
+                json!([])
+            } else if vm.library.character_ids.is_empty() {
+                json!(["none"])
+            } else {
+                json!(vm.library.character_ids)
+            },
             "includeDeleted": trash,
             "onlyDeleted": trash,
             "offset": offset,
@@ -381,6 +387,17 @@ fn live_query(vm: &ViewModel, offset: i64) -> Value {
 
 fn live_refresh(sink: &mut impl FnMut(&str, Value) -> Result<Value, String>, vm: &mut ViewModel) {
     vm.library.error = None;
+    vm.library.character_ids = if vm.library.character_filter.is_empty() {
+        Vec::new()
+    } else {
+        sink(
+            "characters_generation_ids",
+            json!({ "id": vm.library.character_filter }),
+        )
+        .ok()
+        .and_then(|value| serde_json::from_value(value).ok())
+        .unwrap_or_default()
+    };
     match sink("library_query", live_query(vm, 0)) {
         Ok(value) => {
             vm.library.records = value
@@ -397,6 +414,7 @@ fn live_refresh(sink: &mut impl FnMut(&str, Value) -> Result<Value, String>, vm:
         ("presets_list", "presets"),
         ("library_tags", "tags"),
         ("library_collections", "collections"),
+        ("characters_list", "characters"),
     ] {
         match sink(command, json!({})) {
             Ok(value) => {
@@ -661,6 +679,53 @@ fn draw_toolbar(
                     }
                 }
             });
+        let characters: Vec<(String, String)> = vm
+            .library
+            .meta
+            .get("characters")
+            .and_then(Value::as_array)
+            .map(|items| {
+                items
+                    .iter()
+                    .map(|item| {
+                        (
+                            record_str(item, "id").to_string(),
+                            record_str(item, "name").to_string(),
+                        )
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
+        if !characters.is_empty() || !vm.library.character_filter.is_empty() {
+            let current = characters
+                .iter()
+                .find(|(id, _)| *id == vm.library.character_filter)
+                .map(|(_, name)| name.clone())
+                .unwrap_or_else(|| "Any character".to_string());
+            let mut picked: Option<String> = None;
+            egui::ComboBox::from_id_salt("library-character-filter")
+                .selected_text(current)
+                .show_ui(ui, |ui| {
+                    if ui
+                        .selectable_label(vm.library.character_filter.is_empty(), "Any character")
+                        .clicked()
+                    {
+                        picked = Some(String::new());
+                    }
+                    for (id, name) in &characters {
+                        if ui
+                            .selectable_label(vm.library.character_filter == *id, name)
+                            .clicked()
+                        {
+                            picked = Some(id.clone());
+                        }
+                    }
+                });
+            if let Some(value) = picked {
+                vm.library.character_filter = value;
+                live_refresh(sink, vm);
+            }
+        }
         let tag = ui.add(
             egui::TextEdit::singleline(&mut vm.library.tag_filter)
                 .hint_text("tag filter")

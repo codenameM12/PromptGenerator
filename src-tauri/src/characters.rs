@@ -1,0 +1,376 @@
+//! Named sets of reference images ("characters" in the UI; they can equally be
+//! products). Images are copied into the workspace, never linked to the
+//! source file. See docs/spec-v2.md.
+
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use rusqlite::{Connection, OptionalExtension, params};
+use serde_json::{Value, json};
+
+use crate::commands::CommandError;
+
+fn new_id() -> String {
+    uuid::Uuid::now_v7().to_string()
+}
+
+fn clean(text: &str, limit: usize) -> String {
+    text.trim().chars().take(limit).collect()
+}
+
+pub fn characters_dir(data_dir: &Path) -> PathBuf {
+    data_dir.join("characters")
+}
+
+pub fn list(connection: &Connection) -> Result<Value, CommandError> {
+    let mut statement = connection.prepare(
+        "SELECT c.id, c.name, c.description,
+                (SELECT COUNT(*) FROM character_images i WHERE i.character_id = c.id),
+                (SELECT COUNT(*) FROM character_images i WHERE i.character_id = c.id AND i.is_default = 1)
+         FROM characters c ORDER BY c.name COLLATE NOCASE",
+    )?;
+    let rows = statement.query_map([], |row| {
+        Ok(json!({
+            "id": row.get::<_, String>(0)?,
+            "name": row.get::<_, String>(1)?,
+            "description": row.get::<_, String>(2)?,
+            "imageCount": row.get::<_, i64>(3)?,
+            "defaultCount": row.get::<_, i64>(4)?,
+        }))
+    })?;
+    Ok(Value::Array(rows.collect::<Result<Vec<_>, _>>()?))
+}
+
+pub fn get(connection: &Connection, id: &str) -> Result<Value, CommandError> {
+    let head = connection
+        .query_row(
+            "SELECT name, description FROM characters WHERE id = ?1",
+            params![id],
+            |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
+        )
+        .optional()?
+        .ok_or_else(|| CommandError::not_found("Not found"))?;
+    Ok(json!({
+        "id": id,
+        "name": head.0,
+        "description": head.1,
+        "images": images(connection, id)?,
+    }))
+}
+
+fn images(connection: &Connection, character_id: &str) -> Result<Vec<Value>, CommandError> {
+    let mut statement = connection.prepare(
+        "SELECT id, file_name, stored_path, role, description, is_default
+         FROM character_images WHERE character_id = ?1 ORDER BY position, created_at",
+    )?;
+    let rows = statement.query_map(params![character_id], |row| {
+        Ok(json!({
+            "id": row.get::<_, String>(0)?,
+            "fileName": row.get::<_, String>(1)?,
+            "path": row.get::<_, String>(2)?,
+            "role": row.get::<_, String>(3)?,
+            "description": row.get::<_, String>(4)?,
+            "isDefault": row.get::<_, i64>(5)? != 0,
+        }))
+    })?;
+    Ok(rows.collect::<Result<Vec<_>, _>>()?)
+}
+
+pub fn create(connection: &Connection, name: &str) -> Result<Value, CommandError> {
+    let name = clean(name, 120);
+    if name.is_empty() {
+        return Err(CommandError::validation("Enter a name"));
+    }
+    let id = new_id();
+    connection.execute(
+        "INSERT INTO characters (id, name, description, created_at)
+         VALUES (?1, ?2, '', strftime('%Y-%m-%dT%H:%M:%SZ','now'))",
+        params![id, name],
+    )?;
+    get(connection, &id)
+}
+
+pub fn update(
+    connection: &Connection,
+    id: &str,
+    name: &str,
+    description: &str,
+) -> Result<Value, CommandError> {
+    let name = clean(name, 120);
+    if name.is_empty() {
+        return Err(CommandError::validation("Enter a name"));
+    }
+    let changed = connection.execute(
+        "UPDATE characters SET name = ?2, description = ?3 WHERE id = ?1",
+        params![id, name, clean(description, 4000)],
+    )?;
+    if changed == 0 {
+        return Err(CommandError::not_found("Not found"));
+    }
+    get(connection, id)
+}
+
+/// Deletes the set and its stored image copies. Generations keep their text;
+/// only the link rows go.
+pub fn delete(connection: &Connection, data_dir: &Path, id: &str) -> Result<(), CommandError> {
+    connection.execute("DELETE FROM characters WHERE id = ?1", params![id])?;
+    let folder = characters_dir(data_dir).join(id);
+    if folder.exists() {
+        let _ = fs::remove_dir_all(folder);
+    }
+    Ok(())
+}
+
+/// Copies each file into `<data>/characters/<id>/` and records it.
+pub fn add_images(
+    connection: &Connection,
+    data_dir: &Path,
+    character_id: &str,
+    sources: &[String],
+) -> Result<Value, CommandError> {
+    get(connection, character_id)?;
+    let folder = characters_dir(data_dir).join(character_id);
+    fs::create_dir_all(&folder).map_err(|error| CommandError::from_io(&error))?;
+    let mut position: i64 = connection.query_row(
+        "SELECT COALESCE(MAX(position), -1) + 1 FROM character_images WHERE character_id = ?1",
+        params![character_id],
+        |row| row.get(0),
+    )?;
+    for source in sources {
+        let source_path = Path::new(source);
+        let Some(file_name) = source_path.file_name().and_then(|name| name.to_str()) else {
+            continue;
+        };
+        let image_id = new_id();
+        let extension = source_path
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .unwrap_or("png");
+        let stored = folder.join(format!("{image_id}.{extension}"));
+        fs::copy(source_path, &stored).map_err(|error| CommandError::from_io(&error))?;
+        let stem = source_path
+            .file_stem()
+            .and_then(|name| name.to_str())
+            .unwrap_or(file_name);
+        connection.execute(
+            "INSERT INTO character_images
+               (id, character_id, file_name, stored_path, role, description, is_default, position, created_at)
+             VALUES (?1, ?2, ?3, ?4, '', '', 0, ?5, strftime('%Y-%m-%dT%H:%M:%SZ','now'))",
+            params![
+                image_id,
+                character_id,
+                clean(stem, 120),
+                stored.to_string_lossy(),
+                position
+            ],
+        )?;
+        position += 1;
+    }
+    get(connection, character_id)
+}
+
+pub fn update_image(
+    connection: &Connection,
+    image_id: &str,
+    file_name: &str,
+    role: &str,
+    description: &str,
+    is_default: bool,
+) -> Result<(), CommandError> {
+    connection.execute(
+        "UPDATE character_images SET file_name = ?2, role = ?3, description = ?4, is_default = ?5 WHERE id = ?1",
+        params![
+            image_id,
+            clean(file_name, 120),
+            clean(role, 60),
+            clean(description, 4000),
+            i64::from(is_default)
+        ],
+    )?;
+    Ok(())
+}
+
+pub fn remove_image(connection: &Connection, image_id: &str) -> Result<(), CommandError> {
+    let stored: Option<String> = connection
+        .query_row(
+            "SELECT stored_path FROM character_images WHERE id = ?1",
+            params![image_id],
+            |row| row.get(0),
+        )
+        .optional()?;
+    connection.execute("DELETE FROM character_images WHERE id = ?1", params![image_id])?;
+    if let Some(path) = stored {
+        let _ = fs::remove_file(path);
+    }
+    Ok(())
+}
+
+/// The images to load when the set is added to Compose: the requested ones, else
+/// the defaults, else one random image (`avoid` is excluded when shuffling).
+pub fn pick_images(
+    connection: &Connection,
+    character_id: &str,
+    requested: &[String],
+    avoid: Option<&str>,
+) -> Result<Vec<Value>, CommandError> {
+    let all = images(connection, character_id)?;
+    let id_of = |image: &Value| image["id"].as_str().unwrap_or_default().to_string();
+    if !requested.is_empty() {
+        return Ok(all
+            .into_iter()
+            .filter(|image| requested.contains(&id_of(image)))
+            .collect());
+    }
+    let defaults: Vec<Value> = all
+        .iter()
+        .filter(|image| image["isDefault"].as_bool().unwrap_or(false))
+        .cloned()
+        .collect();
+    if !defaults.is_empty() {
+        return Ok(defaults);
+    }
+    let mut pool: Vec<Value> = all
+        .iter()
+        .filter(|image| Some(id_of(image).as_str()) != avoid)
+        .cloned()
+        .collect();
+    if pool.is_empty() {
+        pool = all;
+    }
+    if pool.is_empty() {
+        return Ok(Vec::new());
+    }
+    let entropy = uuid::Uuid::now_v7().as_u128() as usize;
+    Ok(vec![pool[entropy % pool.len()].clone()])
+}
+
+pub fn link_generations(
+    connection: &Connection,
+    character_ids: &[String],
+    generation_ids: &[String],
+) -> Result<(), CommandError> {
+    for character in character_ids {
+        for generation in generation_ids {
+            connection.execute(
+                "INSERT OR IGNORE INTO generation_characters (generation_id, character_id) VALUES (?1, ?2)",
+                params![generation, character],
+            )?;
+        }
+    }
+    Ok(())
+}
+
+pub fn generation_ids(
+    connection: &Connection,
+    character_id: &str,
+) -> Result<Vec<String>, CommandError> {
+    let mut statement = connection
+        .prepare("SELECT generation_id FROM generation_characters WHERE character_id = ?1")?;
+    let rows = statement.query_map(params![character_id], |row| row.get::<_, String>(0))?;
+    Ok(rows.collect::<Result<Vec<_>, _>>()?)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::db::Database;
+
+    fn database() -> Database {
+        let mut database = Database::open_in_memory().expect("open");
+        database.migrate().expect("migrate");
+        database
+    }
+
+    fn temp_dir(label: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!("ps-char-{label}-{}", new_id()));
+        fs::create_dir_all(&dir).expect("dir");
+        dir
+    }
+
+    fn sample_files(dir: &Path, count: usize) -> Vec<String> {
+        (0..count)
+            .map(|index| {
+                let path = dir.join(format!("shot{index}.png"));
+                fs::write(&path, [index as u8; 8]).expect("write");
+                path.to_string_lossy().to_string()
+            })
+            .collect()
+    }
+
+    #[test]
+    fn create_update_and_list() {
+        let database = database();
+        let connection = database.connection();
+        let made = create(connection, "  Mira ").expect("create");
+        assert_eq!(made["name"], "Mira");
+        let id = made["id"].as_str().unwrap().to_string();
+        update(connection, &id, "Mira K", "tall, red coat").expect("update");
+        let listed = list(connection).expect("list");
+        assert_eq!(listed[0]["name"], "Mira K");
+        assert_eq!(listed[0]["imageCount"], 0);
+        assert!(create(connection, "  ").is_err());
+    }
+
+    #[test]
+    fn images_are_copied_into_the_workspace() {
+        let database = database();
+        let connection = database.connection();
+        let data = temp_dir("data");
+        let source = temp_dir("src");
+        let id = create(connection, "Mira").unwrap()["id"].as_str().unwrap().to_string();
+        let got = add_images(connection, &data, &id, &sample_files(&source, 2)).expect("add");
+        let stored = got["images"][0]["path"].as_str().unwrap();
+        assert!(stored.starts_with(data.to_string_lossy().as_ref()));
+        assert!(Path::new(stored).exists());
+        // Deleting the source does not break the stored copy.
+        fs::remove_dir_all(&source).unwrap();
+        assert!(Path::new(stored).exists());
+        delete(connection, &data, &id).expect("delete");
+        assert!(!Path::new(stored).exists());
+        assert!(get(connection, &id).is_err());
+    }
+
+    #[test]
+    fn defaults_then_random_pick() {
+        let database = database();
+        let connection = database.connection();
+        let data = temp_dir("data2");
+        let source = temp_dir("src2");
+        let id = create(connection, "Box").unwrap()["id"].as_str().unwrap().to_string();
+        let got = add_images(connection, &data, &id, &sample_files(&source, 3)).unwrap();
+        let first = got["images"][0]["id"].as_str().unwrap().to_string();
+        let second = got["images"][1]["id"].as_str().unwrap().to_string();
+
+        // No defaults: exactly one image, never the avoided one.
+        for _ in 0..10 {
+            let picked = pick_images(connection, &id, &[], Some(&first)).unwrap();
+            assert_eq!(picked.len(), 1);
+            assert_ne!(picked[0]["id"], first.as_str());
+        }
+        update_image(connection, &first, "shot0", "front", "front view", true).unwrap();
+        update_image(connection, &second, "shot1", "profile", "", true).unwrap();
+        let picked = pick_images(connection, &id, &[], None).unwrap();
+        assert_eq!(picked.len(), 2);
+        assert_eq!(picked[0]["role"], "front");
+        // Requested ids win over defaults.
+        let one = pick_images(connection, &id, &[second.clone()], None).unwrap();
+        assert_eq!(one.len(), 1);
+        assert_eq!(one[0]["id"], second.as_str());
+    }
+
+    #[test]
+    fn generation_links_round_trip() {
+        let database = database();
+        let connection = database.connection();
+        // Foreign keys are not enforced for link rows in this check.
+        let id = create(connection, "Mira").unwrap()["id"].as_str().unwrap().to_string();
+        connection
+            .execute("PRAGMA foreign_keys = OFF", [])
+            .expect("pragma");
+        link_generations(connection, &[id.clone()], &["g1".into(), "g2".into()]).unwrap();
+        link_generations(connection, &[id.clone()], &["g1".into()]).unwrap();
+        let mut ids = generation_ids(connection, &id).unwrap();
+        ids.sort();
+        assert_eq!(ids, vec!["g1".to_string(), "g2".to_string()]);
+    }
+}
