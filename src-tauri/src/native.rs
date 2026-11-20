@@ -564,7 +564,12 @@ impl NativeState {
             "characters_list" => self.db(crate::characters::list),
             "characters_get" => {
                 let id: String = arg(&args, "id")?;
-                self.db(|connection| crate::characters::get(connection, &id))
+                let data_dir = self.paths.data_dir.clone();
+                self.db(|connection| {
+                    let mut value = crate::characters::get(connection, &id)?;
+                    crate::characters::absolutize(&mut value, &data_dir);
+                    Ok(value)
+                })
             }
             "characters_create" => {
                 let name: String = arg(&args, "name")?;
@@ -574,7 +579,13 @@ impl NativeState {
                 let id: String = arg(&args, "id")?;
                 let name: String = arg(&args, "name")?;
                 let description: String = arg(&args, "description")?;
-                self.db(|connection| crate::characters::update(connection, &id, &name, &description))
+                let data_dir = self.paths.data_dir.clone();
+                self.db(|connection| {
+                    let mut value =
+                        crate::characters::update(connection, &id, &name, &description)?;
+                    crate::characters::absolutize(&mut value, &data_dir);
+                    Ok(value)
+                })
             }
             "characters_delete" => {
                 let id: String = arg(&args, "id")?;
@@ -585,7 +596,12 @@ impl NativeState {
                 let id: String = arg(&args, "id")?;
                 let paths: Vec<String> = arg(&args, "paths")?;
                 let data_dir = self.paths.data_dir.clone();
-                self.db(|connection| crate::characters::add_images(connection, &data_dir, &id, &paths))
+                self.db(|connection| {
+                    let mut value =
+                        crate::characters::add_images(connection, &data_dir, &id, &paths)?;
+                    crate::characters::absolutize(&mut value, &data_dir);
+                    Ok(value)
+                })
             }
             "characters_image_update" => {
                 let image_id: String = arg(&args, "imageId")?;
@@ -606,7 +622,10 @@ impl NativeState {
             }
             "characters_image_remove" => {
                 let image_id: String = arg(&args, "imageId")?;
-                self.db(|connection| crate::characters::remove_image(connection, &image_id))
+                let data_dir = self.paths.data_dir.clone();
+                self.db(|connection| {
+                    crate::characters::remove_image(connection, &data_dir, &image_id)
+                })
             }
             "characters_load" => self.characters_load(&args),
             "characters_link_generations" => {
@@ -1958,6 +1977,11 @@ impl NativeState {
                 crate::characters::pick_images(connection, &id, &requested, avoid.as_deref())?;
             (head, picked)
         };
+        let data_dir = self.paths.data_dir.clone();
+        let mut picked = picked;
+        picked
+            .iter_mut()
+            .for_each(|image| crate::characters::absolutize(image, &data_dir));
         let paths: Vec<String> = picked
             .iter()
             .filter_map(|image| image["path"].as_str().map(str::to_string))

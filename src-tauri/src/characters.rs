@@ -22,6 +22,43 @@ pub fn characters_dir(data_dir: &Path) -> PathBuf {
     data_dir.join("characters")
 }
 
+/// Stored paths are relative to the data folder (so a moved portable folder
+/// keeps working); older rows with an absolute path are used as they are.
+pub fn resolve(data_dir: &Path, stored: &str) -> PathBuf {
+    let path = Path::new(stored);
+    if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        data_dir.join(path)
+    }
+}
+
+/// Rewrites every image `path` in a set (or one image) to an absolute path.
+pub fn absolutize(value: &mut Value, data_dir: &Path) {
+    let fix = |image: &mut Value| {
+        if let Some(stored) = image.get("path").and_then(Value::as_str) {
+            let full = resolve(data_dir, stored).to_string_lossy().to_string();
+            image["path"] = json!(full);
+        }
+    };
+    if let Some(images) = value.get_mut("images").and_then(Value::as_array_mut) {
+        images.iter_mut().for_each(fix);
+    } else {
+        fix(value);
+    }
+}
+
+fn used_by_media(connection: &Connection, path: &Path) -> bool {
+    connection
+        .query_row(
+            "SELECT COUNT(*) FROM assets WHERE source_path = ?1 AND deleted_at IS NULL",
+            params![path.to_string_lossy()],
+            |row| row.get::<_, i64>(0),
+        )
+        .map(|count| count > 0)
+        .unwrap_or(false)
+}
+
 pub fn list(connection: &Connection) -> Result<Value, CommandError> {
     let mut statement = connection.prepare(
         "SELECT c.id, c.name, c.description,
@@ -113,11 +150,20 @@ pub fn update(
 /// Deletes the set and its stored image copies. Generations keep their text;
 /// only the link rows go.
 pub fn delete(connection: &Connection, data_dir: &Path, id: &str) -> Result<(), CommandError> {
+    let stored: Vec<String> = images(connection, id)?
+        .iter()
+        .filter_map(|image| image["path"].as_str().map(str::to_string))
+        .collect();
     connection.execute("DELETE FROM characters WHERE id = ?1", params![id])?;
-    let folder = characters_dir(data_dir).join(id);
-    if folder.exists() {
-        let _ = fs::remove_dir_all(folder);
+    // Images that were loaded into Media are still used there; keep those files.
+    for path in stored {
+        let full = resolve(data_dir, &path);
+        if !used_by_media(connection, &full) {
+            let _ = fs::remove_file(full);
+        }
     }
+    let folder = characters_dir(data_dir).join(id);
+    let _ = fs::remove_dir(folder); // only succeeds when empty
     Ok(())
 }
 
@@ -182,7 +228,8 @@ pub fn add_images(
             .extension()
             .and_then(|ext| ext.to_str())
             .unwrap_or("png");
-        let stored = folder.join(format!("{image_id}.{extension}"));
+        let relative = format!("characters/{character_id}/{image_id}.{extension}");
+        let stored = data_dir.join(&relative);
         fs::copy(source_path, &stored).map_err(|error| CommandError::from_io(&error))?;
         let stem = source_path
             .file_stem()
@@ -196,7 +243,7 @@ pub fn add_images(
                 image_id,
                 character_id,
                 clean(stem, 120),
-                stored.to_string_lossy(),
+                relative,
                 position
             ],
         )?;
@@ -226,7 +273,11 @@ pub fn update_image(
     Ok(())
 }
 
-pub fn remove_image(connection: &Connection, image_id: &str) -> Result<(), CommandError> {
+pub fn remove_image(
+    connection: &Connection,
+    data_dir: &Path,
+    image_id: &str,
+) -> Result<(), CommandError> {
     let stored: Option<String> = connection
         .query_row(
             "SELECT stored_path FROM character_images WHERE id = ?1",
@@ -236,7 +287,10 @@ pub fn remove_image(connection: &Connection, image_id: &str) -> Result<(), Comma
         .optional()?;
     connection.execute("DELETE FROM character_images WHERE id = ?1", params![image_id])?;
     if let Some(path) = stored {
-        let _ = fs::remove_file(path);
+        let full = resolve(data_dir, &path);
+        if !used_by_media(connection, &full) {
+            let _ = fs::remove_file(full);
+        }
     }
     Ok(())
 }
@@ -355,14 +409,17 @@ mod tests {
         let source = temp_dir("src");
         let id = create(connection, "Mira").unwrap()["id"].as_str().unwrap().to_string();
         let got = add_images(connection, &data, &id, &sample_files(&source, 2)).expect("add");
-        let stored = got["images"][0]["path"].as_str().unwrap();
-        assert!(stored.starts_with(data.to_string_lossy().as_ref()));
-        assert!(Path::new(stored).exists());
+        let relative = got["images"][0]["path"].as_str().unwrap().to_string();
+        // Stored relative to the data folder, so a moved folder keeps working.
+        assert!(relative.starts_with("characters/"), "{relative}");
+        let stored = resolve(&data, &relative);
+        assert!(stored.starts_with(&data));
+        assert!(stored.exists());
         // Deleting the source does not break the stored copy.
         fs::remove_dir_all(&source).unwrap();
-        assert!(Path::new(stored).exists());
+        assert!(stored.exists());
         delete(connection, &data, &id).expect("delete");
-        assert!(!Path::new(stored).exists());
+        assert!(!stored.exists());
         assert!(get(connection, &id).is_err());
     }
 
@@ -411,6 +468,29 @@ mod tests {
         let id = create(connection, "Pack").unwrap()["id"].as_str().unwrap().to_string();
         let got = add_images(connection, &data, &id, &[root.to_string_lossy().to_string()]).unwrap();
         assert_eq!(got["images"].as_array().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn deleting_keeps_files_that_media_still_uses() {
+        let database = database();
+        let connection = database.connection();
+        let data = temp_dir("data4");
+        let source = temp_dir("src4");
+        let id = create(connection, "Mira").unwrap()["id"].as_str().unwrap().to_string();
+        let got = add_images(connection, &data, &id, &sample_files(&source, 2)).unwrap();
+        let used = resolve(&data, got["images"][0]["path"].as_str().unwrap());
+        let unused = resolve(&data, got["images"][1]["path"].as_str().unwrap());
+        // The first image was loaded into Media (an asset points at the copy).
+        connection
+            .execute(
+                "INSERT INTO assets (id, hash, kind, source_path, display_name, created_at)
+                 VALUES ('a1', 'h1', 'image', ?1, 'x', '2026-01-01T00:00:00Z')",
+                params![used.to_string_lossy()],
+            )
+            .unwrap();
+        delete(connection, &data, &id).expect("delete");
+        assert!(used.exists(), "a file Media still uses must stay");
+        assert!(!unused.exists());
     }
 
     #[test]
