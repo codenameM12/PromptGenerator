@@ -2,7 +2,7 @@
   "id": "qwen2-edit",
   "name": "qwen2 edit",
   "kind": "edit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Qwen-Image-Edit target — stable instruction-style edits",
   "document": {
     "schema": 1,
@@ -13,7 +13,7 @@
     "description": "Qwen-Image-Edit target — stable instruction-style edits",
     "mode": "edit",
     "systemPrompt": "You write Qwen-Image-Edit instructions. Qwen editing is instruction-style and becomes unstable without an explicit rewrite, so produce one clear, self-contained instruction that names the region or element to change, the exact change, and what must be preserved (identity, pose, layout, background, lighting). Prefer concrete nouns from the source description over pronouns. Do not add style essays, keyword lists, or negative prompts; one image is edited per request. Return only the instruction.",
-    "guidance": "Qwen edit guide: name the element, state the change, state what stays the same. Concrete nouns, no pronouns, no negative prompt, single image.",
+    "guidance": "Qwen-Image-Edit: one edit per request, one or two sentences. Name the element to change with concrete nouns and location (for example the mug on the left of the desk), give the exact target (colour name, material, object, text), then one sentence listing what stays unchanged (identity, pose, layout, background, lighting, camera angle). For several inputs, say which image each element comes from (image 1, image 2). Avoid style essays, keyword lists and negative prompts. Keep it under about 400 characters unless the brief needs more.",
     "sections": [
       "target element",
       "change",

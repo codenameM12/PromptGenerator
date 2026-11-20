@@ -38,6 +38,9 @@ pub struct DescribeRequest {
     pub mode: DescribeMode,
     pub hint: Option<String>,
     pub force_refresh: bool,
+    /// Neutral tag for this image, e.g. `<image1>`.
+    #[serde(default)]
+    pub tag: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -349,6 +352,7 @@ pub async fn describe(
             hint: request.hint,
             force_refresh: request.force_refresh,
             system_prompt: describer_prompt,
+            tag: request.tag,
         })
         .await
 }

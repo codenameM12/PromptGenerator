@@ -171,7 +171,12 @@ impl NativeApp {
             Ok(results) => {
                 self.vm.status = format!("Imported {} item(s)", results.len());
                 match self.backend.list_assets() {
-                    Ok(assets) => self.vm.assets = assets,
+                    Ok(assets) => {
+                        self.vm.asset_count = assets.len();
+                        self.vm.assets = assets;
+                        // Compose pickers reload on this signal.
+                        self.vm.edits_version += 1;
+                    }
                     Err(error) => self.vm.status = crate::errors::error_text_of(&error),
                 }
             }
@@ -220,7 +225,18 @@ impl eframe::App for NativeApp {
 
         if let Some(instance) = self.single_instance.as_mut() {
             if instance.poll() {
+                // A second launch already gave up and exited, so this process
+                // must raise itself: the focus request alone is ignored unless
+                // this process owns the foreground.
                 ctx.send_viewport_cmd(ViewportCommand::Focus);
+                let title = ctx
+                    .input(|input| input.viewport().title.clone())
+                    .unwrap_or_default();
+                if !crate::platform::foreground::raise_window(&title) {
+                    crate::platform::foreground::raise_window(
+                        "Prompt Studio (native \u{b7} port in progress)",
+                    );
+                }
             }
         }
 
@@ -243,7 +259,10 @@ impl eframe::App for NativeApp {
                 if self.vm.status.is_empty() {
                     ui.label(egui::RichText::new("Ready").color(self.theme.faint));
                 } else {
-                    ui.label(&self.vm.status);
+                    // Long errors wrapped into a second line that the fixed-height
+                    // bar clipped; keep one line and show the full text on hover.
+                    ui.add(egui::Label::new(&self.vm.status).truncate())
+                        .on_hover_text(&self.vm.status);
                 }
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                     if self.vm.drop_hint {

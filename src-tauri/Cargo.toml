@@ -38,6 +38,9 @@ tauri-plugin-dialog = "2.8.4"
 tauri-plugin-clipboard-manager = "2.5.0"
 base64 = "0.23.1"
 png = "0.18.1"
+image = "0.25"
+ort = { version = "=2.0.0-rc.10", default-features = false, features = ["std", "ndarray", "download-binaries"] }
+tokenizers = { version = "0.21", default-features = false, features = ["onig"] }
 kamadak-exif = "0.6.1"
 percent-encoding = "2.3.2"
 async-trait = "0.1.92"

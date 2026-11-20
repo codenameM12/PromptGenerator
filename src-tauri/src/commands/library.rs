@@ -78,6 +78,8 @@ pub struct GenerationRecord {
     pub collections: Vec<String>,
     pub created_at: String,
     pub deleted_at: Option<String>,
+    #[serde(default)]
+    pub title: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1401,6 +1403,7 @@ fn record(
         collections: gen_repo::collections_for_generation(connection, &row.id)?,
         created_at: row.created_at.clone(),
         deleted_at: row.deleted_at.clone(),
+        title: None,
     })
 }
 

@@ -1956,6 +1956,48 @@ pub mod import_profiles {
     }
 }
 
+pub mod titles {
+    use rusqlite::{Connection, OptionalExtension, params};
+
+    use crate::commands::CommandError;
+
+    pub fn get(connection: &Connection, id: &str) -> Result<Option<String>, CommandError> {
+        Ok(connection
+            .query_row(
+                "SELECT title FROM generation_titles WHERE generation_id = ?1",
+                params![id],
+                |row| row.get(0),
+            )
+            .optional()?)
+    }
+
+    pub fn set(
+        connection: &Connection,
+        id: &str,
+        title: &str,
+        source: &str,
+    ) -> Result<(), CommandError> {
+        connection.execute(
+            "INSERT INTO generation_titles (generation_id, title, source) VALUES (?1, ?2, ?3)
+             ON CONFLICT(generation_id) DO UPDATE SET title = excluded.title, source = excluded.source",
+            params![id, title, source],
+        )?;
+        Ok(())
+    }
+
+    /// Generations that have a prompt but no title yet, newest first.
+    pub fn missing(connection: &Connection, limit: i64) -> Result<Vec<(String, String)>, CommandError> {
+        let mut statement = connection.prepare(
+            "SELECT g.id, g.prompt FROM generations g
+             LEFT JOIN generation_titles t ON t.generation_id = g.id
+             WHERE t.generation_id IS NULL AND length(trim(g.prompt)) > 0
+             ORDER BY g.created_at DESC LIMIT ?1",
+        )?;
+        let rows = statement.query_map(params![limit], |row| Ok((row.get(0)?, row.get(1)?)))?;
+        Ok(rows.collect::<Result<Vec<_>, _>>()?)
+    }
+}
+
 pub mod tags {
     use crate::commands::CommandError;
     use rusqlite::{Connection, params};

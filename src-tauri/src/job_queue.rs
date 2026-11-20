@@ -824,6 +824,113 @@ impl JobQueue {
     }
 }
 
+/// Executes one queued compose item. Shared by the Tauri runner and the
+/// native runner so both behave identically (dataset row status included).
+pub async fn run_compose_item(
+    database: &Mutex<Database>,
+    manager: &Arc<ModelManager>,
+    composer_prompt: Option<String>,
+    payload_json: &str,
+    cancel: &Arc<AtomicBool>,
+) -> Result<Value, CommandError> {
+    let request: ComposeRequest = parse_compose_payload(payload_json).map_err(|error| {
+        CommandError::validation(format!("Invalid compose job payload: {error}"))
+    })?;
+
+    let spec = {
+        let guard = database
+            .lock()
+            .map_err(|_| CommandError::internal("Database lock is poisoned"))?;
+        let row = preset_repo::get(guard.connection(), &request.preset_id)?
+            .filter(|row| row.deleted_at.is_none())
+            .ok_or_else(|| CommandError::not_found("Preset not found"))?;
+        let document: Value = serde_json::from_str(&row.document_json)
+            .map_err(|error| CommandError::internal(format!("read preset: {error}")))?;
+        let spec = preset::parse(&document)?;
+        preset::validate(&spec)?;
+        spec
+    };
+
+    let pipeline = Pipeline { manager, database };
+    let cancel_flag = cancel.clone();
+    let dataset_row_id = request.dataset_row_id.clone();
+    let primary_asset_id = request
+        .asset_id
+        .clone()
+        .or_else(|| request.references.first().and_then(|item| item.asset_id.clone()));
+    let primary_edit_id = request
+        .edit_id
+        .clone()
+        .or_else(|| request.references.first().and_then(|item| item.edit_id.clone()));
+    let primary_description = request.description.clone().or_else(|| {
+        request
+            .references
+            .first()
+            .and_then(|item| item.description.clone())
+    });
+    let result = pipeline
+        .compose(
+            &ComposeInput {
+                preset_id: request.preset_id.clone(),
+                spec,
+                asset_id: primary_asset_id,
+                edit_id: primary_edit_id,
+                references: request.references.clone(),
+                parent_id: request.parent_id.clone(),
+                description: primary_description,
+                brief: request.brief.clone(),
+                existing_prompt: request.existing_prompt.clone(),
+                instruction: request.instruction.clone(),
+                guidance: request.guidance.clone(),
+                locked: request.locked.clone(),
+                params: request.params.clone(),
+                variations: request.variations.max(1),
+                seed: request.seed,
+                output_language: request.output_language.clone(),
+                bypass_cache: request.bypass_cache,
+                cancel: Some(cancel_flag),
+                system_prompt: composer_prompt,
+                images: Vec::new(),
+                images_key: None,
+            },
+            None,
+        )
+        .await;
+
+    match result {
+        Ok(generations) => {
+            if let (Some(row_id), Some(first)) = (dataset_row_id.as_deref(), generations.first())
+                && let Ok(guard) = database.lock()
+            {
+                let _ = dataset_repo::update_item_status(
+                    guard.connection(),
+                    row_id,
+                    "succeeded",
+                    Some(&first.id),
+                    None,
+                );
+            }
+            serde_json::to_value(&generations)
+                .map_err(|error| CommandError::internal(format!("serialize generations: {error}")))
+        }
+        Err(error) => {
+            if let Some(row_id) = dataset_row_id.as_deref()
+                && let Ok(guard) = database.lock()
+            {
+                let message = format!("[{:?}] {}", error.category, error.message);
+                let _ = dataset_repo::update_item_status(
+                    guard.connection(),
+                    row_id,
+                    "failed",
+                    None,
+                    Some(&message),
+                );
+            }
+            Err(error)
+        }
+    }
+}
+
 struct TauriExecutor {
     app: AppHandle,
 }
@@ -838,122 +945,22 @@ impl JobExecutor for TauriExecutor {
     ) -> Result<Value, CommandError> {
         match job.kind.as_str() {
             "compose" => {
-                let request: ComposeRequest =
-                    parse_compose_payload(&item.payload_json).map_err(|error| {
-                        CommandError::validation(format!("Invalid compose job payload: {error}"))
-                    })?;
-
-                let spec = {
-                    let database = self.app.state::<Mutex<Database>>();
-                    let guard = database
-                        .lock()
-                        .map_err(|_| CommandError::internal("Database lock is poisoned"))?;
-                    let row = preset_repo::get(guard.connection(), &request.preset_id)?
-                        .filter(|row| row.deleted_at.is_none())
-                        .ok_or_else(|| CommandError::not_found("Preset not found"))?;
-                    let document: Value = serde_json::from_str(&row.document_json)
-                        .map_err(|error| CommandError::internal(format!("read preset: {error}")))?;
-                    let spec = preset::parse(&document)?;
-                    preset::validate(&spec)?;
-                    spec
-                };
-
-                let manager = self.app.state::<Arc<ModelManager>>();
                 let database = self.app.state::<Mutex<Database>>();
+                let manager = self.app.state::<Arc<ModelManager>>();
                 let composer_prompt = self
                     .app
                     .state::<Mutex<SettingsStore>>()
                     .lock()
                     .ok()
                     .and_then(|store| store.get().composer_system_prompt);
-                let pipeline = Pipeline {
-                    manager: manager.inner(),
-                    database: database.inner(),
-                };
-
-                let cancel_flag = cancel.clone();
-                let dataset_row_id = request.dataset_row_id.clone();
-                let primary_asset_id = request.asset_id.clone().or_else(|| {
-                    request
-                        .references
-                        .first()
-                        .and_then(|item| item.asset_id.clone())
-                });
-                let primary_edit_id = request.edit_id.clone().or_else(|| {
-                    request
-                        .references
-                        .first()
-                        .and_then(|item| item.edit_id.clone())
-                });
-                let primary_description = request.description.clone().or_else(|| {
-                    request
-                        .references
-                        .first()
-                        .and_then(|item| item.description.clone())
-                });
-                let result = pipeline
-                    .compose(
-                        &ComposeInput {
-                            preset_id: request.preset_id.clone(),
-                            spec,
-                            asset_id: primary_asset_id,
-                            edit_id: primary_edit_id,
-                            references: request.references.clone(),
-                            parent_id: request.parent_id.clone(),
-                            description: primary_description,
-                            brief: request.brief.clone(),
-                            existing_prompt: request.existing_prompt.clone(),
-                            instruction: request.instruction.clone(),
-                            guidance: request.guidance.clone(),
-                            locked: request.locked.clone(),
-                            params: request.params.clone(),
-                            variations: request.variations.max(1),
-                            seed: request.seed,
-                            output_language: request.output_language.clone(),
-                            bypass_cache: request.bypass_cache,
-                            cancel: Some(cancel_flag),
-                            system_prompt: composer_prompt.clone(),
-                            images: Vec::new(),
-                            images_key: None,
-                        },
-                        None,
-                    )
-                    .await;
-
-                match result {
-                    Ok(generations) => {
-                        if let (Some(row_id), Some(first)) =
-                            (dataset_row_id.as_deref(), generations.first())
-                            && let Ok(guard) = database.lock()
-                        {
-                            let _ = dataset_repo::update_item_status(
-                                guard.connection(),
-                                row_id,
-                                "succeeded",
-                                Some(&first.id),
-                                None,
-                            );
-                        }
-                        serde_json::to_value(&generations).map_err(|error| {
-                            CommandError::internal(format!("serialize generations: {error}"))
-                        })
-                    }
-                    Err(error) => {
-                        if let Some(row_id) = dataset_row_id.as_deref()
-                            && let Ok(guard) = database.lock()
-                        {
-                            let message = format!("[{:?}] {}", error.category, error.message);
-                            let _ = dataset_repo::update_item_status(
-                                guard.connection(),
-                                row_id,
-                                "failed",
-                                None,
-                                Some(&message),
-                            );
-                        }
-                        Err(error)
-                    }
-                }
+                run_compose_item(
+                    database.inner(),
+                    manager.inner(),
+                    composer_prompt,
+                    &item.payload_json,
+                    cancel,
+                )
+                .await
             }
             other => Err(CommandError::validation(format!(
                 "Job kind '{other}' cannot be executed by this runner"

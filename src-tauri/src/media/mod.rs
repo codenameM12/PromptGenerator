@@ -13,3 +13,4 @@ pub mod thumbnail;
 
 #[cfg(test)]
 pub mod test_support;
+pub mod still;

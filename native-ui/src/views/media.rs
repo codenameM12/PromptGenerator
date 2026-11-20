@@ -279,18 +279,27 @@ pub fn ui(
                 dispatch(&mut flow, MediaAction::Mount, &mut sink);
             }
         });
+        // Status and errors go above the grid: below an auto-expanding scroll
+        // area they were pushed half under the window's status bar.
         if !flow.status.is_empty() {
             ui.label(egui::RichText::new(&flow.status).color(theme.muted));
         }
+        if let Some(error) = &flow.error {
+            ui.add(egui::Label::new(egui::RichText::new(error).color(theme.danger)).wrap());
+        }
+        if let Some(error) = thumbnails.last_error.clone() {
+            ui.label(egui::RichText::new(error).color(theme.warning));
+        }
 
-        egui::ScrollArea::vertical()
-            .id_salt("media-scroll")
-            .scroll_source(egui::scroll_area::ScrollSource {
-                drag: egui::scroll_area::DragScroll::Never,
-                ..Default::default()
-            })
-            .auto_shrink([false, false])
-            .show(ui, |ui| {
+        let mut draw_grid = |ui: &mut Ui, flow: &mut MediaFlow| {
+            egui::ScrollArea::vertical()
+                .id_salt("media-scroll")
+                .scroll_source(egui::scroll_area::ScrollSource {
+                    drag: egui::scroll_area::DragScroll::Never,
+                    ..Default::default()
+                })
+                .auto_shrink([false, false])
+                .show(ui, |ui| {
                 if flow.assets.is_empty() {
                     ui.label(
                         egui::RichText::new("No media yet — drop files here, or use Add files.")
@@ -299,54 +308,130 @@ pub fn ui(
                 } else {
                     let mut remove: Option<String> = None;
                     let mut select: Option<String> = None;
-                    ui.horizontal_wrapped(|ui| {
-                        for index in 0..flow.assets.len() {
-                            let asset = flow.assets[index].clone();
-                            let selected =
-                                flow.selected_asset_id.as_deref() == Some(asset.id.as_str());
-                            ui.vertical(|ui| {
-                                ui.set_max_width(GRID_THUMB.x + theme.space_xs);
-                                if thumbnails.paint_button(ui, &asset, GRID_THUMB).clicked() {
-                                    select = Some(asset.id.clone());
-                                }
-                                if ui.selectable_label(selected, &asset.display_name).clicked() {
-                                    select = Some(asset.id.clone());
-                                }
-                                let meta = media_meta(&asset);
-                                if !meta.is_empty() {
-                                    ui.label(egui::RichText::new(meta).color(theme.faint));
-                                }
-                                if asset.missing {
-                                    ui.label(
-                                        egui::RichText::new("source offline").color(theme.warning),
-                                    );
-                                }
-                                if ui.small_button("Remove").clicked() {
-                                    remove = Some(asset.id.clone());
-                                }
-                            });
-                        }
-                    });
+                    // `horizontal_wrapped` does not wrap nested `vertical`
+                    // groups (every card landed on one row), so lay the grid
+                    // out in explicit rows sized to the available width.
+                    let cell_width = GRID_THUMB.x + theme.space_xs;
+                    let spacing = ui.spacing().item_spacing.x;
+                    let columns = (((ui.available_width() + spacing) / (cell_width + spacing))
+                        .floor() as usize)
+                        .max(1);
+                    let assets = flow.assets.clone();
+                    for row in assets.chunks(columns) {
+                        ui.horizontal_top(|ui| {
+                            for asset in row {
+                                let selected =
+                                    flow.selected_asset_id.as_deref() == Some(asset.id.as_str());
+                                ui.vertical(|ui| {
+                                    ui.set_width(cell_width);
+                                    if thumbnails.paint_button(ui, asset, GRID_THUMB).clicked() {
+                                        select = Some(asset.id.clone());
+                                    }
+                                    if ui
+                                        .add(
+                                            egui::Button::selectable(
+                                                selected,
+                                                egui::RichText::new(&asset.display_name),
+                                            )
+                                            .truncate(),
+                                        )
+                                        .on_hover_text(&asset.display_name)
+                                        .clicked()
+                                    {
+                                        select = Some(asset.id.clone());
+                                    }
+                                    let meta = media_meta(asset);
+                                    if !meta.is_empty() {
+                                        ui.add(
+                                            egui::Label::new(
+                                                egui::RichText::new(meta).color(theme.faint),
+                                            )
+                                            .truncate(),
+                                        );
+                                    }
+                                    if asset.missing {
+                                        ui.label(
+                                            egui::RichText::new("source offline")
+                                                .color(theme.warning),
+                                        );
+                                    }
+                                    if crate::widgets::trash_button(ui, theme, &asset.id, "Move to trash").clicked() {
+                                        remove = Some(asset.id.clone());
+                                    }
+                                });
+                            }
+                        });
+                        ui.add_space(theme.space_xs);
+                    }
                     if let Some(asset_id) = select {
-                        dispatch(&mut flow, MediaAction::SelectAsset { asset_id }, &mut sink);
+                        dispatch(flow, MediaAction::SelectAsset { asset_id }, &mut sink);
                     }
                     if let Some(asset_id) = remove {
-                        dispatch(&mut flow, MediaAction::RemoveAsset { asset_id }, &mut sink);
+                        dispatch(flow, MediaAction::RemoveAsset { asset_id }, &mut sink);
                     }
                 }
 
-                if let Some(selected) = flow.selected_asset_id.clone() {
-                    ui.add_space(theme.space_sm);
-                    super::editor::ui(ui, vm, theme, backend, &selected);
-                }
-            });
+                });
+        };
 
-        if let Some(error) = thumbnails.last_error.clone() {
-            ui.label(egui::RichText::new(error).color(theme.warning));
+        // With an item selected, split the view: grid on the left, editor on
+        // the right, each scrolling on its own (the editor used to sit below a
+        // long grid and had to be scrolled to).
+        let selected_asset = flow.selected_asset_id.clone();
+        let height = (ui.available_height() - 6.0).max(160.0);
+        match selected_asset {
+            Some(selected) if !flow.assets.is_empty() => {
+                ui.horizontal_top(|ui| {
+                    let grid_width = (ui.available_width() * 0.36).clamp(220.0, 440.0);
+                    ui.allocate_ui_with_layout(
+                        egui::vec2(grid_width, height),
+                        egui::Layout::top_down(egui::Align::Min),
+                        |ui| {
+                            ui.set_height(height);
+                            draw_grid(ui, &mut flow);
+                        },
+                    );
+                    ui.separator();
+                    let editor_width = (ui.available_width() - 4.0).max(320.0);
+                    ui.allocate_ui_with_layout(
+                        egui::vec2(editor_width, height),
+                        egui::Layout::top_down(egui::Align::Min),
+                        |ui| {
+                            ui.set_height(height);
+                            egui::ScrollArea::vertical()
+                                .id_salt("media-editor")
+                                .auto_shrink([false, false])
+                                .show(ui, |ui| {
+                                    super::editor::ui(ui, vm, theme, backend, &selected);
+                                });
+                        },
+                    );
+                });
+            }
+            _ => {
+                ui.allocate_ui_with_layout(
+                    egui::vec2(ui.available_width(), height),
+                    egui::Layout::top_down(egui::Align::Min),
+                    |ui| {
+                        ui.set_height(height);
+                        draw_grid(ui, &mut flow);
+                    },
+                );
+            }
         }
-        if let Some(error) = &flow.error {
-            ui.label(egui::RichText::new(error).color(theme.danger));
+
+        // Tell the other views (Compose pickers) when the library changed here
+        // (import, remove, trash); otherwise they kept showing deleted media.
+        let changed = vm.assets.len() != flow.assets.len()
+            || vm
+                .assets
+                .iter()
+                .zip(flow.assets.iter())
+                .any(|(old, new)| old.id != new.id);
+        if changed {
+            vm.edits_version += 1;
         }
+        vm.asset_count = flow.assets.len();
         vm.assets = flow.assets.clone();
         vm.media.selected_asset_id = flow.selected_asset_id.clone();
     });
@@ -357,11 +442,15 @@ fn media_meta(asset: &Asset) -> String {
     if let (Some(width), Some(height)) = (asset.width, asset.height) {
         parts.push(format!("{width}×{height}"));
     }
-    if let Some(fps) = asset.fps {
-        parts.push(format!("{fps:.0} fps"));
-    }
-    if let Some(duration) = asset.duration_ms {
-        parts.push(format!("{:.1}s", duration as f64 / 1000.0));
+    // ffprobe reports a nominal frame rate/zero duration for stills; only show
+    // timing for video.
+    if asset.kind == crate::backend::AssetKind::Video {
+        if let Some(fps) = asset.fps {
+            parts.push(format!("{fps:.0} fps"));
+        }
+        if let Some(duration) = asset.duration_ms {
+            parts.push(format!("{:.1}s", duration as f64 / 1000.0));
+        }
     }
     if asset.kind == AssetKind::Video {
         parts.push(if asset.has_audio {

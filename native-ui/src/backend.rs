@@ -203,7 +203,7 @@ pub trait Backend: Send {
     fn call(
         &self,
         command: &str,
-        args: serde_json::Value,
+        _args: serde_json::Value,
     ) -> Result<serde_json::Value, BackendError> {
         Err(BackendError::not_implemented(command))
     }

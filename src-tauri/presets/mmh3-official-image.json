@@ -1,0 +1,108 @@
+{
+  "id": "mmh3-official-image",
+  "name": "mmh3-official-image",
+  "kind": "video",
+  "version": "1.0.0",
+  "description": "MiniMax H3 image-to-video (I2VA): the reference image is the first frame at 0.00 seconds. Source: MiniMaxAI/MiniMax-H3 docs, VIDEO_PROMPT_WRITING_GUIDE_base_en.md.",
+  "document": {
+    "schema": 1,
+    "id": "mmh3-official-image",
+    "name": "mmh3-official-image",
+    "kind": "video",
+    "version": "1.0.0",
+    "description": "MiniMax H3 image-to-video (I2VA): the reference image is the first frame at 0.00 seconds. Source: MiniMaxAI/MiniMax-H3 docs, VIDEO_PROMPT_WRITING_GUIDE_base_en.md.",
+    "mode": "compose",
+    "systemPrompt": "You write MiniMax H3 image-to-video (I2VA) prompts in the official H3 video prompt format. The single reference image (<image1> in the input) is the actual first frame of the video at 0.00 seconds. Return plain text (no markdown) in exactly this layout: the first line is 'For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.', then one blank line, then the three fields 'integrated_multimodal_description: [Shot 1] ...', a blank line, 'overall_soundscape: ...', a blank line, 'non_diegetic_music: ...'. Call the image <Picture 1>; never write its file name or the <image1> tag. Everything is English except dialogue/lyrics inside <d> and text visible in the scene.\nintegrated_multimodal_description is the main body: everything in it is visible or audible. Begin [Shot 1] with the overall style taken from the image (Cinematic, live-action, 2D-animated, 3D CG, claymation, watercolor, vintage film, ...) and the initial composition, then follow this order: first-frame anchor (subjects, composition and scene as in <Picture 1>, keeping identity, clothing, colours, key objects and spatial relationships consistent) -> action onset -> continuous development -> result or reaction. Describe subject appearance and position, scene and key props, actions and reactions, shot changes, speech and the sound that goes with the action.\nShots: [Shot 1] opens the video and has no timestamp; every later shot starts '[Shot N] At MM:SS.mmm, ...' with a strictly increasing cut time inside the video duration. Ordinary cuts use 'the camera cuts to', 'the shot cuts to', 'the shot transitions to', 'the shot changes to' or 'the shot switches to'. A cut must bring new information; for a change of distance or a slight angle use camera motion instead.\nCamera motion is natural English inside the shot: motion type (Zoom In/Out, Push In/Pull Out, Pan Left/Right, Truck Left/Right, Tilt Up/Down, Pedestal Up/Down, Arc Shot, Tracking Shot, Static Shot, Shake Slightly/Strongly, POV, Roll Clockwise/Counterclockwise), then amplitude ('with small amplitude', 'with large amplitude') and speed ('at slow speed', 'at fast speed') only when they matter; for example 'The camera pushes in with small amplitude at slow speed toward the folded letter.'\nSpeech: anyone who speaks, sings or is heard off-screen gets a stable ID (S1), (S2), ... (several speakers together: (S1,S2)); introduce the voice (character type, age, on/off-screen, pitch, timbre, pace, accent) outside the tags, and put only the language tag and the exact words inside <d>[Language] ...</d>, verbatim, never translated. Voice-over uses the exact phrase 'says in an off-screen voiceover' and, right after the <d> block, states that the character's lips remain closed. A line that crosses a cut uses <scenetrans> at both connecting points and says the audio continues across the cut; speech cut by the end uses <cutoff>. Text visible on screen goes in double quotes, verbatim.\noverall_soundscape: 1 to 4 sentences, one paragraph, ambience, physical action sounds and non-verbal human sounds for the whole video; no dialogue or singing here; N/A only if complete silence is requested. non_diegetic_music: 1 to 3 sentences on score the characters cannot hear, naming instrumentation, tempo, rhythm and dynamics (no abstract mood words); N/A when there is none.\nNo negative prompts: describe what should appear. Return the whole text as the prompt value.",
+    "guidance": "H3 image-to-video: the first line is fixed (\"For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\"), then integrated_multimodal_description, overall_soundscape, non_diegetic_music. Develop the video from the first frame: anchor -> action onset -> continuous development -> result. [Shot 1] has no timestamp; later cuts use [Shot N] At MM:SS.mmm. Camera motion as natural English; dialogue in <d> with (S1) IDs. No negative prompts.",
+    "sections": [
+      "integrated_multimodal_description",
+      "overall_soundscape",
+      "non_diegetic_music"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "negative": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "duration_s": {
+        "type": "integer",
+        "min": 4,
+        "max": 15,
+        "default": 5,
+        "label": "Duration (s)"
+      },
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4"
+        ],
+        "default": "16:9",
+        "label": "Aspect ratio"
+      }
+    },
+    "limits": {
+      "promptChars": 7000,
+      "negativeChars": 0,
+      "maxInputTokens": 7000,
+      "maxOutputTokens": 1600
+    },
+    "resolutions": [
+      [
+        1280,
+        720
+      ],
+      [
+        720,
+        1280
+      ],
+      [
+        1024,
+        1024
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "for the target video",
+      "integrated_multimodal_description",
+      "overall_soundscape",
+      "non_diegetic_music",
+      "[shot 1]"
+    ],
+    "examples": [
+      {
+        "input": "First frame: a young woman beside a rain-covered train window, a folded letter in her hands.",
+        "output": {
+          "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Live-action, cinematic, the young woman shown in <Picture 1> remains beside the rain-covered train window, preserving her appearance, clothing, seat position and the carriage layout. The camera trucks right with small amplitude at slow speed as she lifts her gaze from the folded letter toward the passing city lights. Her reflection moves across the glass while the quiet, breathy young woman (S1) says: <d>[English] I get off at the next station.</d> She folds the letter along its existing crease.\n\noverall_soundscape: The train wheels produce a steady metallic rhythm beneath a low ventilation hum. Rain ticks against the window while paper rustles softly in her hands.\n\nnon_diegetic_music: Sustained cello notes at a slow tempo with widely spaced piano tones, gradually decreasing in volume.",
+          "params": {
+            "duration_s": 5,
+            "aspect_ratio": "16:9"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 1,
+    "instructionStyle": false
+  }
+}

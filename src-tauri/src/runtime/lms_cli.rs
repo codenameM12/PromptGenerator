@@ -96,6 +96,7 @@ impl LmsCli {
             Command::new(&self.path)
         };
 
+        crate::media::ffmpeg::hide_console(&mut command);
         let output = command
             .args(args)
             .output()

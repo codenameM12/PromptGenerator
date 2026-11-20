@@ -181,8 +181,20 @@ fn live_action(
     args: Value,
 ) {
     vm.runtime.error = None;
+    vm.runtime.notice = None;
     match sink(command, args) {
-        Ok(_) => live_refresh(sink, vm),
+        Ok(_) => {
+            live_refresh(sink, vm);
+            vm.runtime.notice = Some(
+                match command {
+                    "settings_update" => "Saved. New describe and compose runs use it now.",
+                    "models_set_roles" => "Models saved.",
+                    "models_set_policy" => "Keep-warm policy saved.",
+                    _ => "Done.",
+                }
+                .to_string(),
+            );
+        }
         Err(error) => vm.runtime.error = Some(error),
     }
 }
@@ -261,7 +273,7 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
         .runtime
         .status
         .as_ref()
-        .and_then(|status| status.get("online"))
+        .and_then(|status| status.get("reachable").or_else(|| status.get("online")))
         .and_then(Value::as_bool)
         .unwrap_or(false);
     ui.horizontal(|ui| {
@@ -433,8 +445,10 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
             ui.add_space(theme.space_sm);
             ui.label(egui::RichText::new("Model instructions").color(theme.ink_2));
             ui.label(
-                egui::RichText::new("Describer system prompt (empty restores the built-in)")
-                    .color(theme.faint),
+                egui::RichText::new(
+                    "Describer instructions: sent as the system message of every image description,                      replacing the built-in describer text. The describer sees one image at a time and                      is told its tag (<image1>, <image2>, ...). Empty restores the built-in.",
+                )
+                .color(theme.faint),
             );
             let describer = ui.add(
                 egui::TextEdit::multiline(&mut vm.runtime.describer_prompt)
@@ -444,9 +458,12 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
             if describer.has_focus() {
                 vm.text_input_focused = true;
             }
+            crate::widgets::clear_overlay(ui, &describer, &mut vm.runtime.describer_prompt, theme);
             ui.label(
-                egui::RichText::new("Composer system prompt (empty restores the preset)")
-                    .color(theme.faint),
+                egui::RichText::new(
+                    "Composer instructions: sent as the composer's system message in place of the                      preset's own text (preset guidance, limits and your guidance are still added).                      Empty restores the preset.",
+                )
+                .color(theme.faint),
             );
             let composer = ui.add(
                 egui::TextEdit::multiline(&mut vm.runtime.composer_prompt)
@@ -456,6 +473,29 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
             if composer.has_focus() {
                 vm.text_input_focused = true;
             }
+            crate::widgets::clear_overlay(ui, &composer, &mut vm.runtime.composer_prompt, theme);
+            let describer_active = vm
+                .runtime
+                .settings
+                .as_ref()
+                .and_then(|value| value.get("describerSystemPrompt"))
+                .and_then(Value::as_str)
+                .is_some_and(|text| !text.trim().is_empty());
+            let composer_active = vm
+                .runtime
+                .settings
+                .as_ref()
+                .and_then(|value| value.get("composerSystemPrompt"))
+                .and_then(Value::as_str)
+                .is_some_and(|text| !text.trim().is_empty());
+            ui.label(
+                egui::RichText::new(format!(
+                    "In use: describer {} · composer {}",
+                    if describer_active { "custom instructions" } else { "built-in" },
+                    if composer_active { "custom instructions" } else { "preset text" },
+                ))
+                .color(theme.muted),
+            );
             if ui.button("Save instructions").clicked() {
                 live_action(
                     &mut sink,
@@ -470,6 +510,9 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
                 );
             }
 
+            if let Some(notice) = vm.runtime.notice.clone() {
+                ui.label(egui::RichText::new(notice).color(theme.success));
+            }
             ui.add_space(theme.space_sm);
             ui.label(
                 egui::RichText::new(format!("{} model(s) reported", models.len()))

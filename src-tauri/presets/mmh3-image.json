@@ -1,0 +1,117 @@
+{
+  "id": "mmh3-image",
+  "name": "mmh3-image",
+  "kind": "image",
+  "version": "1.0.0",
+  "description": "MiniMax H3 Image text-to-image. Written from the public MiniMax-H3-Image model card and documented prompt-expander behaviour (huggingface.co/MiniMaxAI/MiniMax-H3-Image); not a copy of the MiniMax templates.",
+  "document": {
+    "schema": 1,
+    "id": "mmh3-image",
+    "name": "mmh3-image",
+    "kind": "image",
+    "version": "1.0.0",
+    "description": "MiniMax H3 Image text-to-image. Written from the public MiniMax-H3-Image model card and documented prompt-expander behaviour (huggingface.co/MiniMaxAI/MiniMax-H3-Image); not a copy of the MiniMax templates.",
+    "mode": "compose",
+    "systemPrompt": "You write prompts for MiniMax H3 Image text-to-image. H3 follows long, natural English captions well and renders legible text, so write one continuous, concrete caption in plain prose (no markdown, no keyword lists, no negative prompts; the model does not accept them).\nFirst decide what kind of image it is. A depicted scene or photograph: lead with the subject's identity, pose and contact with the world, then scale, environment, light, lens or medium, and physical plausibility. A communication artifact (poster, UI, chart, infographic, packaging, cover, multi-panel board, printed page): describe a finished layout - what sits where, hierarchy, labels, data, colours - not just a scene containing the objects.\nKeep every hard fact from the brief and description exactly: requested text (quote it verbatim and say where it sits and in what lettering), names, counts, numbers, style, medium, orientation and left/right/top/bottom order. Required content must be visible, never implied. For people or animals in action, fix the scene layout and one camera first, then state camera-relative facing (front, back, profile, three-quarter) and the direction of motion in the frame.\nComplete the image with visible, checkable detail (materials, textures, light direction, depth), but invent nothing that contradicts the brief, and do not pad with style adjectives. Choose one aspect ratio from the allowed list for the final canvas: an explicit ratio or size wins, then the requested deliverable, then the natural shape of the main subject (tall for upright subjects and stacked information, wide for lateral action and broad scenes, square when neutral). Words like cinematic or portrait do not decide orientation. Put the ratio in params.aspect_ratio.\nReturn JSON with prompt (the caption), params and optional notes.",
+    "guidance": "H3 Image text-to-image: one natural-English caption, no keyword soup, no negative prompt. Scene = subject, pose, environment, light, lens/medium. Layout (poster, UI, chart) = finished structure with quoted text and where it sits. Keep exact text, counts and left/right order. Pick one aspect ratio (explicit > deliverable > subject shape). The model uses about 16 MP, 6 steps, no CFG, and truncates the prompt at 4096 tokens.",
+    "sections": [
+      "subject and action",
+      "setting and light",
+      "camera or medium",
+      "exact text and layout"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "1:1",
+          "5:4",
+          "4:3",
+          "3:2",
+          "16:9",
+          "21:9",
+          "4:5",
+          "3:4",
+          "2:3",
+          "9:16"
+        ],
+        "default": "1:1",
+        "label": "Aspect ratio"
+      }
+    },
+    "limits": {
+      "promptChars": 12000,
+      "negativeChars": 0,
+      "maxInputTokens": 7000,
+      "maxOutputTokens": 1600
+    },
+    "resolutions": [
+      [
+        2048,
+        2048
+      ],
+      [
+        2560,
+        1440
+      ],
+      [
+        1440,
+        2560
+      ],
+      [
+        2304,
+        1728
+      ],
+      [
+        1728,
+        2304
+      ],
+      [
+        3072,
+        2048
+      ],
+      [
+        2048,
+        3072
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "subject and action",
+      "setting and light",
+      "camera or medium",
+      "exact text and layout"
+    ],
+    "examples": [
+      {
+        "input": "poster for a jazz night, title JAZZ AT MIDNIGHT, saxophonist silhouette",
+        "output": {
+          "prompt": "A vertical concert poster printed on matte dark-blue paper. A black saxophonist silhouette stands centre-left in profile, facing right, instrument raised, lit from behind by a warm amber spotlight that spills into soft haze. Across the top third, the title \"JAZZ AT MIDNIGHT\" is set in tall cream capital letters with wide spacing; a thin gold rule sits beneath it. The lower third is empty dark space for details, with a small cream line of text \"Friday 11 PM\" aligned to the left margin. Subtle paper grain, flat graphic illustration style.",
+          "params": {
+            "aspect_ratio": "2:3"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 0
+  }
+}

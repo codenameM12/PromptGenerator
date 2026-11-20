@@ -27,6 +27,8 @@ pub mod theme;
 pub mod thumbnails;
 #[path = "../src/view_model.rs"]
 pub mod view_model;
+#[path = "../src/widgets.rs"]
+pub mod widgets;
 
 use std::sync::Mutex;
 

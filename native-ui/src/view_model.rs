@@ -115,6 +115,9 @@ pub struct LibraryState {
     pub tag_filter: String,
     pub sort: String,
     pub trash_only: bool,
+    /// Rows ticked for a bulk action, and the anchor for shift-range ticking.
+    pub checked: std::collections::HashSet<String>,
+    pub check_anchor: Option<String>,
     pub selected_generation_id: Option<String>,
     pub visited: bool,
     /// Set once the first draw has issued the mount refresh through the backend.
@@ -170,6 +173,8 @@ pub struct RuntimeState {
     pub status: Option<Value>,
     pub settings: Option<Value>,
     pub error: Option<String>,
+    /// Confirmation after a successful save (instructions, roles...).
+    pub notice: Option<String>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -208,6 +213,8 @@ pub struct ViewModel {
     /// Asset count reported by the Compose mount, so the status bar is not
     /// limited to views that happen to copy the grid into `assets`.
     pub asset_count: usize,
+    /// Bumped whenever an edit is applied so Compose reloads the edited images.
+    pub edits_version: u64,
 }
 
 impl Default for ViewModel {
@@ -228,6 +235,7 @@ impl Default for ViewModel {
             busy: false,
             drop_hint: false,
             asset_count: 0,
+            edits_version: 0,
         }
     }
 }

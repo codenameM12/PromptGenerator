@@ -14,6 +14,7 @@ mod single_instance;
 mod theme;
 mod thumbnails;
 mod view_model;
+mod widgets;
 mod views;
 
 use std::sync::Arc;

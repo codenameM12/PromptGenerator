@@ -14,8 +14,9 @@ use crate::paths::AppPaths;
 use super::ffmpeg::MediaTools;
 use super::hash::hash_file;
 use super::metadata;
-use super::probe::probe;
+use super::probe::{ProbeData, probe};
 use super::proxy;
+use super::still;
 use super::thumbnail;
 
 const IMAGE_EXTENSIONS: &[&str] = &[
@@ -134,24 +135,36 @@ impl ImportService<'_> {
             });
         }
 
-        let probe = probe(self.tools, &canonical)?;
-        if probe.display_width == 0 || probe.display_height == 0 {
-            return Err(CommandError::media("Probe returned zero dimensions"));
-        }
-
         let kind = kind_for_path(&canonical);
         let is_video = kind == AssetKind::Video;
         let prefix = &hash[..2];
-
         let thumbnail_path = self
             .paths
             .cache_dir
             .join("thumbnails")
             .join(prefix)
             .join(format!("{hash}.jpg"));
-        if !thumbnail_path.is_file() {
-            thumbnail::generate(self.tools, &canonical, &thumbnail_path, is_video)?;
-        }
+
+        // Common still formats are read in-process: it skips two ffprobe/ffmpeg
+        // launches per image (slow, and each flashed a console window).
+        let quick = if is_video {
+            None
+        } else {
+            still::read(&canonical, &thumbnail_path)
+        };
+        let probe = match quick {
+            Some(data) => data,
+            None => {
+                let probe = probe(self.tools, &canonical)?;
+                if probe.display_width == 0 || probe.display_height == 0 {
+                    return Err(CommandError::media("Probe returned zero dimensions"));
+                }
+                if !thumbnail_path.is_file() {
+                    thumbnail::generate(self.tools, &canonical, &thumbnail_path, is_video)?;
+                }
+                probe
+            }
+        };
 
         let proxy_path = if is_video && proxy::needs_proxy(&probe) {
             let proxy_path = self

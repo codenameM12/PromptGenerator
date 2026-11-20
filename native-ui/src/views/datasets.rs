@@ -199,6 +199,20 @@ fn live_refresh(sink: &mut impl FnMut(&str, Value) -> Result<Value, String>, vm:
     }
 }
 
+/// Compact display text for one JSON preview value (strings unquoted).
+fn preview_cell(value: &Value) -> String {
+    match value {
+        Value::Null => String::new(),
+        Value::String(text) => text.clone(),
+        Value::Array(items) => items
+            .iter()
+            .map(preview_cell)
+            .collect::<Vec<_>>()
+            .join(", "),
+        other => other.to_string(),
+    }
+}
+
 fn live_action(
     sink: &mut impl FnMut(&str, Value) -> Result<Value, String>,
     vm: &mut ViewModel,
@@ -397,12 +411,46 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
                     .and_then(|mapping| mapping.get("fields"))
                     .cloned()
                     .unwrap_or_else(|| json!({}));
-                ui.label(
-                    egui::RichText::new(format!("Auto-mapped fields: {fields}")).color(theme.ink_2),
-                );
+                ui.label(egui::RichText::new("Auto-mapped fields").color(theme.ink_2));
+                match fields.as_object() {
+                    Some(map) if !map.is_empty() => {
+                        egui::Grid::new("dataset-preview-fields")
+                            .num_columns(2)
+                            .show(ui, |ui| {
+                                for (field, column) in map {
+                                    ui.label(egui::RichText::new(field).color(theme.muted));
+                                    ui.label(preview_cell(column));
+                                    ui.end_row();
+                                }
+                            });
+                    }
+                    _ => {
+                        ui.label(egui::RichText::new("No fields mapped").color(theme.faint));
+                    }
+                }
                 if let Some(rows) = preview.get("rows").and_then(Value::as_array) {
+                    ui.label(
+                        egui::RichText::new(format!(
+                            "First {} of {} previewed row(s)",
+                            rows.len().min(5),
+                            rows.len()
+                        ))
+                        .color(theme.muted),
+                    );
                     for row in rows.iter().take(5) {
-                        ui.label(egui::RichText::new(row.to_string()).color(theme.faint));
+                        let text = match row.as_object() {
+                            Some(map) => map
+                                .values()
+                                .map(preview_cell)
+                                .filter(|cell| !cell.is_empty())
+                                .collect::<Vec<_>>()
+                                .join(" · "),
+                            None => preview_cell(row),
+                        };
+                        ui.add(
+                            egui::Label::new(egui::RichText::new(text).color(theme.faint))
+                                .truncate(),
+                        );
                     }
                 }
             }

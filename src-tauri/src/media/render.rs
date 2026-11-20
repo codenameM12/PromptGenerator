@@ -89,10 +89,28 @@ pub fn render(
         }
     } else {
         command.arg("-i").arg(request.source);
+        if let Some(mask) = &request.ops.mask_path {
+            command.arg("-i").arg(mask);
+        }
     }
 
     let filter = build_filter(&plan, request.ops, &request.source_info)?;
-    if !filter.is_empty() {
+    let masked = !request.source_info.is_video && request.ops.mask_path.is_some();
+    if masked {
+        // The mask (white = keep) is applied to the source first, so crop,
+        // rotate and flip then act on the masked image. Everything outside
+        // the painted area becomes opaque black, which every model handles
+        // the same way (unlike transparency).
+        let tail = if filter.is_empty() {
+            String::new()
+        } else {
+            format!(",{filter}")
+        };
+        let graph = format!(
+            "[1:v]format=gray[mg];[mg][0:v]scale2ref=flags=bilinear[m][s];             [s]format=rgba[sa];[sa][m]alphamerge,split=2[t][u];             [u]drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill[bg];             [bg][t]overlay=format=auto,format=rgb24{tail}[out]"
+        );
+        command.args(["-filter_complex", &graph, "-map", "[out]"]);
+    } else if !filter.is_empty() {
         command.args(["-vf", &filter]);
     }
 
@@ -249,10 +267,12 @@ fn build_filter(
         }
     }
 
-    if ops.flip_h && ops.rotate.rem_euclid(360) != 180 {
+    // Flips apply after the rotation, including at 180 degrees (where the
+    // rotation itself is hflip+vflip); skipping them there dropped the user's flip.
+    if ops.flip_h {
         filters.push("hflip".into());
     }
-    if ops.flip_v && ops.rotate.rem_euclid(360) != 180 {
+    if ops.flip_v {
         filters.push("vflip".into());
     }
 
@@ -405,6 +425,64 @@ mod tests {
             dimension_multiple: 16,
             mask_polarity: MaskPolarity::WhiteKeeps,
         }
+    }
+
+    #[test]
+    fn mask_blanks_everything_outside_the_painted_area() {
+        let directory = temp_dir("render-mask");
+        let tools = tools();
+        let source = directory.join("source.png");
+        make_image(&tools, &source, "64x48");
+
+        // White square (keep) in the middle of a black (remove) mask.
+        let mask = directory.join("mask.png");
+        let mut command = tools.ffmpeg_command();
+        command
+            .args([
+                "-y",
+                "-f",
+                "lavfi",
+                "-i",
+                "color=c=black:s=64x48:d=1",
+                "-vf",
+                "drawbox=x=16:y=12:w=32:h=24:color=white:t=fill,format=gray",
+                "-frames:v",
+                "1",
+            ])
+            .arg(&mask);
+        crate::media::ffmpeg::run_checked(command, "make mask").expect("mask");
+
+        let mut value = ops();
+        value.mask_path = Some(mask.display().to_string());
+        value.format = Some("png".into());
+
+        let result = render(
+            &tools,
+            &RenderRequest {
+                source: &source,
+                source_hash: "hash",
+                source_info: SourceInfo {
+                    width: 64,
+                    height: 48,
+                    duration_ms: None,
+                    fps: None,
+                    is_video: false,
+                },
+                ops: &value,
+                target: &target(),
+                output_root: None,
+            },
+            &AtomicBool::new(false),
+            |_| {},
+        )
+        .expect("render");
+
+        let output = image::open(&result.output_path).expect("decode").to_rgb8();
+        assert_eq!(output.get_pixel(2, 2).0, [0, 0, 0], "outside is black");
+        let inside = output.get_pixel(32, 24).0;
+        assert!(inside[0] > 200 && inside[1] < 60, "inside keeps the source: {inside:?}");
+
+        let _ = std::fs::remove_dir_all(directory);
     }
 
     #[test]

@@ -2,32 +2,51 @@
   "id": "generic-image",
   "name": "Generic image",
   "kind": "image",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Model-agnostic image prompt",
   "document": {
     "schema": 1,
     "id": "generic-image",
     "name": "Generic image",
     "kind": "image",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Model-agnostic image prompt",
     "mode": "compose",
     "systemPrompt": "You write natural-language image prompts for text-to-image models. Cover subject, composition, lighting, and style in a compact paragraph. Return only the prompt.",
-    "guidance": "One still frame, no temporal language.",
-    "sections": ["subject", "composition", "lighting", "style"],
+    "guidance": "One still frame, no temporal language. Write one paragraph of roughly 30 to 90 words in natural sentences: subject first, then composition and shot, then lighting and one style phrase. Avoid comma-separated tag lists. Keep any negative short, and only use one when the target supports negatives.",
+    "sections": [
+      "subject",
+      "composition",
+      "lighting",
+      "style"
+    ],
     "outputSchema": {
       "type": "object",
-      "required": ["prompt", "params"],
+      "required": [
+        "prompt",
+        "params"
+      ],
       "properties": {
-        "prompt": { "type": "string" },
-        "negative": { "type": "string" },
-        "params": { "type": "object" }
+        "prompt": {
+          "type": "string"
+        },
+        "negative": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        }
       }
     },
     "params": {
       "aspect_ratio": {
         "type": "enum",
-        "values": ["1:1", "16:9", "9:16", "4:5"],
+        "values": [
+          "1:1",
+          "16:9",
+          "9:16",
+          "4:5"
+        ],
         "default": "1:1",
         "label": "Aspect ratio"
       }
@@ -39,14 +58,29 @@
       "maxOutputTokens": 700
     },
     "resolutions": [
-      [1024, 1024],
-      [1344, 768],
-      [768, 1344],
-      [896, 1152]
+      [
+        1024,
+        1024
+      ],
+      [
+        1344,
+        768
+      ],
+      [
+        768,
+        1344
+      ],
+      [
+        896,
+        1152
+      ]
     ],
     "dimensionMultiple": 16,
     "supportsNegative": true,
-    "checklist": ["subject", "lighting"],
+    "checklist": [
+      "subject",
+      "lighting"
+    ],
     "examples": [],
     "referenceSlots": 0,
     "instructionStyle": false

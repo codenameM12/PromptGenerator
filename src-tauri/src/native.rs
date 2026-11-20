@@ -8,7 +8,7 @@
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
@@ -19,7 +19,7 @@ use crate::commands::assets::{Asset, ImportResult};
 use crate::commands::drag::{
     DragControl, DragPayload, DragPrepareRequest, DragRevealRequest, DragSaveRequest,
 };
-use crate::commands::edits::{EditControl, EditOps, EditRequest, TargetSpec};
+use crate::commands::edits::{EditControl, EditRequest};
 use crate::commands::pipeline::{BatchRequest, ComposeRequest, DescribeRequest, PipelineControl};
 use crate::db::Database;
 use crate::db::repository::{assets as asset_repo, edits as edit_repo, generations as gen_repo};
@@ -50,7 +50,47 @@ pub struct NativeState {
     pub pipeline_control: PipelineControl,
     /// Native-only queue pause flag; the Tauri queue owns its own flag.
     pub jobs_paused: AtomicBool,
+    /// Cancellation handles for running jobs (the native runner's counterpart
+    /// of the Tauri-managed queue).
+    pub queue: job_queue::JobQueue,
     pub manager: Arc<ModelManager>,
+}
+
+/// Executes queued items in-process, mirroring the Tauri runner.
+struct StateExecutor {
+    state: Arc<NativeState>,
+}
+
+#[async_trait::async_trait]
+impl job_queue::JobExecutor for StateExecutor {
+    async fn execute(
+        &self,
+        job: &crate::db::repository::jobs::JobRow,
+        item: &crate::db::repository::jobs::JobItemRow,
+        cancel: &Arc<AtomicBool>,
+    ) -> Result<Value, CommandError> {
+        match job.kind.as_str() {
+            "compose" => {
+                let composer_prompt = self
+                    .state
+                    .settings
+                    .lock()
+                    .ok()
+                    .and_then(|store| store.get().composer_system_prompt);
+                job_queue::run_compose_item(
+                    &self.state.database,
+                    &self.state.manager,
+                    composer_prompt,
+                    &item.payload_json,
+                    cancel,
+                )
+                .await
+            }
+            other => Err(CommandError::validation(format!(
+                "Job kind '{other}' cannot be executed by this runner"
+            ))),
+        }
+    }
 }
 
 fn per_user_dirs() -> (PathBuf, PathBuf) {
@@ -107,8 +147,118 @@ impl NativeState {
             drag_control: DragControl::default(),
             pipeline_control: PipelineControl::default(),
             jobs_paused: AtomicBool::new(false),
+            queue: job_queue::JobQueue::default(),
             manager,
         })
+    }
+
+    /// Starts the thread that gives every generation a short title. The
+    /// MiniLM model loads once on that thread; without the model files a plain
+    /// word-picking fallback is used.
+    pub fn start_title_worker(self: &Arc<Self>) {
+        use crate::db::repository::titles;
+        let state = Arc::clone(self);
+        let _ = std::thread::Builder::new()
+            .name("title-worker".into())
+            .spawn(move || {
+                let mut model = crate::title::TitleModel::load().ok();
+                loop {
+                    let pending = state
+                        .database
+                        .lock()
+                        .ok()
+                        .and_then(|guard| titles::missing(guard.connection(), 64).ok())
+                        .unwrap_or_default();
+                    if pending.is_empty() {
+                        std::thread::sleep(Duration::from_secs(2));
+                        continue;
+                    }
+                    for (id, prompt) in pending {
+                        let (title, source) = match model.as_mut() {
+                            Some(model) => (model.title(&prompt), "model"),
+                            None => (crate::title::fallback_title(&prompt), "fallback"),
+                        };
+                        if let Ok(guard) = state.database.lock() {
+                            let _ = titles::set(guard.connection(), &id, &title, source);
+                        }
+                    }
+                }
+            });
+    }
+
+    /// Starts the background runner that executes queued jobs. Without it the
+    /// native shell can enqueue work (batches, dataset runs) but nothing ever
+    /// runs it. Call once after the state is wrapped in an `Arc`.
+    pub fn start_job_runner(self: &Arc<Self>) {
+        use crate::db::repository::jobs as repo;
+        let state = Arc::clone(self);
+        let spawned = std::thread::Builder::new()
+            .name("job-runner".into())
+            .spawn(move || {
+                let Ok(runtime) = tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build()
+                else {
+                    return;
+                };
+                let executor = StateExecutor {
+                    state: Arc::clone(&state),
+                };
+                runtime.block_on(async move {
+                    loop {
+                        tokio::time::sleep(Duration::from_millis(150)).await;
+                        if state.jobs_paused.load(Ordering::Relaxed) {
+                            continue;
+                        }
+                        let claimed = {
+                            let Ok(guard) = state.database.lock() else {
+                                continue;
+                            };
+                            repo::claim_next(guard.connection()).ok().flatten()
+                        };
+                        let Some(job) = claimed else {
+                            continue;
+                        };
+                        let cancel = state.queue.cancel_flag(&job.id);
+                        if cancel.load(Ordering::Relaxed) {
+                            if let Ok(guard) = state.database.lock() {
+                                let _ = repo::update_state(
+                                    guard.connection(),
+                                    &job.id,
+                                    "cancelled",
+                                    0.0,
+                                    Some("Cancelled before it started"),
+                                );
+                            }
+                            state.queue.release(&job.id);
+                            continue;
+                        }
+                        let mut on_event = |_: &job_queue::JobProgressEvent| {};
+                        let result = job_queue::run_job(
+                            &state.database,
+                            &job,
+                            &executor,
+                            &cancel,
+                            &job_queue::RunOptions::default(),
+                            &mut on_event,
+                        )
+                        .await;
+                        if let Err(error) = result
+                            && let Ok(guard) = state.database.lock()
+                        {
+                            let _ = repo::update_state(
+                                guard.connection(),
+                                &job.id,
+                                "failed",
+                                0.0,
+                                Some(&format!("[{:?}] {}", error.category, error.message)),
+                            );
+                        }
+                        state.queue.release(&job.id);
+                    }
+                });
+            });
+        let _ = spawned;
     }
 
     /// Same behaviour as `commands::assets::assets_list`, without Tauri state.
@@ -497,12 +647,12 @@ impl NativeState {
             "models_load" => self.models_load(&request),
             "models_unload" => {
                 let model = arg::<String>(&args, "model")?;
-                self.with_runtime(|runtime| runtime.block_on(self.manager.unload(&model)))?;
+                self.with_runtime(|runtime| runtime.block_on(self.manager.unload(&model)))??;
                 to_value(())
             }
             "models_unload_all" => {
                 let force = arg::<bool>(&args, "force").unwrap_or(false);
-                self.with_runtime(|runtime| runtime.block_on(self.manager.unload_all(force)))?;
+                self.with_runtime(|runtime| runtime.block_on(self.manager.unload_all(force)))??;
                 to_value(())
             }
             "models_set_roles" => self.models_set_roles(&request),
@@ -745,19 +895,31 @@ impl NativeState {
             .get()
             .output_root
             .map(PathBuf::from);
-        let rendered = crate::media::render::render(
-            &self.tools,
-            &crate::media::render::RenderRequest {
-                source: Path::new(&asset.source_path),
-                source_hash: &asset.hash,
-                source_info: source,
-                ops: &request.ops,
-                target: &request.target,
-                output_root: output_root.as_deref(),
-            },
-            cancel,
-            |_| {},
-        )?;
+        let render_into = |root: Option<&Path>| {
+            crate::media::render::render(
+                &self.tools,
+                &crate::media::render::RenderRequest {
+                    source: Path::new(&asset.source_path),
+                    source_hash: &asset.hash,
+                    source_info: source_info(&asset),
+                    ops: &request.ops,
+                    target: &request.target,
+                    output_root: root,
+                },
+                cancel,
+                |_| {},
+            )
+        };
+        let rendered = match render_into(output_root.as_deref()) {
+            // Windows "controlled folder access" blocks writes beside sources in
+            // Pictures/Documents. Fall back to the app's own data folder so the
+            // edit still completes.
+            Err(error) if error.code == "permission_denied" && output_root.is_none() => {
+                render_into(Some(self.paths.data_dir.as_path())).map_err(|_| error)?
+            }
+            other => other?,
+        };
+        let _ = source;
         let mut warnings = rendered.plan.warnings.clone();
         let actual = crate::media::probe::probe(&self.tools, &rendered.output_path).ok();
         if let Some(actual) = &actual {
@@ -1120,9 +1282,10 @@ impl NativeState {
         let job = job_queue::get(&self.database, id)?;
         match job.state {
             crate::commands::jobs::JobState::Running => {
-                return Err(CommandError::conflict(
-                    "A running job needs the queue runner; cancel is unavailable in the native shell",
-                ));
+                // The runner checks this flag between items and aborts the
+                // active compose call.
+                self.queue.request_cancel(id);
+                return to_value(job_queue::get(&self.database, id)?);
             }
             crate::commands::jobs::JobState::Succeeded
             | crate::commands::jobs::JobState::Failed
@@ -1268,6 +1431,7 @@ fn generation_record(
         collections: gen_repo::collections_for_generation(connection, &row.id)?,
         created_at: row.created_at.clone(),
         deleted_at: row.deleted_at.clone(),
+        title: crate::db::repository::titles::get(connection, &row.id)?,
     })
 }
 
@@ -1672,22 +1836,28 @@ impl NativeState {
             .lock()
             .map_err(|_| CommandError::internal("Database lock is poisoned"))?;
         let connection = guard.connection();
-        for id in &request.generation_ids {
-            let changed = if restore {
-                gen_repo::restore(connection, id)?
-            } else {
-                gen_repo::soft_delete(connection, id)?
-            };
-            generations += usize::from(changed);
-        }
-        for id in &request.asset_ids {
-            let changed = if restore {
-                asset_repo::restore(connection, id)?
-            } else {
-                asset_repo::soft_delete(connection, id)?
-            };
-            assets += usize::from(changed);
-        }
+        // One transaction: thousands of single-row commits are very slow.
+        begin_batch(connection)?;
+        let batch = (|| -> Result<(), CommandError> {
+            for id in &request.generation_ids {
+                let changed = if restore {
+                    gen_repo::restore(connection, id)?
+                } else {
+                    gen_repo::soft_delete(connection, id)?
+                };
+                generations += usize::from(changed);
+            }
+            for id in &request.asset_ids {
+                let changed = if restore {
+                    asset_repo::restore(connection, id)?
+                } else {
+                    asset_repo::soft_delete(connection, id)?
+                };
+                assets += usize::from(changed);
+            }
+            Ok(())
+        })();
+        finish_batch(connection, batch)?;
         to_value(crate::commands::library::TrashSummary {
             generations,
             assets,
@@ -1725,12 +1895,17 @@ impl NativeState {
             .lock()
             .map_err(|_| CommandError::internal("Database lock is poisoned"))?;
         let connection = guard.connection();
-        for id in &request.generation_ids {
-            generations += usize::from(gen_repo::hard_delete(connection, id)?);
-        }
-        for id in &request.asset_ids {
-            assets += usize::from(asset_repo::hard_delete(connection, id)?);
-        }
+        begin_batch(connection)?;
+        let batch = (|| -> Result<(), CommandError> {
+            for id in &request.generation_ids {
+                generations += usize::from(gen_repo::hard_delete(connection, id)?);
+            }
+            for id in &request.asset_ids {
+                assets += usize::from(asset_repo::hard_delete(connection, id)?);
+            }
+            Ok(())
+        })();
+        finish_batch(connection, batch)?;
         to_value(crate::commands::library::PurgeSummary {
             generations,
             assets,
@@ -2250,6 +2425,27 @@ fn to_asset(row: asset_repo::AssetRow) -> Asset {
     }
 }
 
+fn begin_batch(connection: &rusqlite::Connection) -> Result<(), CommandError> {
+    connection
+        .execute_batch("BEGIN IMMEDIATE")
+        .map_err(|error| CommandError::internal(error.to_string()))
+}
+
+fn finish_batch(
+    connection: &rusqlite::Connection,
+    result: Result<(), CommandError>,
+) -> Result<(), CommandError> {
+    match result {
+        Ok(()) => connection
+            .execute_batch("COMMIT")
+            .map_err(|error| CommandError::internal(error.to_string())),
+        Err(error) => {
+            let _ = connection.execute_batch("ROLLBACK");
+            Err(error)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2289,6 +2485,7 @@ mod tests {
             drag_control: DragControl::default(),
             pipeline_control: PipelineControl::default(),
             jobs_paused: AtomicBool::new(false),
+            queue: job_queue::JobQueue::default(),
             manager,
         })
     }

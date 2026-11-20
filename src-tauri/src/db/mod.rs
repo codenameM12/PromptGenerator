@@ -306,6 +306,14 @@ const MIGRATION_006: &str = r#"
 ALTER TABLE dataset_rows ADD COLUMN media_asset_ids_json TEXT;
 "#;
 
+const MIGRATION_007: &str = r#"
+CREATE TABLE IF NOT EXISTS generation_titles (
+  generation_id TEXT PRIMARY KEY REFERENCES generations(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  source TEXT NOT NULL DEFAULT 'model'
+);
+"#;
+
 struct Migration {
     version: i64,
     sql: &'static str,
@@ -336,9 +344,13 @@ const MIGRATIONS: &[Migration] = &[
         version: 6,
         sql: MIGRATION_006,
     },
+    Migration {
+        version: 7,
+        sql: MIGRATION_007,
+    },
 ];
 
-const LATEST_VERSION: i64 = 6;
+const LATEST_VERSION: i64 = 7;
 
 /// SQLite connection with embedded, forward-only migrations.
 pub struct Database {
@@ -684,7 +696,7 @@ mod tests {
         }
         assert_eq!(
             database.applied_migrations().expect("migrations"),
-            vec![1, 2, 3, 4, 5, 6]
+            vec![1, 2, 3, 4, 5, 6, 7]
         );
         assert!(tables.iter().any(|name| name == "generations_fts"));
     }
@@ -724,7 +736,7 @@ mod tests {
         database.migrate().expect("upgrade");
         assert_eq!(
             database.applied_migrations().expect("migrations"),
-            vec![1, 2, 3, 4, 5, 6]
+            vec![1, 2, 3, 4, 5, 6, 7]
         );
 
         let connection = database.connection();
@@ -770,7 +782,7 @@ mod tests {
 
         assert_eq!(
             database.applied_migrations().expect("migrations"),
-            vec![1, 2, 3, 4, 5, 6]
+            vec![1, 2, 3, 4, 5, 6, 7]
         );
         let count: i64 = database
             .connection()
@@ -778,7 +790,7 @@ mod tests {
                 row.get(0)
             })
             .expect("count");
-        assert_eq!(count, 6);
+        assert_eq!(count, 7);
     }
 
     #[test]
@@ -794,7 +806,7 @@ mod tests {
         database.migrate().expect("migrate again");
         assert_eq!(
             database.applied_migrations().expect("migrations"),
-            vec![1, 2, 3, 4, 5, 6]
+            vec![1, 2, 3, 4, 5, 6, 7]
         );
         assert!(
             database
@@ -857,7 +869,7 @@ mod tests {
         database.migrate().expect("upgrade");
         assert_eq!(
             database.applied_migrations().expect("migrations"),
-            vec![1, 2, 3, 4, 5, 6]
+            vec![1, 2, 3, 4, 5, 6, 7]
         );
 
         let backups: Vec<String> = fs::read_dir(&temp.path)
@@ -949,7 +961,7 @@ mod tests {
         );
         assert_eq!(
             target.applied_migrations().expect("migrations"),
-            vec![1, 2, 3, 4, 5, 6]
+            vec![1, 2, 3, 4, 5, 6, 7]
         );
 
         let pre_connection = rusqlite::Connection::open(&pre_restore).expect("open pre-restore");
@@ -989,7 +1001,7 @@ mod tests {
         assert_eq!(error.category, crate::commands::ErrorCategory::Conflict);
         assert_eq!(
             target.applied_migrations().expect("migrations"),
-            vec![1, 2, 3, 4, 5, 6]
+            vec![1, 2, 3, 4, 5, 6, 7]
         );
     }
 

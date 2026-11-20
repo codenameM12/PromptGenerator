@@ -16,6 +16,8 @@ mod shortcuts;
 mod theme;
 #[path = "../src/view_model.rs"]
 mod view_model;
+#[path = "../src/widgets.rs"]
+mod widgets;
 
 use std::cell::RefCell;
 use std::collections::HashMap;

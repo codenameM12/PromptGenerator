@@ -1,0 +1,118 @@
+{
+  "id": "mmh3-image-edit",
+  "name": "mmh3-image-edit",
+  "kind": "edit",
+  "version": "1.0.0",
+  "description": "MiniMax H3 Image image edit. Written from the public MiniMax-H3-Image model card and documented prompt-expander behaviour (huggingface.co/MiniMaxAI/MiniMax-H3-Image); not a copy of the MiniMax templates.",
+  "document": {
+    "schema": 1,
+    "id": "mmh3-image-edit",
+    "name": "mmh3-image-edit",
+    "kind": "edit",
+    "version": "1.0.0",
+    "description": "MiniMax H3 Image image edit. Written from the public MiniMax-H3-Image model card and documented prompt-expander behaviour (huggingface.co/MiniMaxAI/MiniMax-H3-Image); not a copy of the MiniMax templates.",
+    "mode": "edit",
+    "systemPrompt": "You write instructions for MiniMax H3 Image editing. The input images are the user's source and reference images; the model sees them in order as <Picture 1>, <Picture 2>, ... In this app the references appear as <image1>, <image2>, ...: always write them as <Picture N> with the same number. Describe the finished target image in one continuous paragraph of plain English, never the edit as an order (no 'please', 'generate', 'make it'), and never use file names.\nStructure: (1) name each source element you keep or borrow by what is visible in its picture (for example 'the woman in the red coat in <Picture 1>'); (2) give an overview of the target image; (3) say for each named element whether it is fully preserved, partly preserved (state what changes and what stays: identity, pose, layout, colours, text, lighting, camera) or only lent a property such as a colour, style or pose; (4) describe the new or changed content concretely, including exact wording for any text.\nGround every claim about the source in the description of that picture; if something is unclear, say so instead of guessing. Do not redesign anything outside the requested change. Brand-new content has no picture reference. If the brief gives an aspect ratio keep it, otherwise keep the main edited image's ratio; put it in params.aspect_ratio ('adaptive' to follow the base image).\nNo negative prompts. Return JSON with prompt, params and optional notes.",
+    "guidance": "H3 Image edit: images are <Picture 1>..N in order. Write the target image as one paragraph: name the kept/borrowed elements by their visible look and picture number, overview of the target, state preserved vs changed for each (identity, pose, layout, colour, text, light, camera), then the new content with exact quoted text. Describe results, not commands. No negative prompt. Do not change unrelated content.",
+    "sections": [
+      "kept elements",
+      "target overview",
+      "preserved vs changed",
+      "new content"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "adaptive",
+          "1:1",
+          "5:4",
+          "4:3",
+          "3:2",
+          "16:9",
+          "21:9",
+          "4:5",
+          "3:4",
+          "2:3",
+          "9:16"
+        ],
+        "default": "adaptive",
+        "label": "Aspect ratio"
+      }
+    },
+    "limits": {
+      "promptChars": 12000,
+      "negativeChars": 0,
+      "maxInputTokens": 7000,
+      "maxOutputTokens": 1600
+    },
+    "resolutions": [
+      [
+        2048,
+        2048
+      ],
+      [
+        2560,
+        1440
+      ],
+      [
+        1440,
+        2560
+      ],
+      [
+        2304,
+        1728
+      ],
+      [
+        1728,
+        2304
+      ],
+      [
+        3072,
+        2048
+      ],
+      [
+        2048,
+        3072
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "kept elements",
+      "target overview",
+      "preserved vs changed",
+      "new content"
+    ],
+    "examples": [
+      {
+        "input": "<image1> woman in a red coat on a street; make it night with rain",
+        "output": {
+          "prompt": "The woman in the red coat standing on a city street in <Picture 1> is Subject A. The target image shows the same woman and street at night in steady rain. She is fully preserved in identity, pose, coat colour and framing. The street layout and shop signs stay where they are, but the daylight is replaced by dark blue evening light, wet reflective asphalt, streaks of rain in the air, and warm shop-window glow on her coat and the pavement.",
+          "params": {
+            "aspect_ratio": "adaptive"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 4
+  }
+}

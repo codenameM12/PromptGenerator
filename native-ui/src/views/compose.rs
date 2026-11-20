@@ -40,6 +40,10 @@ pub struct AssetView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thumbnail_path: Option<String>,
     pub edit_id: Option<String>,
+    /// Output of the latest edit; Compose shows and uses this instead of the
+    /// original image.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub edited_path: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -78,6 +82,8 @@ pub struct ComposeFlow {
     pub refine_instruction: String,
     pub refine_parent_id: Option<String>,
     pub sources: Vec<(String, String, String)>,
+    /// Short generated titles keyed by generation id (Refine source list).
+    pub source_titles: std::collections::HashMap<String, String>,
     pub results: Vec<String>,
     pub result_index: usize,
     pub prompt_draft: String,
@@ -102,6 +108,8 @@ pub struct ComposeFlow {
     /// library sources and preset guidance load against the live backend.
     #[serde(default)]
     pub mounted: bool,
+    /// Last `ViewModel::edits_version` this flow loaded, to reload after edits.
+    pub seen_edits: u64,
 }
 
 impl Default for ComposeFlow {
@@ -131,6 +139,7 @@ impl Default for ComposeFlow {
             refine_instruction: String::new(),
             refine_parent_id: None,
             sources: Vec::new(),
+            source_titles: std::collections::HashMap::new(),
             results: Vec::new(),
             result_index: 0,
             prompt_draft: String::new(),
@@ -146,6 +155,7 @@ impl Default for ComposeFlow {
             loaded_preset_id: None,
             result_meta: Vec::new(),
             mounted: false,
+            seen_edits: 0,
         }
     }
 }
@@ -724,6 +734,11 @@ pub fn load_lists(flow: &mut ComposeFlow, call: CallSink) {
     )
     .unwrap_or_else(|_| json!({ "items": [] }));
 
+    let previous_edits: Vec<(String, Option<String>)> = flow
+        .assets
+        .iter()
+        .map(|asset| (asset.id.clone(), asset.edit_id.clone()))
+        .collect();
     flow.assets = assets
         .iter()
         .filter_map(|asset| {
@@ -736,6 +751,7 @@ pub fn load_lists(flow: &mut ComposeFlow, call: CallSink) {
                     .and_then(Value::as_str)
                     .map(str::to_string),
                 edit_id: None,
+                edited_path: None,
             })
         })
         .collect();
@@ -754,6 +770,22 @@ pub fn load_lists(flow: &mut ComposeFlow, call: CallSink) {
         })
         .collect();
 
+    flow.source_titles = as_array(library.get("items").unwrap_or(&json!([])))
+        .iter()
+        .filter_map(|item| {
+            let id = item.get("id")?.as_str()?.to_string();
+            let title = item.get("title").and_then(Value::as_str).unwrap_or("");
+            let title = if title.is_empty() {
+                // Not titled yet: first few words of the prompt.
+                let prompt = item.get("prompt").and_then(Value::as_str).unwrap_or("");
+                prompt.split_whitespace().take(5).collect::<Vec<_>>().join(" ")
+            } else {
+                title.to_string()
+            };
+            Some((id, title))
+        })
+        .collect();
+
     let ids: Vec<Value> = flow.assets.iter().map(|asset| json!(asset.id)).collect();
     let latest = call("edits_latest", json!({ "assetIds": ids })).unwrap_or_else(|_| json!([]));
     for edit in as_array(&latest) {
@@ -763,7 +795,28 @@ pub fn load_lists(flow: &mut ComposeFlow, call: CallSink) {
         ) && let Some(asset) = flow.assets.iter_mut().find(|item| item.id == asset_id)
         {
             asset.edit_id = Some(edit_id.to_string());
+            asset.edited_path = edit
+                .get("outputPath")
+                .and_then(Value::as_str)
+                .map(str::to_string);
         }
+    }
+    // A new edit means the old description (of the original image) no longer
+    // applies; drop it so Describe runs again on the edited image.
+    let changed: Vec<String> = flow
+        .assets
+        .iter()
+        .filter(|asset| {
+            previous_edits
+                .iter()
+                .find(|(id, _)| id == &asset.id)
+                .is_some_and(|(_, old)| old != &asset.edit_id)
+        })
+        .map(|asset| asset.id.clone())
+        .collect();
+    if !changed.is_empty() {
+        flow.descriptions
+            .retain(|entry| !changed.contains(&entry.asset_id));
     }
     call("models_status", json!({})).ok();
 
@@ -779,6 +832,9 @@ pub fn load_lists(flow: &mut ComposeFlow, call: CallSink) {
         });
     }
     flow.batch_asset_ids.retain(|id| available.contains(id));
+    // Descriptions and results of media that no longer exists are stale.
+    flow.descriptions
+        .retain(|entry| available.contains(&entry.asset_id));
     if flow.preset_id.is_empty()
         && let Some(first) = flow.presets.first()
     {
@@ -827,6 +883,14 @@ fn run_describe_flow(flow: &mut ComposeFlow, force: bool, call: CallSink) {
     });
     flow.error = None;
     for asset in &targets {
+        // Neutral tag by position in the selection, so descriptions (and the
+        // prompts built from them) never need the file name.
+        let position = flow
+            .selection
+            .iter()
+            .position(|reference| reference.asset_id == asset.id)
+            .map(|index| index + 1)
+            .unwrap_or(1);
         let args = json!({
             "request": {
                 "assetId": asset.id,
@@ -834,7 +898,8 @@ fn run_describe_flow(flow: &mut ComposeFlow, force: bool, call: CallSink) {
                 "framePaths": [],
                 "mode": if asset.kind == "video" { "video" } else { "image" },
                 "hint": non_empty(&flow.hint),
-                "forceRefresh": force
+                "forceRefresh": force,
+                "tag": format!("<image{position}>")
             }
         });
         match call("pipeline_describe", args) {
@@ -998,14 +1063,18 @@ fn queue_batch(flow: &mut ComposeFlow, call: CallSink) {
         let args = json!({
             "request": {
                 "assetId": asset.id,
-                "editId": null,
+                "editId": asset.edit_id.clone().map(Value::String).unwrap_or(Value::Null),
                 "framePaths": [],
                 "mode": if asset.kind == "video" { "video" } else { "image" },
                 "hint": non_empty(&flow.hint),
                 "forceRefresh": false
             }
         });
-        if let Ok(value) = call("pipeline_describe", args) {
+        let described = call("pipeline_describe", args);
+        if let Err(error) = &described {
+            flow.error = Some(format!("Could not describe {}: {error}", asset.display_name));
+        }
+        if let Ok(value) = described {
             let text = value
                 .get("text")
                 .and_then(Value::as_str)
@@ -1014,7 +1083,7 @@ fn queue_batch(flow: &mut ComposeFlow, call: CallSink) {
             items.push(json!({
                 "presetId": flow.preset_id,
                 "assetId": asset.id,
-                "editId": null,
+                "editId": asset.edit_id.clone().map(Value::String).unwrap_or(Value::Null),
                 "parentId": null,
                 "description": text,
                 "brief": non_empty(&flow.brief),
@@ -1035,14 +1104,20 @@ fn queue_batch(flow: &mut ComposeFlow, call: CallSink) {
         let args = json!({
             "request": { "kind": "compose", "items": items, "priority": 0, "note": note }
         });
-        if let Ok(value) = call("jobs_enqueue", args)
-            && let Some(id) = value.pointer("/job/id").and_then(Value::as_str)
-        {
-            flow.batch_job_id = Some(id.to_string());
-            // The batch-job effect polls `jobs_get` immediately after the id
-            // is set (then every 2s in the source).
-            call("jobs_get", json!({ "id": id })).ok();
+        match call("jobs_enqueue", args) {
+            Ok(value) => {
+                if let Some(id) = value.pointer("/job/id").and_then(Value::as_str) {
+                    flow.batch_job_id = Some(id.to_string());
+                    // The batch-job effect polls `jobs_get` immediately after the id
+                    // is set (then every 2s in the source).
+                    call("jobs_get", json!({ "id": id })).ok();
+                    flow.error = None;
+                }
+            }
+            Err(error) => flow.error = Some(format!("Could not queue the batch: {error}")),
         }
+    } else if flow.error.is_none() {
+        flow.error = Some("Nothing was queued: no media could be described".into());
     }
     flow.busy = false;
     flow.busy_stage = None;
@@ -1056,6 +1131,20 @@ pub fn backend_sink(
 ) -> impl FnMut(&str, Value) -> Result<Value, String> + '_ {
     move |method: &str, args: Value| -> Result<Value, String> {
         let request = args.get("request").cloned().unwrap_or(Value::Null);
+        // The typed `run_describe`/`run_compose` seams only carry a few fields
+        // (no forceRefresh, descriptions, seed, variations, guidance, locks,
+        // bypassCache or refine inputs), so a live backend must receive the
+        // whole request. The typed adapters below remain as the fallback for
+        // backends that do not implement the generic command surface.
+        if matches!(method, "pipeline_describe" | "pipeline_compose") {
+            match backend.call(method, args.clone()) {
+                Ok(value) => return Ok(value),
+                Err(error) if error.code != "not_implemented" => {
+                    return Err(error_text_of(&error));
+                }
+                Err(_) => {}
+            }
+        }
         match method {
             "assets_list" => match backend.list_assets() {
                 Ok(rows) => serde_json::to_value(rows).map_err(|e| e.to_string()),
@@ -1173,6 +1262,12 @@ pub fn ui(
             // selected preset's guidance from the live backend.
             dispatch(&mut flow, ComposeAction::Mount, &mut sink);
         }
+        if flow.mounted && flow.seen_edits != vm.edits_version {
+            // An edit was applied in Media: reload so Compose shows and uses
+            // the edited image instead of the original.
+            flow.seen_edits = vm.edits_version;
+            dispatch(&mut flow, ComposeAction::Mount, &mut sink);
+        }
         if flow.preset_id.is_empty()
             && let Some(first) = flow.presets.first().cloned()
         {
@@ -1200,6 +1295,24 @@ pub fn ui(
         });
         ui.add_space(theme.space_sm);
 
+        let pane_height = (ui.available_height() - 6.0).max(200.0);
+        ui.horizontal_top(|ui| {
+            let panel_width = (ui.available_width() * 0.26).clamp(230.0, 330.0);
+            ui.allocate_ui_with_layout(
+                egui::vec2(panel_width, pane_height),
+                egui::Layout::top_down(egui::Align::Min),
+                |ui| {
+                    ui.set_height(pane_height);
+                    draw_media_panel(ui, &mut flow, &mut sink, theme, thumbnails, vm);
+                },
+            );
+            ui.separator();
+            let rest_width = (ui.available_width() - 4.0).max(320.0);
+            ui.allocate_ui_with_layout(
+                egui::vec2(rest_width, pane_height),
+                egui::Layout::top_down(egui::Align::Min),
+                |ui| {
+                    ui.set_height(pane_height);
         ui.columns(2, |columns| {
             egui::ScrollArea::vertical()
                 .id_salt("compose-form")
@@ -1224,6 +1337,9 @@ pub fn ui(
                     ui.add_space(theme.space_sm);
                     draw_descriptions(ui, &mut flow, &mut sink, theme, vm);
                 });
+        });
+                },
+            );
         });
 
         sync_to_vm(&flow, vm);
@@ -1301,27 +1417,14 @@ fn draw_form(
             if response.has_focus() {
                 vm.text_input_focused = true;
             }
-            if response.changed() {
+            let cleared = crate::widgets::clear_overlay(ui, &response, &mut hint, theme);
+            if response.changed() || cleared {
                 let value = hint;
                 dispatch(flow, ComposeAction::SetHint { value }, sink);
             }
-            draw_picker(ui, flow, sink, theme, thumbnails, &typed_assets);
         }
         "refine" => draw_refine(ui, flow, sink, theme, vm),
         "batch" => {
-            draw_picker(ui, flow, sink, theme, thumbnails, &typed_assets);
-            ui.horizontal(|ui| {
-                if ui.button("Select all assets").clicked() {
-                    dispatch(flow, ComposeAction::BatchSelectAll, sink);
-                }
-                ui.label(
-                    egui::RichText::new(format!(
-                        "{} selected for batch",
-                        flow.batch_asset_ids.len()
-                    ))
-                    .color(theme.muted),
-                );
-            });
             if let Some(job) = flow.batch_job_id.clone() {
                 ui.label(egui::RichText::new(format!("Queued job {job}")).color(theme.success));
             }
@@ -1338,9 +1441,6 @@ fn draw_form(
                     sink,
                 );
             }
-            if !flow.text_only {
-                draw_picker(ui, flow, sink, theme, thumbnails, &typed_assets);
-            }
             ui.label(egui::RichText::new("Brief").color(theme.ink_2));
             let mut brief = flow.brief.clone();
             let response = ui.add(
@@ -1351,7 +1451,8 @@ fn draw_form(
             if response.has_focus() {
                 vm.text_input_focused = true;
             }
-            if response.changed() {
+            let cleared = crate::widgets::clear_overlay(ui, &response, &mut brief, theme);
+            if response.changed() || cleared {
                 let value = brief;
                 dispatch(flow, ComposeAction::SetBrief { value }, sink);
             }
@@ -1370,6 +1471,17 @@ fn draw_form(
     draw_advanced(ui, flow, sink, theme, vm);
 }
 
+/// Long file names widened the whole left column and pushed text over the right
+/// panel; show a shortened name (the full name stays in the tooltip/labels).
+fn short_name(name: &str) -> String {
+    const LIMIT: usize = 34;
+    if name.chars().count() <= LIMIT {
+        return name.to_string();
+    }
+    let head: String = name.chars().take(LIMIT - 1).collect();
+    format!("{head}…")
+}
+
 fn draw_picker(
     ui: &mut Ui,
     flow: &mut ComposeFlow,
@@ -1380,19 +1492,40 @@ fn draw_picker(
 ) {
     if flow.assets.is_empty() {
         ui.label(
-            egui::RichText::new("No media yet — import an image or video.").color(theme.muted),
+            egui::RichText::new("No media yet. Use Import media or paste an image.")
+                .color(theme.muted),
         );
         return;
     }
-    ui.label(egui::RichText::new("Reference media").color(theme.ink_2));
-    ui.horizontal(|ui| {
+    // In Batch mode the checkboxes choose which media to queue; otherwise they
+    // build the ordered, weighted reference list.
+    let batch = flow.mode == "batch";
+    ui.horizontal_wrapped(|ui| {
         if ui.button("Select all").clicked() {
-            dispatch(flow, ComposeAction::SelectAll, sink);
+            if batch {
+                dispatch(flow, ComposeAction::BatchSelectAll, sink);
+            } else {
+                dispatch(flow, ComposeAction::SelectAll, sink);
+            }
         }
         if ui.button("Clear").clicked() {
-            dispatch(flow, ComposeAction::ClearSelection, sink);
+            if batch {
+                flow.batch_asset_ids.clear();
+            } else {
+                dispatch(flow, ComposeAction::ClearSelection, sink);
+            }
         }
     });
+    ui.label(
+        egui::RichText::new(if batch {
+            format!("{} queued", flow.batch_asset_ids.len())
+        } else {
+            format!("{} selected", flow.selection.len())
+        })
+        .color(theme.muted),
+    );
+    ui.add_space(theme.space_3xs);
+
     let assets: Vec<AssetView> = flow.assets.clone();
     for asset in assets {
         let order = flow
@@ -1406,81 +1539,155 @@ fn draw_picker(
             .find(|item| item.asset_id == asset.id)
             .map(|item| item.weight)
             .unwrap_or(1.0);
-        ui.horizontal(|ui| {
-            let placeholder = crate::backend::Asset {
-                id: asset.id.clone(),
-                kind: crate::backend::AssetKind::Image,
-                path: asset.thumbnail_path.clone().unwrap_or_default(),
-                display_name: asset.display_name.clone(),
-                hash: String::new(),
-                width: None,
-                height: None,
-                fps: None,
-                duration_ms: None,
-                codec: None,
-                has_audio: false,
-                thumbnail_path: asset.thumbnail_path.clone(),
-                proxy_path: None,
-                missing: false,
-                favorite: false,
-                created_at: String::new(),
-            };
-            // Prefer the backend-typed asset: its thumbnail path is the one the
-            // grid decodes successfully.
-            match typed_assets.iter().find(|item| item.id == asset.id) {
-                Some(typed) => thumbnails.paint(ui, typed, PICKER_THUMB),
-                None => thumbnails.paint(ui, &placeholder, PICKER_THUMB),
-            }
-            let mut checked = order.is_some();
-            let label = match order {
-                Some(order) => format!("{order}. {}", asset.display_name),
-                None => asset.display_name.clone(),
-            };
-            if ui.checkbox(&mut checked, label).clicked() {
-                dispatch(
-                    flow,
-                    ComposeAction::ToggleAsset {
-                        asset_id: asset.id.clone(),
-                    },
-                    sink,
-                );
-            }
-        });
-        if order.is_some() {
-            ui.horizontal(|ui| {
-                ui.add_space(PICKER_THUMB.x + theme.space_xs);
-                ui.label(egui::RichText::new("Weight").color(theme.muted));
-                let mut value = weight;
-                if ui
-                    .add(
-                        egui::DragValue::new(&mut value)
-                            .range(0.0..=2.0)
-                            .speed(0.05)
-                            .max_decimals(2),
-                    )
-                    .changed()
-                {
-                    dispatch(
-                        flow,
-                        ComposeAction::SetWeight {
-                            asset_id: asset.id.clone(),
-                            value,
-                        },
-                        sink,
-                    );
-                }
-                if ui.small_button("Remove").clicked() {
-                    dispatch(
-                        flow,
-                        ComposeAction::RemoveAsset {
-                            asset_id: asset.id.clone(),
-                        },
-                        sink,
-                    );
-                }
-            });
+        let chosen = if batch {
+            flow.batch_asset_ids.contains(&asset.id)
+        } else {
+            order.is_some()
+        };
+        let placeholder = crate::backend::Asset {
+            id: asset.id.clone(),
+            kind: crate::backend::AssetKind::Image,
+            path: asset.thumbnail_path.clone().unwrap_or_default(),
+            display_name: asset.display_name.clone(),
+            hash: String::new(),
+            width: None,
+            height: None,
+            fps: None,
+            duration_ms: None,
+            codec: None,
+            has_audio: false,
+            thumbnail_path: asset.thumbnail_path.clone(),
+            proxy_path: None,
+            missing: false,
+            favorite: false,
+            created_at: String::new(),
+        };
+        // Prefer the backend-typed asset: its thumbnail path is the one the
+        // grid decodes successfully.
+        let mut shown = match typed_assets.iter().find(|item| item.id == asset.id) {
+            Some(typed) => typed.clone(),
+            None => placeholder,
+        };
+        if let Some(edited) = &asset.edited_path {
+            // Show the edited image: that is what Describe/Compose receive.
+            shown.thumbnail_path = Some(edited.clone());
+            shown.path = edited.clone();
         }
+
+        egui::Frame::new()
+            .fill(if chosen {
+                theme.accent.gamma_multiply(0.14)
+            } else {
+                egui::Color32::TRANSPARENT
+            })
+            .corner_radius(4.0)
+            .inner_margin(egui::Margin::same(4))
+            .show(ui, |ui| {
+                ui.set_width(ui.available_width());
+                ui.horizontal_top(|ui| {
+                    thumbnails.paint(ui, &shown, PICKER_THUMB);
+                    ui.vertical(|ui| {
+                        let mut checked = chosen;
+                        let mut label = short_name(&asset.display_name);
+                        if let Some(order) = order
+                            && !batch
+                        {
+                            label = format!("{order}. {label}");
+                        }
+                        if asset.edited_path.is_some() {
+                            label.push_str(" (edited)");
+                        }
+                        if ui
+                            .checkbox(&mut checked, label)
+                            .on_hover_text(&asset.display_name)
+                            .clicked()
+                        {
+                            if batch {
+                                if checked {
+                                    flow.batch_asset_ids.push(asset.id.clone());
+                                } else {
+                                    flow.batch_asset_ids.retain(|id| id != &asset.id);
+                                }
+                            } else {
+                                dispatch(
+                                    flow,
+                                    ComposeAction::ToggleAsset {
+                                        asset_id: asset.id.clone(),
+                                    },
+                                    sink,
+                                );
+                            }
+                        }
+                        if crate::widgets::trash_button(ui, theme, &asset.id, "Move this media to trash")
+                            .clicked()
+                        {
+                            dispatch(
+                                flow,
+                                ComposeAction::RemoveAsset {
+                                    asset_id: asset.id.clone(),
+                                },
+                                sink,
+                            );
+                        }
+                        if order.is_some() && !batch {
+                            ui.horizontal(|ui| {
+                                ui.label(egui::RichText::new("Weight").color(theme.muted));
+                                let mut value = weight;
+                                if ui
+                                    .add(
+                                        egui::DragValue::new(&mut value)
+                                            .range(0.0..=2.0)
+                                            .speed(0.05)
+                                            .max_decimals(2),
+                                    )
+                                    .changed()
+                                {
+                                    dispatch(
+                                        flow,
+                                        ComposeAction::SetWeight {
+                                            asset_id: asset.id.clone(),
+                                            value,
+                                        },
+                                        sink,
+                                    );
+                                }
+                            });
+                        }
+                    });
+                });
+            });
     }
+}
+
+/// Left panel of Compose: the media list. In Refine/text-only modes the list is
+/// not used, so say so instead of showing controls that do nothing.
+fn draw_media_panel(
+    ui: &mut Ui,
+    flow: &mut ComposeFlow,
+    sink: &mut impl FnMut(&str, Value) -> Result<Value, String>,
+    theme: &Theme,
+    thumbnails: &mut ThumbnailCache,
+    vm: &ViewModel,
+) {
+    let typed_assets: Vec<crate::backend::Asset> = vm.assets.clone();
+    ui.label(egui::RichText::new("Media").color(theme.accent));
+    if flow.mode == "refine" {
+        ui.label(
+            egui::RichText::new("Refine edits an existing prompt as text; media is not used.")
+                .color(theme.faint),
+        );
+        return;
+    }
+    if flow.mode == "compose" && flow.text_only {
+        ui.label(egui::RichText::new("Text only is on: media is ignored.").color(theme.faint));
+        return;
+    }
+    egui::ScrollArea::vertical()
+        .id_salt("compose-media")
+        .auto_shrink([false, false])
+        .show(ui, |ui| {
+            draw_picker(ui, flow, sink, theme, thumbnails, &typed_assets);
+        });
 }
 
 fn draw_descriptions(
@@ -1526,7 +1733,8 @@ fn draw_descriptions(
             if response.has_focus() {
                 vm.text_input_focused = true;
             }
-            if response.changed() {
+            let cleared = crate::widgets::clear_overlay(ui, &response, &mut draft, theme);
+            if response.changed() || cleared {
                 dispatch(
                     flow,
                     ComposeAction::SetDescriptionDraft {
@@ -1554,8 +1762,8 @@ fn draw_descriptions(
             });
         } else {
             let text = flow.descriptions[index].text.clone();
-            theme.output_frame().show(ui, |ui| {
-                ui.label(egui::RichText::new(text).color(theme.ink));
+            crate::widgets::scroll_box(ui, theme, ("desc-box", index), 160.0, |ui| {
+                ui.add(egui::Label::new(egui::RichText::new(text).color(theme.ink)).wrap());
             });
             if ui.button("Edit description").clicked() {
                 dispatch(
@@ -1579,22 +1787,31 @@ fn draw_refine(
     vm: &mut ViewModel,
 ) {
     ui.label(egui::RichText::new("Start from a stored generation").color(theme.ink_2));
-    let sources: Vec<(String, String)> = flow
+    let sources: Vec<(String, String, String)> = flow
         .sources
         .iter()
-        .map(|(id, prompt, _)| (id.clone(), prompt.chars().take(60).collect::<String>()))
+        .map(|(id, prompt, preset)| {
+            let title = flow
+                .source_titles
+                .get(id)
+                .cloned()
+                .unwrap_or_else(|| prompt.split_whitespace().take(5).collect::<Vec<_>>().join(" "));
+            (id.clone(), title, format!("{preset}: {}", prompt.chars().take(300).collect::<String>()))
+        })
         .collect();
-    let selected = if flow.refine_source_id.is_empty() {
-        "Free text".to_string()
-    } else {
-        flow.refine_source_id.clone()
-    };
+    let selected = sources
+        .iter()
+        .find(|(id, _, _)| *id == flow.refine_source_id)
+        .map(|(_, title, _)| title.clone())
+        .unwrap_or_else(|| "Free text".to_string());
     egui::ComboBox::from_id_salt("compose-refine-source")
         .selected_text(selected)
+        .width(320.0)
         .show_ui(ui, |ui| {
-            for (id, summary) in sources {
+            for (id, title, hover) in sources {
                 if ui
-                    .selectable_label(flow.refine_source_id == id, format!("{id}: {summary}"))
+                    .selectable_label(flow.refine_source_id == id, title)
+                    .on_hover_text(hover)
                     .clicked()
                 {
                     dispatch(flow, ComposeAction::ChooseRefineSource { id }, sink);
@@ -1612,7 +1829,8 @@ fn draw_refine(
     if response.has_focus() {
         vm.text_input_focused = true;
     }
-    if response.changed() {
+    let cleared = crate::widgets::clear_overlay(ui, &response, &mut existing, theme);
+    if response.changed() || cleared {
         let value = existing;
         dispatch(flow, ComposeAction::SetRefineExisting { value }, sink);
     }
@@ -1623,7 +1841,8 @@ fn draw_refine(
     if response.has_focus() {
         vm.text_input_focused = true;
     }
-    if response.changed() {
+    let cleared = crate::widgets::clear_overlay(ui, &response, &mut instruction, theme);
+    if response.changed() || cleared {
         let value = instruction;
         dispatch(flow, ComposeAction::SetRefineInstruction { value }, sink);
     }
@@ -1646,7 +1865,8 @@ fn draw_advanced(
             if response.has_focus() {
                 vm.text_input_focused = true;
             }
-            if response.changed() {
+            let cleared = crate::widgets::clear_overlay(ui, &response, &mut run, theme);
+            if response.changed() || cleared {
                 let value = run;
                 dispatch(flow, ComposeAction::SetRunGuidance { value }, sink);
             }
@@ -1657,7 +1877,8 @@ fn draw_advanced(
             if response.has_focus() {
                 vm.text_input_focused = true;
             }
-            if response.changed() {
+            let cleared = crate::widgets::clear_overlay(ui, &response, &mut global, theme);
+            if response.changed() || cleared {
                 let value = global;
                 dispatch(flow, ComposeAction::SetGlobalGuidance { value }, sink);
             }
@@ -1678,7 +1899,8 @@ fn draw_advanced(
             if response.has_focus() {
                 vm.text_input_focused = true;
             }
-            if response.changed() {
+            let cleared = crate::widgets::clear_overlay(ui, &response, &mut locked, theme);
+            if response.changed() || cleared {
                 let value = locked;
                 dispatch(flow, ComposeAction::SetLocked { value }, sink);
             }
@@ -1686,15 +1908,14 @@ fn draw_advanced(
             ui.horizontal(|ui| {
                 ui.label(egui::RichText::new("Language").color(theme.ink_2));
                 let mut language = flow.language.clone();
-                if ui
-                    .add(
-                        egui::TextEdit::singleline(&mut language)
+                let response = ui.add(
+                    egui::TextEdit::singleline(&mut language)
                             .desired_width(120.0)
                             .hint_text("auto")
                             .frame(theme.text_edit_frame()),
-                    )
-                    .changed()
-                {
+                );
+                let cleared = crate::widgets::clear_overlay(ui, &response, &mut language, theme);
+                if response.changed() || cleared {
                     let value = language;
                     dispatch(flow, ComposeAction::SetLanguage { value }, sink);
                 }
@@ -1714,15 +1935,14 @@ fn draw_advanced(
             ui.horizontal(|ui| {
                 ui.label(egui::RichText::new("Seed").color(theme.ink_2));
                 let mut seed = flow.seed.clone();
-                if ui
-                    .add(
-                        egui::TextEdit::singleline(&mut seed)
+                let response = ui.add(
+                    egui::TextEdit::singleline(&mut seed)
                             .desired_width(140.0)
                             .hint_text("random")
                             .frame(theme.text_edit_frame()),
-                    )
-                    .changed()
-                {
+                );
+                let cleared = crate::widgets::clear_overlay(ui, &response, &mut seed, theme);
+                if response.changed() || cleared {
                     let value = seed;
                     dispatch(flow, ComposeAction::SetSeed { value }, sink);
                 }
@@ -1742,7 +1962,9 @@ fn draw_actions(
     backend: &dyn Backend,
     access: &AllowedRoots,
 ) {
-    ui.horizontal(|ui| {
+    // Wrap: the left column is narrower than the full button row, which
+    // otherwise clips "Reset" underneath the Output panel.
+    ui.horizontal_wrapped(|ui| {
         let busy = flow.busy;
         let label = match flow.mode.as_str() {
             "describe" => "Describe",
@@ -1848,19 +2070,21 @@ fn draw_result(
     let meta = flow.result_meta.get(flow.result_index).cloned();
     let editing = flow.editing_prompt;
 
-    theme.output_frame().show(ui, |ui| {
+    crate::widgets::scroll_box(ui, theme, "result-box", 340.0, |ui| {
         if editing {
             let mut draft = flow.prompt_draft.clone();
             let response = ui.add(
                 egui::TextEdit::multiline(&mut draft)
                     .desired_rows(10)
+                    .desired_width(f32::INFINITY)
                     .frame(theme.text_edit_frame()),
             );
-            if response.changed() {
+            let cleared = crate::widgets::clear_overlay(ui, &response, &mut draft, theme);
+            if response.changed() || cleared {
                 dispatch(flow, ComposeAction::SetPromptDraft { value: draft }, sink);
             }
         } else {
-            ui.label(egui::RichText::new(prompt.clone()).color(theme.ink));
+            crate::widgets::formatted_prompt(ui, theme, &prompt);
         }
     });
 
@@ -1917,11 +2141,12 @@ fn draw_result(
             dispatch(flow, ComposeAction::EditPrompt, sink);
         }
         if ui.button("Regenerate").clicked() {
-            let seed = meta
-                .as_ref()
-                .and_then(|value| value.get("seed"))
-                .and_then(Value::as_i64)
-                .unwrap_or(0);
+            // Reusing the previous seed would reproduce the same text; a fresh
+            // seed (and bypassing the cache, set in dispatch) gives a new take.
+            let seed = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|elapsed| (elapsed.as_nanos() & 0x7fff_ffff) as i64)
+                .unwrap_or(1);
             dispatch(flow, ComposeAction::Regenerate { seed }, sink);
         }
     });
@@ -1956,8 +2181,26 @@ fn draw_result(
         if let Some(negative) = meta.get("negative").and_then(Value::as_str) {
             ui.label(egui::RichText::new(format!("Negative: {negative}")).color(theme.ink_2));
         }
-        if let Some(params) = meta.get("params").filter(|value| **value != json!({})) {
-            ui.label(egui::RichText::new(format!("Params: {params}")).color(theme.ink_2));
+        if let Some(params) = meta.get("params").and_then(Value::as_object) {
+            // Internal bookkeeping (token budget, reference echo) is not a
+            // generation parameter; show only what the user can act on.
+            let shown: Vec<String> = params
+                .iter()
+                .filter(|(key, _)| !matches!(key.as_str(), "budget" | "source" | "references"))
+                .map(|(key, value)| match value {
+                    Value::String(text) => format!("{key}: {text}"),
+                    other => format!("{key}: {other}"),
+                })
+                .collect();
+            if !shown.is_empty() {
+                ui.add(
+                    egui::Label::new(
+                        egui::RichText::new(format!("Params: {}", shown.join(" · ")))
+                            .color(theme.ink_2),
+                    )
+                    .wrap(),
+                );
+            }
         }
         if let Some(warnings) = meta.get("warnings").and_then(Value::as_array) {
             for warning in warnings {
@@ -2004,6 +2247,7 @@ fn sync_from_vm(flow: &mut ComposeFlow, vm: &ViewModel) {
                 },
                 thumbnail_path: asset.thumbnail_path.clone(),
                 edit_id: None,
+                edited_path: None,
             })
             .collect();
     }
@@ -2034,8 +2278,13 @@ fn sync_from_vm(flow: &mut ComposeFlow, vm: &ViewModel) {
             })
             .collect();
     }
-    if vm.compose.result.is_some() {
-        flow.results = vec![vm.compose.result.clone().unwrap_or_default()];
+    // Restore the saved result only when the flow has none. Doing it every
+    // frame collapsed multiple variations to one and wiped prompt edits.
+    if flow.results.is_empty()
+        && let Some(result) = vm.compose.result.clone()
+    {
+        flow.results = vec![result];
+        flow.result_index = 0;
         flow.prompt_draft = flow.results[0].clone();
     }
 }

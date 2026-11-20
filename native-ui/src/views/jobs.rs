@@ -153,7 +153,7 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
         );
     });
 
-    let jobs: Vec<(String, String, String, i64, i64)> = vm
+    let jobs: Vec<(String, String, String, i64, i64, String)> = vm
         .jobs
         .jobs
         .iter()
@@ -168,7 +168,8 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
                     .and_then(Value::as_str)
                     .unwrap_or("job")
                     .to_string(),
-                job.get("status")
+                job.get("state")
+                    .or_else(|| job.get("status"))
                     .and_then(Value::as_str)
                     .unwrap_or("unknown")
                     .to_string(),
@@ -176,9 +177,29 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
                     .and_then(Value::as_i64)
                     .unwrap_or(0),
                 job.get("totalItems").and_then(Value::as_i64).unwrap_or(0),
+                job.get("error")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string(),
             )
         })
         .collect();
+
+    // Keep progress live: refresh every ~2 s while anything is unfinished.
+    let active = jobs
+        .iter()
+        .any(|(_, _, state, _, _, _)| matches!(state.as_str(), "queued" | "running" | "waiting"));
+    if active {
+        let now = ui.ctx().input(|input| input.time);
+        let key = egui::Id::new("jobs-last-refresh");
+        let last = ui.ctx().data(|data| data.get_temp::<f64>(key)).unwrap_or(0.0);
+        if now - last > 2.0 {
+            ui.ctx().data_mut(|data| data.insert_temp(key, now));
+            live_refresh(&mut sink, vm);
+        }
+        ui.ctx()
+            .request_repaint_after(std::time::Duration::from_millis(1000));
+    }
 
     egui::ScrollArea::vertical()
         .id_salt("jobs")
@@ -187,11 +208,15 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
             if jobs.is_empty() {
                 ui.label(egui::RichText::new("No jobs yet").color(theme.muted));
             }
-            for (id, label, status, done, total) in jobs {
+            for (id, label, status, done, total, job_error) in jobs {
                 ui.horizontal_wrapped(|ui| {
                     ui.label(
                         egui::RichText::new(format!("{label} · {status} {done}/{total}"))
-                            .color(theme.ink),
+                            .color(match status.as_str() {
+                                "failed" => theme.danger,
+                                "succeeded" => theme.success,
+                                _ => theme.ink,
+                            }),
                     );
                     if ui.button("Move up").clicked() {
                         live_action(
@@ -223,6 +248,11 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
                         live_action(&mut sink, vm, "jobs_retry", json!({ "id": id }));
                     }
                 });
+                if !job_error.is_empty() {
+                    ui.add(
+                        egui::Label::new(egui::RichText::new(job_error).color(theme.danger)).wrap(),
+                    );
+                }
             }
 
             if let Some(detail) = vm.jobs.detail.clone() {
@@ -234,7 +264,8 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend)
                     for item in items {
                         let index = item.get("index").and_then(Value::as_i64).unwrap_or(0);
                         let status = item
-                            .get("status")
+                            .get("state")
+                            .or_else(|| item.get("status"))
                             .and_then(Value::as_str)
                             .unwrap_or("pending");
                         let error = item.get("error").and_then(Value::as_str).unwrap_or("");

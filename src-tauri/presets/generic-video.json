@@ -2,44 +2,69 @@
   "id": "generic-video",
   "name": "Generic video",
   "kind": "video",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Model-agnostic video prompt",
   "document": {
     "schema": 1,
     "id": "generic-video",
     "name": "Generic video",
     "kind": "video",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Model-agnostic video prompt",
     "mode": "compose",
     "systemPrompt": "You write cinematic video prompts. Describe subject, action, camera movement, lighting, and style in a compact paragraph. Keep one continuous shot unless the brief asks otherwise.",
-    "guidance": "Prefer physical camera language and a single shot.",
-    "sections": ["subject", "action", "camera", "lighting", "style"],
+    "guidance": "One continuous shot, written as one chronological paragraph of 3 to 6 sentences. Open with the shot and subject, then the action in order, then camera (static, dolly in, pan left, handheld) with direction and speed, then light and look. One camera move per shot; avoid cuts unless the brief asks. Keep any negative short (for example: worst quality, blurry, jittery, distorted).",
+    "sections": [
+      "subject",
+      "action",
+      "camera",
+      "lighting",
+      "style"
+    ],
     "outputSchema": {
       "type": "object",
-      "required": ["prompt", "params"],
+      "required": [
+        "prompt",
+        "params"
+      ],
       "properties": {
-        "prompt": { "type": "string" },
-        "negative": { "type": "string" },
-        "params": { "type": "object" }
+        "prompt": {
+          "type": "string"
+        },
+        "negative": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        }
       }
     },
     "params": {
       "duration_s": {
         "type": "enum",
-        "values": [5, 10],
+        "values": [
+          5,
+          10
+        ],
         "default": 5,
         "label": "Duration"
       },
       "aspect_ratio": {
         "type": "enum",
-        "values": ["16:9", "9:16", "1:1"],
+        "values": [
+          "16:9",
+          "9:16",
+          "1:1"
+        ],
         "default": "16:9",
         "label": "Aspect ratio"
       },
       "fps": {
         "type": "enum",
-        "values": [24, 30, 60],
+        "values": [
+          24,
+          30
+        ],
         "default": 24,
         "label": "Frame rate"
       }
@@ -51,13 +76,26 @@
       "maxOutputTokens": 900
     },
     "resolutions": [
-      [1280, 720],
-      [720, 1280],
-      [1024, 1024]
+      [
+        1280,
+        720
+      ],
+      [
+        720,
+        1280
+      ],
+      [
+        1024,
+        1024
+      ]
     ],
     "dimensionMultiple": 16,
     "supportsNegative": true,
-    "checklist": ["subject", "camera", "lighting"],
+    "checklist": [
+      "subject",
+      "camera",
+      "lighting"
+    ],
     "examples": [],
     "referenceSlots": 0,
     "instructionStyle": false

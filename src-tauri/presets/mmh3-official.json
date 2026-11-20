@@ -1,0 +1,113 @@
+{
+  "id": "mmh3-official",
+  "name": "mmh3-official",
+  "kind": "video",
+  "version": "1.0.0",
+  "description": "MiniMax H3 full-reference (R2V) prompts in the official six-section format (subject definitions, summary, retention analysis, detailed description, soundscape, score). Source: MiniMaxAI/MiniMax-H3 docs, VIDEO_PROMPT_WRITING_GUIDE_ref_en.md.",
+  "document": {
+    "schema": 1,
+    "id": "mmh3-official",
+    "name": "mmh3-official",
+    "kind": "video",
+    "version": "1.0.0",
+    "description": "MiniMax H3 full-reference (R2V) prompts in the official six-section format (subject definitions, summary, retention analysis, detailed description, soundscape, score). Source: MiniMaxAI/MiniMax-H3 docs, VIDEO_PROMPT_WRITING_GUIDE_ref_en.md.",
+    "mode": "compose",
+    "systemPrompt": "You write MiniMax H3 full-reference (R2V) prompts in the official H3 full-reference rewrite format. Return one plain-text prompt (no markdown) of exactly six sections in this order, each beginning with its name and a colon, separated by a blank line: subject_definitions, summary, retention_analysis, detailed_description, overall_soundscape, non_diegetic_music. Write all six in English; keep dialogue and lyrics inside <d> and text visible in the scene in their original language.\nReferences: the input lists numbered references (<image1>, <image2>, ...) with a description and a weight. In the output call reference k <Picture k>; never write file names or <imageK> tags. Labels: <Subject N> is reusable visible content taken from the references (a person, animal, object, environment, clothing, prop, style, pose); <Picture N> is used as its own entry only when an image is a concrete first frame, keyframe, last frame, edited keyframe or storyboard anchor; <Video N> and <Audio N> only if the brief mentions reference video or audio. A label keeps the same meaning in every section and is never redefined.\nsubject_definitions: one line per item that must be tracked later, saying what the label denotes, its reference role and the main features to follow, and naming the source picture, for example '<Subject 1> is the young woman in <Picture 1>, with long dark hair, a blue cardigan and a thin silver necklace.' If an image only supplies a subject, cite it inside that subject's line instead of adding a separate <Picture N> line.\nsummary: one short paragraph that starts with a bracketed task type: [keyframe completion] (an image is a concrete first/key/last frame), [reference generation] (images only guide character, scene, style, action, camera or storyboard), [video editing], [video continuation], [audio reuse], [audio reference]; combine types with ' + ' without repeating one. Describe the target video with the labels already defined; add no new labels.\nretention_analysis: one line per label, '<Subject N> (appears in [Shot 1], [Shot 3]): fully_preserved - ...' or '<Picture N> ([Shot 1] first frame): fully_preserved - ...'. Visible-content markers: fully_preserved, partially_preserved, attribute_transfer, weak_reference. Audio markers: fully_copy, partially_copy, reference, weak_reference. A reference weight of 1.00 is normal; below 1 means loosen it (partially_preserved or weak_reference), above 1 means keep it strictly. New actions or backgrounds are not a loss of fidelity.\ndetailed_description: the main body, shot by shot in playback order. Start with one or two sentences setting the overall style (for example 'The target video is in a cinematic, literary music-video style with soft lighting.'), then [Shot 1]. At the first clear appearance of each <Subject N> describe its referenced features, position in the frame and action; later shots reuse the label. Be as detailed and explicit as possible: composition, subject appearance and position, environment and lighting, actions and state changes, camera motion, the sound at that moment, and where referenced content actually appears. Generation tasks normally run 350 to 500 words; never shrink it to a plot summary. When a referenced subject speaks write '<Subject N> (Sx)'.\nShots: [Shot 1] opens the video and has no timestamp; every later shot starts '[Shot N] At MM:SS.mmm, ...' with a strictly increasing cut time inside the video duration. Ordinary cuts use 'the camera cuts to', 'the shot cuts to', 'the shot transitions to', 'the shot changes to' or 'the shot switches to'. A cut must bring new information; for a change of distance or a slight angle use camera motion instead.\nCamera motion is natural English inside the shot: motion type (Zoom In/Out, Push In/Pull Out, Pan Left/Right, Truck Left/Right, Tilt Up/Down, Pedestal Up/Down, Arc Shot, Tracking Shot, Static Shot, Shake Slightly/Strongly, POV, Roll Clockwise/Counterclockwise), then amplitude ('with small amplitude', 'with large amplitude') and speed ('at slow speed', 'at fast speed') only when they matter; for example 'The camera pushes in with small amplitude at slow speed toward the folded letter.'\nSpeech: anyone who speaks, sings or is heard off-screen gets a stable ID (S1), (S2), ... (several speakers together: (S1,S2)); introduce the voice (character type, age, on/off-screen, pitch, timbre, pace, accent) outside the tags, and put only the language tag and the exact words inside <d>[Language] ...</d>, verbatim, never translated. Voice-over uses the exact phrase 'says in an off-screen voiceover' and, right after the <d> block, states that the character's lips remain closed. A line that crosses a cut uses <scenetrans> at both connecting points and says the audio continues across the cut; speech cut by the end uses <cutoff>. Text visible on screen goes in double quotes, verbatim.\noverall_soundscape: 1 to 4 sentences, one paragraph, ambience, physical action sounds and non-verbal human sounds for the whole video; no dialogue or singing here; N/A only if complete silence is requested. non_diegetic_music: 1 to 3 sentences on score the characters cannot hear, naming instrumentation, tempo, rhythm and dynamics (no abstract mood words); N/A when there is none.\nNo negative prompts: describe what should appear. Return the whole six-section text as the prompt value.",
+    "guidance": "H3 full-reference format: six sections in order: subject_definitions, summary, retention_analysis, detailed_description, overall_soundscape, non_diegetic_music. Reference k becomes <Picture k>; reusable content is <Subject N> and keeps its meaning in every section. The summary starts with a [task type]; retention lines use fully_preserved, partially_preserved, attribute_transfer or weak_reference. detailed_description: style sentence, then [Shot 1], later [Shot N] At MM:SS.mmm, about 350 to 500 words, camera motion as natural English, dialogue in <d> with (S1) speaker IDs. No negative prompts.",
+    "sections": [
+      "subject_definitions",
+      "summary",
+      "retention_analysis",
+      "detailed_description",
+      "overall_soundscape",
+      "non_diegetic_music"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "negative": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "duration_s": {
+        "type": "integer",
+        "min": 4,
+        "max": 15,
+        "default": 5,
+        "label": "Duration (s)"
+      },
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4"
+        ],
+        "default": "16:9",
+        "label": "Aspect ratio"
+      }
+    },
+    "limits": {
+      "promptChars": 7000,
+      "negativeChars": 0,
+      "maxInputTokens": 7000,
+      "maxOutputTokens": 2200
+    },
+    "resolutions": [
+      [
+        1280,
+        720
+      ],
+      [
+        720,
+        1280
+      ],
+      [
+        1024,
+        1024
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "subject_definitions",
+      "summary",
+      "retention_analysis",
+      "detailed_description",
+      "overall_soundscape",
+      "non_diegetic_music",
+      "[shot 1]"
+    ],
+    "examples": [
+      {
+        "input": "Two references: a woman reading in a coffee shop and a Samoyed; she shares her cookie with the dog.",
+        "output": {
+          "prompt": "subject_definitions:\n<Subject 1> is the young woman in <Picture 1>, with long dark hair, a blue cardigan and a thin silver necklace.\n<Subject 2> is the fluffy white Samoyed in <Picture 2>, with thick white fur, pointed ears and a dark nose.\n\nsummary:\n[reference generation] <Subject 1> sits in a warm coffee shop and shares a cookie with <Subject 2> in a two-shot scene.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1], [Shot 2]): fully_preserved - her identity, hair and blue cardigan are retained.\n<Subject 2> (appears in [Shot 1], [Shot 2]): fully_preserved - the dog's white fur and pointed ears are retained.\n\ndetailed_description:\nThe target video is in a realistic, warm sitcom style with soft indoor lighting.\n[Shot 1] A medium shot frames <Subject 1>, the young woman with long dark hair and a blue cardigan, seated on an orange sofa beside a brick wall, a cookie in her hand. <Subject 2>, the thick-furred white Samoyed, sits at her feet and lifts its nose toward the cookie. The camera pushes in with small amplitude at slow speed as she breaks the cookie in half and lowers it toward the dog. Soft room tone fills the shop.\n[Shot 2] At 00:04.000, the shot cuts to a close-up of <Subject 2> taking the piece gently from her fingers while <Subject 1> smiles and strokes its fur.\n\noverall_soundscape:\nQuiet coffee-shop room tone, the soft crunch of a cookie and light paws on the wooden floor.\n\nnon_diegetic_music:\nN/A",
+          "params": {
+            "duration_s": 6,
+            "aspect_ratio": "16:9"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 4,
+    "instructionStyle": false
+  }
+}

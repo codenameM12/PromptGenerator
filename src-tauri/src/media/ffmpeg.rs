@@ -5,6 +5,18 @@ use serde_json::Value;
 
 use crate::commands::CommandError;
 
+/// Keeps child processes from opening a console window (they flashed on every
+/// import/probe when launched from the GUI app). No effect off Windows.
+pub fn hide_console(command: &mut Command) -> &mut Command {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        command.creation_flags(CREATE_NO_WINDOW);
+    }
+    command
+}
+
 /// Resolved FFmpeg sidecar binaries.
 #[derive(Debug, Clone)]
 pub struct MediaTools {
@@ -31,11 +43,15 @@ impl MediaTools {
     }
 
     pub fn ffmpeg_command(&self) -> Command {
-        Command::new(&self.ffmpeg)
+        let mut command = Command::new(&self.ffmpeg);
+        hide_console(&mut command);
+        command
     }
 
     pub fn ffprobe_json(&self, path: &Path) -> Result<Value, CommandError> {
-        let output = Command::new(&self.ffprobe)
+        let mut probe = Command::new(&self.ffprobe);
+        hide_console(&mut probe);
+        let output = probe
             .args([
                 "-v",
                 "error",

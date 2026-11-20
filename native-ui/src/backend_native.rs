@@ -73,10 +73,11 @@ pub struct NativeBackend {
 
 impl NativeBackend {
     pub fn open() -> Result<Self, BackendError> {
-        let state = NativeState::open().map_err(map_error)?;
-        Ok(Self {
-            state: Arc::new(state),
-        })
+        let state = Arc::new(NativeState::open().map_err(map_error)?);
+        // Without the runner, enqueued batches and dataset runs never execute.
+        state.start_job_runner();
+        state.start_title_worker();
+        Ok(Self { state })
     }
 }
 

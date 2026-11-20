@@ -797,7 +797,18 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend,
                 dispatch(flow, EditorAction::Preview, &mut sink);
             }
             if ui.button("Apply edit").clicked() {
-                dispatch(flow, EditorAction::Apply, &mut sink);
+                // The painted mask is part of the edit: it is exported
+                // automatically and baked into the saved image.
+                match prepare_mask(flow, &mut sink) {
+                    Ok(()) => {
+                        dispatch(flow, EditorAction::Apply, &mut sink);
+                        if flow.apply_error.is_none() && flow.result.is_some() {
+                            // Tell Compose to pick up the edited image.
+                            vm.edits_version += 1;
+                        }
+                    }
+                    Err(error) => flow.apply_error = Some(error),
+                }
             }
             if ui.button("Cancel render").clicked() {
                 dispatch(flow, EditorAction::Cancel, &mut sink);
@@ -850,6 +861,55 @@ pub fn ui(ui: &mut Ui, vm: &mut ViewModel, theme: &Theme, backend: &dyn Backend,
 // manipulation on the image instead of sliders).
 // ---------------------------------------------------------------------------
 
+/// Exports the painted mask (if any) at the source resolution and records it
+/// in the edit, or clears a stale mask path when nothing is painted.
+fn prepare_mask(flow: &mut EditorFlow, call: CallSink) -> Result<(), String> {
+    let painted = CANVAS.with(|cell| {
+        cell.borrow()
+            .as_ref()
+            .filter(|canvas| canvas.asset_id == flow.asset_id && canvas.has_mask())
+            .map(|canvas| {
+                (
+                    canvas.mask.clone(),
+                    canvas.width,
+                    canvas.height,
+                    canvas.feather,
+                    canvas.invert,
+                )
+            })
+    });
+    match painted {
+        Some((mask, width, height, feather, invert)) => {
+            let args = json!({
+                "request": {
+                    "assetId": flow.asset_id,
+                    "mask": mask,
+                    "maskWidth": width,
+                    "maskHeight": height,
+                    "targetWidth": flow.width.max(1),
+                    "targetHeight": flow.height.max(1),
+                    "feather": feather,
+                    "invert": invert,
+                    "polarity": "whiteKeeps",
+                }
+            });
+            let value = call("edits_export_mask", args)?;
+            let path = value
+                .get("path")
+                .and_then(Value::as_str)
+                .ok_or_else(|| "The mask export returned no file".to_string())?
+                .to_string();
+            dispatch(flow, EditorAction::MaskPath { path }, call);
+        }
+        None => {
+            if current(&flow.history).mask_path.is_some() {
+                flow.update(|ops| ops.mask_path = None, call);
+            }
+        }
+    }
+    Ok(())
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum CanvasTool {
     Crop,
@@ -867,6 +927,8 @@ struct CanvasState {
     /// to scan the whole raster.
     painted: usize,
     texture: Option<egui::TextureHandle>,
+    /// Black overlay (alpha = removed area) used to preview the masked result.
+    dark: Option<egui::TextureHandle>,
     source: Option<egui::TextureHandle>,
     tool: CanvasTool,
     brush: f32,
@@ -908,6 +970,7 @@ impl CanvasState {
             mask: vec![0u8; (width * height) as usize],
             painted: 0,
             texture: None,
+            dark: None,
             source: Some(source),
             tool: CanvasTool::Crop,
             brush: 28.0,
@@ -964,10 +1027,20 @@ impl CanvasState {
             return;
         }
         let mut pixels = Vec::with_capacity(self.mask.len() * 4);
+        let mut dark_pixels = Vec::with_capacity(self.mask.len() * 4);
         for value in &self.mask {
             let shown = if self.invert { 255 - value } else { *value };
             pixels.extend_from_slice(&[255, 255, 255, shown]);
+            dark_pixels.extend_from_slice(&[0, 0, 0, 255 - shown]);
         }
+        self.dark = Some(ctx.load_texture(
+            format!("editor-dark-{}", self.asset_id),
+            egui::ColorImage::from_rgba_unmultiplied(
+                [self.width as usize, self.height as usize],
+                &dark_pixels,
+            ),
+            egui::TextureOptions::LINEAR,
+        ));
         self.texture = Some(ctx.load_texture(
             format!("editor-mask-{}", self.asset_id),
             egui::ColorImage::from_rgba_unmultiplied(
@@ -1021,7 +1094,7 @@ fn canvas_ui(
             return;
         };
 
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             if ui
                 .selectable_label(canvas.tool == CanvasTool::Crop, "Crop")
                 .clicked()
@@ -1072,6 +1145,52 @@ fn canvas_ui(
                     egui::Color32::WHITE,
                 );
             }
+        }
+
+        // Show the committed crop (from drags, sliders or aspect buttons) as a
+        // dimmed frame so every crop control has a visible effect.
+        if let Some(crop) = &current(&flow.history).crop
+            && flow.width > 0
+            && flow.height > 0
+        {
+            let sx = rect.width() / flow.width as f32;
+            let sy = rect.height() / flow.height as f32;
+            let min = rect.min + egui::vec2(crop.x as f32 * sx, crop.y as f32 * sy);
+            let max = min + egui::vec2(crop.width as f32 * sx, crop.height as f32 * sy);
+            let keep = egui::Rect::from_min_max(min, max).intersect(rect);
+            let shade = egui::Color32::from_black_alpha(150);
+            painter.rect_filled(
+                egui::Rect::from_min_max(rect.min, egui::pos2(rect.max.x, keep.min.y)),
+                0.0,
+                shade,
+            );
+            painter.rect_filled(
+                egui::Rect::from_min_max(egui::pos2(rect.min.x, keep.max.y), rect.max),
+                0.0,
+                shade,
+            );
+            painter.rect_filled(
+                egui::Rect::from_min_max(
+                    egui::pos2(rect.min.x, keep.min.y),
+                    egui::pos2(keep.min.x, keep.max.y),
+                ),
+                0.0,
+                shade,
+            );
+            painter.rect_filled(
+                egui::Rect::from_min_max(
+                    egui::pos2(keep.max.x, keep.min.y),
+                    egui::pos2(rect.max.x, keep.max.y),
+                ),
+                0.0,
+                shade,
+            );
+            painter.rect_stroke(
+                keep,
+                0.0,
+                egui::Stroke::new(2.0, theme.accent),
+                egui::StrokeKind::Inside,
+            );
         }
 
         let to_canvas = |position: egui::Pos2| -> egui::Pos2 {
@@ -1153,7 +1272,7 @@ fn canvas_ui(
             }
         }
 
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             if ui
                 .add_enabled(canvas.has_mask(), egui::Button::new("Clear mask"))
                 .clicked()
@@ -1163,44 +1282,6 @@ fn canvas_ui(
                 canvas.texture = None;
                 canvas.exported_path = None;
             }
-            if ui
-                .add_enabled(canvas.has_mask(), egui::Button::new("Export mask"))
-                .clicked()
-            {
-                let width = flow.target.width.max(flow.width).max(1);
-                let height = flow.target.height.max(flow.height).max(1);
-                let polarity = if flow.target.mask_polarity == "blackKeeps" {
-                    "blackKeeps"
-                } else {
-                    "whiteKeeps"
-                };
-                let args = json!({
-                    "request": {
-                        "assetId": flow.asset_id,
-                        "mask": canvas.mask,
-                        "maskWidth": canvas.width,
-                        "maskHeight": canvas.height,
-                        "targetWidth": width,
-                        "targetHeight": height,
-                        "feather": canvas.feather,
-                        "invert": canvas.invert,
-                        "polarity": polarity,
-                    }
-                });
-                match sink("edits_export_mask", args) {
-                    Ok(value) => {
-                        let path = value
-                            .get("path")
-                            .and_then(Value::as_str)
-                            .map(str::to_string);
-                        canvas.exported_path = path.clone();
-                        if let Some(path) = path {
-                            dispatch(flow, EditorAction::MaskPath { path }, &mut sink);
-                        }
-                    }
-                    Err(error) => canvas.last_error = Some(error),
-                }
-            }
             ui.label(
                 egui::RichText::new(format!("mask {}/{} px", canvas.painted, canvas.mask.len()))
                     .color(theme.faint),
@@ -1208,12 +1289,108 @@ fn canvas_ui(
             if let Some(path) = &canvas.exported_path {
                 ui.label(egui::RichText::new(format!("Mask: {path}")).color(theme.success));
             }
-            ui.label(egui::RichText::new("Drag on the image to crop or paint").color(theme.faint));
+            ui.label(
+                egui::RichText::new(
+                    "Drag to crop, or paint the area to keep (the rest turns black; Invert flips it)",
+                )
+                .color(theme.faint),
+            );
         });
         if let Some(error) = &canvas.last_error {
             ui.label(egui::RichText::new(error).color(theme.danger));
         }
+        draw_result_preview(ui, theme, canvas, flow);
     });
+}
+
+/// Live preview of what "Apply edit" will produce for crop, rotate and flip.
+/// It uses the same order as the renderer (crop, rotate, then flips) by
+/// remapping the corners of the cropped source texture; no ffmpeg run needed.
+fn draw_result_preview(ui: &mut Ui, theme: &Theme, canvas: &CanvasState, flow: &EditorFlow) {
+    let Some(source) = &canvas.source else {
+        return;
+    };
+    let ops = current(&flow.history);
+    let (width, height) = (flow.width.max(1) as f32, flow.height.max(1) as f32);
+    let (u0, v0, u1, v1) = match &ops.crop {
+        Some(crop) if crop.width > 0.0 && crop.height > 0.0 => (
+            (crop.x as f32 / width).clamp(0.0, 1.0),
+            (crop.y as f32 / height).clamp(0.0, 1.0),
+            ((crop.x + crop.width) as f32 / width).clamp(0.0, 1.0),
+            ((crop.y + crop.height) as f32 / height).clamp(0.0, 1.0),
+        ),
+        _ => (0.0, 0.0, 1.0, 1.0),
+    };
+    // Corners of the cropped source: top-left, top-right, bottom-right, bottom-left.
+    let base = [
+        egui::pos2(u0, v0),
+        egui::pos2(u1, v0),
+        egui::pos2(u1, v1),
+        egui::pos2(u0, v1),
+    ];
+    let turns = ((ops.rotate.rem_euclid(360.0) / 90.0).round() as usize) % 4;
+    let mut uv: [egui::Pos2; 4] = std::array::from_fn(|index| base[(index + 4 - turns) % 4]);
+    if ops.flip_h {
+        uv.swap(0, 1);
+        uv.swap(2, 3);
+    }
+    if ops.flip_v {
+        uv.swap(0, 3);
+        uv.swap(1, 2);
+    }
+    let crop_w = (u1 - u0).max(0.001) * width;
+    let crop_h = (v1 - v0).max(0.001) * height;
+    let (out_w, out_h) = if turns % 2 == 1 {
+        (crop_h, crop_w)
+    } else {
+        (crop_w, crop_h)
+    };
+    let max_width = ui.available_width().clamp(160.0, 420.0);
+    let scale = (max_width / out_w).min(260.0 / out_h).min(1.0);
+    let size = egui::vec2(out_w * scale, out_h * scale);
+
+    ui.add_space(theme.space_xs);
+    ui.label(egui::RichText::new("Result preview (what Apply produces)").color(theme.ink_2));
+    let (rect, _) = ui.allocate_exact_size(size, egui::Sense::hover());
+    let corners = [
+        rect.left_top(),
+        rect.right_top(),
+        rect.right_bottom(),
+        rect.left_bottom(),
+    ];
+    let mut mesh = egui::Mesh::with_texture(source.id());
+    for (position, uv) in corners.iter().zip(uv.iter()) {
+        mesh.vertices.push(egui::epaint::Vertex {
+            pos: *position,
+            uv: *uv,
+            color: egui::Color32::WHITE,
+        });
+    }
+    mesh.add_triangle(0, 1, 2);
+    mesh.add_triangle(0, 2, 3);
+    ui.painter().add(egui::Shape::mesh(mesh));
+    // Show the masked result: everything outside the painted area is black.
+    if canvas.has_mask()
+        && let Some(dark) = &canvas.dark
+    {
+        let mut overlay = egui::Mesh::with_texture(dark.id());
+        for (position, uv) in corners.iter().zip(uv.iter()) {
+            overlay.vertices.push(egui::epaint::Vertex {
+                pos: *position,
+                uv: *uv,
+                color: egui::Color32::WHITE,
+            });
+        }
+        overlay.add_triangle(0, 1, 2);
+        overlay.add_triangle(0, 2, 3);
+        ui.painter().add(egui::Shape::mesh(overlay));
+    }
+    ui.painter().rect_stroke(
+        rect,
+        0.0,
+        egui::Stroke::new(1.0, theme.faint),
+        egui::StrokeKind::Outside,
+    );
 }
 
 #[cfg(test)]
@@ -1228,6 +1405,7 @@ mod canvas_tests {
             mask: vec![0u8; 100 * 50],
             painted: 0,
             texture: None,
+            dark: None,
             source: None,
             tool: CanvasTool::Brush,
             brush: 5.0,

@@ -15,6 +15,23 @@ use std::net::{TcpListener, TcpStream};
 
 pub const DEFAULT_PORT: u16 = 49_173;
 
+#[cfg(windows)]
+fn grant_foreground_rights() {
+    const ASFW_ANY: u32 = u32::MAX;
+    #[link(name = "user32")]
+    unsafe extern "system" {
+        fn AllowSetForegroundWindow(process_id: u32) -> i32;
+    }
+    // SAFETY: ASFW_ANY is the documented value that lets any process take the
+    // foreground; the call has no pointers or lifetime requirements.
+    unsafe {
+        AllowSetForegroundWindow(ASFW_ANY);
+    }
+}
+
+#[cfg(not(windows))]
+fn grant_foreground_rights() {}
+
 pub enum Acquisition {
     First(SingleInstance),
     AlreadyRunning,
@@ -36,6 +53,10 @@ impl SingleInstance {
                 })
             }
             Err(_) => {
+                // Windows only lets the foreground process raise another one.
+                // The user just launched us from the shell, so hand those rights
+                // to the running instance before signalling it.
+                grant_foreground_rights();
                 // Another instance owns the port; ask it to focus itself.
                 if let Ok(mut stream) = TcpStream::connect(("127.0.0.1", port)) {
                     let _ = stream.write_all(&[1]);
@@ -51,6 +72,10 @@ impl SingleInstance {
         loop {
             match self.listener.accept() {
                 Ok((mut stream, _)) => {
+                    // Accepted sockets can inherit the listener's non-blocking
+                    // mode, so the byte may not have landed yet; wait briefly.
+                    let _ = stream.set_nonblocking(false);
+                    let _ = stream.set_read_timeout(Some(std::time::Duration::from_millis(200)));
                     let mut byte = [0u8; 1];
                     if stream.read(&mut byte).map(|n| n > 0).unwrap_or(false) {
                         self.focus_requested = true;

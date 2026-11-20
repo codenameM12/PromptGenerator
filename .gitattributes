@@ -1,1 +1,3 @@
 src-tauri/binaries/*.exe filter=lfs diff=lfs merge=lfs -text
+
+src-tauri/models/**/*.onnx filter=lfs diff=lfs merge=lfs -text

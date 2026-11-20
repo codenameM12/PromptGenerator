@@ -35,6 +35,9 @@ pub struct DescribeInput {
     pub force_refresh: bool,
     /// Optional per-install override for the describer system prompt.
     pub system_prompt: Option<String>,
+    /// Neutral name for this image (for example `<image1>`) so descriptions
+    /// never need to mention file names.
+    pub tag: Option<String>,
 }
 
 pub struct ComposeInput {
@@ -197,12 +200,32 @@ fn reference_block(references: &[NormalizedReference]) -> String {
     let mut block = String::from("References:");
     for reference in references {
         block.push_str(&format!(
-            "\n{}. {} (weight {:.2})",
-            reference.index, reference.name, reference.weight
+            "\n{}. <image{}> (weight {:.2})",
+            reference.index, reference.index, reference.weight
         ));
-        if !reference.summary.is_empty() {
-            block.push_str(": ");
-            block.push_str(&reference.summary);
+    }
+    block
+}
+
+/// Composer-facing reference list: ordered, weighted, with the full reviewed
+/// description of each reference.
+fn reference_input_block(references: &[NormalizedReference]) -> String {
+    let mut block = String::from(
+        "References (weight 1.00 = normal influence, below 1 = subtle, above 1 = dominant):",
+    );
+    for reference in references {
+        block.push_str(&format!(
+            "\n{}. <image{}> (weight {:.2})",
+            reference.index, reference.index, reference.weight
+        ));
+        if let Some(description) = reference
+            .description
+            .as_deref()
+            .map(str::trim)
+            .filter(|text| !text.is_empty())
+        {
+            block.push_str("\n   Description: ");
+            block.push_str(description);
         }
     }
     block
@@ -267,6 +290,7 @@ impl Pipeline<'_> {
             "hint": input.hint,
             "model": model,
             "system": input.system_prompt,
+            "tag": input.tag,
         }))?;
 
         let cached = if input.force_refresh {
@@ -591,6 +615,7 @@ impl Pipeline<'_> {
                 (Some(_), _) | (_, Some(_)) => {
                     let description = self
                         .describe(&DescribeInput {
+                            tag: None,
                             asset_id: item.asset_id.clone(),
                             edit_id: item.edit_id.clone(),
                             asset_hash: item.asset_hash.clone(),
@@ -612,6 +637,7 @@ impl Pipeline<'_> {
                     Some(description) => Some(description.clone()),
                     None => match self
                         .describe(&DescribeInput {
+                            tag: None,
                             asset_id: reference.asset_id.clone(),
                             edit_id: reference.edit_id.clone(),
                             asset_hash: reference.asset_hash.clone(),
@@ -739,6 +765,11 @@ fn describe_user_message(input: &DescribeInput) -> Result<ChatMessage, CommandEr
     let mut parts = Vec::new();
     if let Some(hint) = &input.hint {
         parts.push(ContentPart::Text(format!("Focus: {hint}")));
+    }
+    if let Some(tag) = input.tag.as_deref().filter(|tag| !tag.trim().is_empty()) {
+        parts.push(ContentPart::Text(format!(
+            "This image is {tag}. If it must be named, call it {tag}; never use a file name."
+        )));
     }
     parts.push(ContentPart::Text(match input.mode {
         DescribeMode::Image => "Describe this image in detailed prose.".into(),
@@ -888,7 +919,7 @@ fn compose_messages_with_budget(
     }
     if !input.references.is_empty() {
         system.push_str(
-            "\nOrdered references are supplied with weights. Keep each reference's role and relative weight in mind.",
+            "\nOrdered references are supplied with weights. Keep each reference's role and relative weight in mind. Refer to references only by their tags (<image1>, <image2>, ...); never use file names.",
         );
     }
 
@@ -914,15 +945,22 @@ fn compose_messages_with_budget(
         });
     }
 
+    let described_in_references = references
+        .iter()
+        .any(|reference| reference.description.is_some());
     if !references.is_empty() {
+        // The composer gets every reference's full description with its weight
+        // (the output-side block lists names and weights only).
         sections.push(Section {
             name: "references".into(),
-            text: reference_block(&references),
-            priority: 2,
+            text: reference_input_block(&references),
+            priority: if described_in_references { 1 } else { 2 },
         });
     }
 
-    if let Some(description) = &input.description {
+    // A single description is already inside its reference entry; only add the
+    // standalone section when no reference carries it (text-only / legacy use).
+    if !described_in_references && let Some(description) = &input.description {
         sections.push(Section {
             name: "description".into(),
             text: format!("Visual description:\n{description}"),
@@ -1521,6 +1559,7 @@ mod tests {
             database: &database,
         };
         let input = DescribeInput {
+            tag: None,
             asset_id: None,
             edit_id: None,
             asset_hash: "asset-hash".into(),
@@ -1550,6 +1589,7 @@ mod tests {
         };
 
         let input = DescribeInput {
+            tag: None,
             asset_id: None,
             edit_id: None,
             asset_hash: "asset-hash".into(),
@@ -1582,6 +1622,7 @@ mod tests {
             database: &database,
         };
         let input = DescribeInput {
+            tag: None,
             asset_id: None,
             edit_id: None,
             asset_hash: "text-retry".into(),
@@ -2141,6 +2182,7 @@ mod tests {
 
         let described = pipeline
             .describe(&DescribeInput {
+                tag: None,
                 asset_id: None,
                 edit_id: None,
                 asset_hash: "real-smoke".into(),

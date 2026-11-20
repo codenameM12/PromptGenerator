@@ -12,6 +12,7 @@ pub mod pipeline;
 pub mod preset;
 pub mod runtime;
 pub mod settings;
+pub mod title;
 pub mod ui;
 pub mod workspace;
 

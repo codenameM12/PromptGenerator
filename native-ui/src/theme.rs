@@ -250,7 +250,7 @@ impl Theme {
             for (text_style, size) in [
                 (TextStyle::Small, self.text_xs),
                 (TextStyle::Body, self.text_base),
-                (TextStyle::Button, self.text_base),
+                (TextStyle::Button, self.text_base + 1.0),
                 (TextStyle::Heading, self.text_xl),
                 (TextStyle::Monospace, self.text_md),
             ] {
@@ -259,6 +259,14 @@ impl Theme {
                     .insert(text_style, FontId::proportional(size));
             }
             style.animation_time = animation_time;
+            // Larger click targets everywhere: the defaults are tiny on a
+            // high-resolution monitor.
+            style.spacing.button_padding = egui::vec2(16.0, 9.0);
+            style.spacing.interact_size = egui::vec2(44.0, 36.0);
+            style.spacing.item_spacing = egui::vec2(10.0, 8.0);
+            style.spacing.icon_width = 20.0;
+            style.spacing.icon_width_inner = 11.0;
+            style.spacing.slider_rail_height = 8.0;
         });
     }
 }

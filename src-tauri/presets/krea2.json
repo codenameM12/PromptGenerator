@@ -2,7 +2,7 @@
   "id": "krea2",
   "name": "krea2",
   "kind": "image",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Krea 2 image target — director's-brief prompt formula",
   "document": {
     "schema": 1,
@@ -13,7 +13,7 @@
     "description": "Krea 2 image target — director's-brief prompt formula",
     "mode": "compose",
     "systemPrompt": "You write Krea 2 image prompts. Use the documented formula in this order: [Subject], [Action], [Location/context], [Composition], [Style]. Write natural language that describes the scene the way a director briefs a photographer: no keyword lists, no weighting syntax. Put style language early and be specific about lighting, lens, and mood. State spatial relationships explicitly. Return only the prompt.",
-    "guidance": "Krea 2 formula: Subject + Action + Location/context + Composition + Style. Natural language, style early, explicit lighting and spatial relationships; references beat describing a style in words.",
+    "guidance": "Krea 2: one still image as a short paragraph (roughly 40 to 110 words) of natural sentences. House order: subject and action, location, shot and composition, then one style phrase. State lighting and spatial relationships explicitly. No keyword lists, no weights, no negatives. Prefer style reference images over describing a look at length. Output is 1K only.",
     "sections": [
       "subject",
       "action",

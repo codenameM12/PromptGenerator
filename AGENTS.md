@@ -29,6 +29,7 @@
   without re-adding those files a different way.
 - Builds: `npm run tauri build -- --bundles nsis` writes the installer to `src-tauri/target/release/bundle/nsis/`; `npm run package:portable` writes `dist-portable/`.
 - Avast flags a freshly rebuilt `dist-portable\Prompt Studio\Prompt Studio.exe` as `IDP.HELU.PSD11` and blocks recreating that exact filename. A renamed copy was also quarantined. The working launcher is the desktop `Prompt Studio App` shortcut pointing to `src-tauri\target\release\prompt-studio.exe`, with `portable.txt` beside it and a `data` junction to `dist-portable\Prompt Studio\data`. Add an Avast folder exception before restoring the portable copy.
+- Native UI style guide: `docs/native-ui-style-guide.md` (supersedes `docs/ui-system.md`).
 - Last recorded gates: 164 Vitest tests, 241 passing Rust tests plus 2 ignored tests (one real-model, one 10k performance). Docs: `README.md`, `docs/user-guide.md`, `docs/troubleshooting.md`, `docs/release-notes.md`, `docs/drag-out.md`, `docs/ui-system.md`.
 
 ## Commands

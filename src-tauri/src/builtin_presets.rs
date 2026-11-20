@@ -24,6 +24,22 @@ const BUILTINS: &[BuiltinSource] = &[
         json: include_str!("../presets/mmh3.json"),
     },
     BuiltinSource {
+        file: "mmh3-official.json",
+        json: include_str!("../presets/mmh3-official.json"),
+    },
+    BuiltinSource {
+        file: "mmh3-official-image.json",
+        json: include_str!("../presets/mmh3-official-image.json"),
+    },
+    BuiltinSource {
+        file: "mmh3-image.json",
+        json: include_str!("../presets/mmh3-image.json"),
+    },
+    BuiltinSource {
+        file: "mmh3-image-edit.json",
+        json: include_str!("../presets/mmh3-image-edit.json"),
+    },
+    BuiltinSource {
         file: "krea2.json",
         json: include_str!("../presets/krea2.json"),
     },
@@ -137,9 +153,38 @@ mod tests {
         let database = database();
         let connection = database.connection();
 
-        assert_eq!(super::seed(connection).expect("seed"), 6);
+        assert_eq!(super::seed(connection).expect("seed"), 10);
         assert_eq!(super::seed(connection).expect("seed again"), 0);
-        assert_eq!(presets::list(connection, false).expect("list").len(), 6);
+        assert_eq!(presets::list(connection, false).expect("list").len(), 10);
+    }
+
+    #[test]
+    fn official_h3_presets_follow_the_official_guides() {
+        let reference = builtin_spec("mmh3-official");
+        assert_eq!(reference.reference_slots, 4);
+        for section in [
+            "subject_definitions",
+            "summary",
+            "retention_analysis",
+            "detailed_description",
+            "overall_soundscape",
+            "non_diegetic_music",
+        ] {
+            assert!(reference.sections.iter().any(|name| name == section));
+            assert!(reference.system_prompt.contains(section));
+        }
+        assert!(reference.system_prompt.contains("fully_preserved"));
+        assert!(!reference.supports_negative);
+
+        let image = builtin_spec("mmh3-official-image");
+        assert_eq!(image.reference_slots, 1);
+        assert!(
+            image
+                .system_prompt
+                .contains("For the target video, at 0.00 seconds into the target video")
+        );
+        assert!(preset::validate(&reference).is_ok());
+        assert!(preset::validate(&image).is_ok());
     }
 
     fn builtin_spec(id: &str) -> crate::preset::PresetSpec {
@@ -219,7 +264,7 @@ mod tests {
             preset::validate(&spec).expect("valid preset");
             assert!(ids.insert(spec.id.clone()), "duplicate id {}", spec.id);
         }
-        assert_eq!(ids.len(), 6);
+        assert_eq!(ids.len(), 10);
     }
 
     #[test]
