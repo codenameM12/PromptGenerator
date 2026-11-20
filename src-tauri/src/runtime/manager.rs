@@ -451,12 +451,17 @@ impl ModelManager {
         // The app may have restarted while LM Studio still had a model loaded,
         // or the user may have loaded it by hand. Mirror LM Studio's state
         // before deciding to load again so we do not create a second instance.
+        // The reported set replaces ours, both ways: a model LM Studio unloaded
+        // on its own (idle TTL, manual unload) must be loaded again, and one it
+        // still holds must not be loaded a second time.
         if let Ok(models) = self.backend.list_models().await
             && let Ok(mut state) = self.state.lock()
         {
-            for loaded in models.into_iter().filter(|entry| entry.loaded) {
-                state.loaded.insert(loaded.id);
-            }
+            state.loaded = models
+                .into_iter()
+                .filter(|entry| entry.loaded)
+                .map(|entry| entry.id)
+                .collect();
         }
 
         let desired = self.desired_for(role)?;
@@ -740,6 +745,70 @@ mod tests {
                 .any(|call| call == "load gemma4-12b-qat-uncensored-hauhaucs-balanced"),
             "the manager loaded an already-loaded model again: {calls:?}"
         );
+    }
+
+    fn load_count(backend: &FakeBackend, model: &str) -> usize {
+        backend
+            .calls()
+            .iter()
+            .filter(|call| *call == &format!("load {model}"))
+            .count()
+    }
+
+    #[tokio::test]
+    async fn keep_both_loads_each_model_once_across_many_runs() {
+        let backend = Arc::new(FakeBackend::new());
+        let manager = manager(backend.clone(), KeepWarm::Both, 2);
+        for _ in 0..5 {
+            drop(manager.clone().acquire(ModelRole::Describer).await.expect("describer"));
+            drop(manager.clone().acquire(ModelRole::Composer).await.expect("composer"));
+        }
+        assert_eq!(load_count(&backend, "lfm3-vl-2b"), 1);
+        assert_eq!(
+            load_count(&backend, "gemma4-12b-qat-uncensored-hauhaucs-balanced"),
+            1
+        );
+        assert!(!backend.calls().iter().any(|call| call.starts_with("unload")));
+    }
+
+    #[tokio::test]
+    async fn repeated_runs_of_one_role_never_reload() {
+        let backend = Arc::new(FakeBackend::new());
+        let manager = manager(backend.clone(), KeepWarm::None, 2);
+        for _ in 0..5 {
+            drop(manager.clone().acquire(ModelRole::Composer).await.expect("composer"));
+        }
+        assert_eq!(
+            load_count(&backend, "gemma4-12b-qat-uncensored-hauhaucs-balanced"),
+            1
+        );
+    }
+
+    #[tokio::test]
+    async fn a_model_lm_studio_unloaded_by_itself_is_loaded_again() {
+        let backend = Arc::new(FakeBackend::new());
+        let manager = manager(backend.clone(), KeepWarm::Both, 2);
+        drop(manager.clone().acquire(ModelRole::Composer).await.expect("first"));
+        // LM Studio's own idle TTL (or the user) unloads it.
+        backend.loaded.lock().expect("loaded").clear();
+        drop(manager.clone().acquire(ModelRole::Composer).await.expect("second"));
+        assert_eq!(
+            load_count(&backend, "gemma4-12b-qat-uncensored-hauhaucs-balanced"),
+            2
+        );
+    }
+
+    #[tokio::test]
+    async fn none_policy_swaps_models_when_roles_differ() {
+        // Documents the VRAM-saving behaviour: with different describer and
+        // composer models, "keep none" unloads one to load the other each time.
+        let backend = Arc::new(FakeBackend::new());
+        let manager = manager(backend.clone(), KeepWarm::None, 2);
+        for _ in 0..2 {
+            drop(manager.clone().acquire(ModelRole::Describer).await.expect("describer"));
+            drop(manager.clone().acquire(ModelRole::Composer).await.expect("composer"));
+        }
+        assert_eq!(load_count(&backend, "lfm3-vl-2b"), 2);
     }
 
     #[tokio::test]
