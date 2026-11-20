@@ -14,7 +14,7 @@ are recorded by hand, never produced by the app. No ComfyUI or MiniMax runners.
 |---|---|---|---|
 | R1 | Hailuo bracket camera syntax with a menu of named combinations | Separate `hailuo` preset; H3 presets unchanged | Blocked on checking the syntax against MiniMax API docs (the source is a vendor blog) |
 | R2 | One camera move per clip, static default, pinned lighting | Lives only in the Hailuo preset | Conflicts with H3 multi-shot cuts, so not applied to `mmh3*` |
-| R3 | Product shots default to push-in, not zoom | Guidance line in the product presets (R8) and Hailuo preset | |
+| R3 | Product shots default to push-in, not zoom | Push-in rule in `mmh3`, `mmh3-official`, `mmh3-official-image`, `hailuo` and `product-macro` | |
 | R4 | Style reference with strength; brand moodboard | Strength = existing reference weight (0-2). Moodboard deferred | |
 | R5 | Product photo templates (product, audience, setting) | Built-in presets with a labelled-input form | Needs the brief-fields schema addition |
 | R6 | Multi-shot character consistency | Not needed; closed | Existing `mmh3-official` R2V preset already covers labelled references |
@@ -51,4 +51,6 @@ licence and copyright (2026 DareDev256). The picker is a Compose panel.
 | 4 | T1 term pick-list (`native-ui/assets/terms.json`, credits in `NOTICE-terms.txt`) | Built, tests pass |
 | 5 | R1/R2 Hailuo preset (`hailuo`) | Built. Verified against the MiniMax API reference: 15 commands, simultaneous in one bracket (max 3 recommended), sequential in separate brackets; supported on Hailuo-2.3, Hailuo-02, T2V-01-Director. H3 is not covered by that page. Named combinations are in the Terms picker under "Hailuo camera" and are sent verbatim as Style terms |
 
-Not yet seen on screen: the form inputs, term picker and render-details form were compiled and unit-tested only.
+Seed lock (R9): a value in the Compose Seed field fixes the base seed, so a variant set reproduces; blank picks a random one. Seed and model are stored per result.
+
+Verified on screen by the user (2026-11-20): term chips, product forms, render details. Not yet exercised against a live model: the form inputs, term picker and render-details form were compiled and unit-tested only.
