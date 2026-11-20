@@ -1956,6 +1956,55 @@ pub mod import_profiles {
     }
 }
 
+pub mod render_meta {
+    use rusqlite::{Connection, OptionalExtension, params};
+    use serde_json::{Value, json};
+
+    use crate::commands::CommandError;
+
+    /// Hand-entered render facts for a result; empty strings when never set.
+    pub fn get(connection: &Connection, id: &str) -> Result<Value, CommandError> {
+        let row = connection
+            .query_row(
+                "SELECT engine, sampler, steps, cfg, notes FROM generation_render_meta WHERE generation_id = ?1",
+                params![id],
+                |row| {
+                    Ok(json!({
+                        "engine": row.get::<_, String>(0)?,
+                        "sampler": row.get::<_, String>(1)?,
+                        "steps": row.get::<_, String>(2)?,
+                        "cfg": row.get::<_, String>(3)?,
+                        "notes": row.get::<_, String>(4)?,
+                    }))
+                },
+            )
+            .optional()?;
+        Ok(row.unwrap_or_else(
+            || json!({"engine": "", "sampler": "", "steps": "", "cfg": "", "notes": ""}),
+        ))
+    }
+
+    pub fn set(connection: &Connection, id: &str, meta: &Value) -> Result<(), CommandError> {
+        let text = |key: &str| -> String {
+            meta.get(key)
+                .and_then(Value::as_str)
+                .unwrap_or_default()
+                .trim()
+                .chars()
+                .take(2000)
+                .collect()
+        };
+        connection.execute(
+            "INSERT INTO generation_render_meta (generation_id, engine, sampler, steps, cfg, notes)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+             ON CONFLICT(generation_id) DO UPDATE SET engine = excluded.engine, sampler = excluded.sampler,
+               steps = excluded.steps, cfg = excluded.cfg, notes = excluded.notes",
+            params![id, text("engine"), text("sampler"), text("steps"), text("cfg"), text("notes")],
+        )?;
+        Ok(())
+    }
+}
+
 pub mod titles {
     use rusqlite::{Connection, OptionalExtension, params};
 

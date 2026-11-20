@@ -139,6 +139,18 @@ pub struct PresetSpec {
     pub reference_slots: u8,
     #[serde(default)]
     pub instruction_style: bool,
+    /// Labelled inputs that replace the free brief (see docs/spec-v2.md).
+    #[serde(default)]
+    pub brief_fields: Vec<BriefField>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BriefField {
+    pub key: String,
+    pub label: String,
+    #[serde(default)]
+    pub placeholder: String,
 }
 
 pub fn parse(value: &Value) -> Result<PresetSpec, CommandError> {
@@ -530,6 +542,7 @@ mod tests {
             examples: vec![],
             reference_slots: 0,
             instruction_style: false,
+            brief_fields: Vec::new(),
         }
     }
 

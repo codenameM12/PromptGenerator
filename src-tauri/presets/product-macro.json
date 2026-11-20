@@ -1,0 +1,148 @@
+{
+  "id": "product-macro",
+  "name": "product macro",
+  "kind": "image",
+  "version": "1.0.0",
+  "description": "Product macro and material-detail template: detail, finish, lens, focus, lighting cue and an optional slow reveal (image, or a short video clip).",
+  "document": {
+    "schema": 1,
+    "id": "product-macro",
+    "name": "product macro",
+    "kind": "image",
+    "version": "1.0.0",
+    "description": "Product macro and material-detail template: detail, finish, lens, focus, lighting cue and an optional slow reveal (image, or a short video clip).",
+    "mode": "compose",
+    "systemPrompt": "You write one macro or material-detail prompt for a product from the labelled brief (Detail, Finish, Lens, Focus, Lighting cue, and an optional Reveal). Open with the exact detail being shown (stitching, grain, engraving, thread, weave) and the finish (brushed, matte, glossy, anodised, leather, ceramic), then the lens and magnification, the focus plane and what falls out of focus, and one lighting cue (for example raking side light to show texture). Describe real surface behaviour: reflections, micro-scratches, fibre direction, edge highlights. If a Reveal is given, add one slow camera move at the end ('the camera slowly pushes in', never a zoom) so the prompt also works for a short video clip; otherwise describe a single still. No negative prompts, no keyword lists. Put the chosen aspect ratio in params.aspect_ratio. Return JSON with prompt, params and optional notes.",
+    "guidance": "Fill Detail, Finish and Lens; add Focus and a Lighting cue. A Reveal adds one slow push-in. One camera move at most; prefer a push-in over a zoom.",
+    "sections": [
+      "detail",
+      "finish",
+      "lens and focus",
+      "lighting cue",
+      "reveal (optional)"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "1:1",
+          "4:5",
+          "3:4",
+          "2:3",
+          "3:2",
+          "4:3",
+          "16:9",
+          "9:16"
+        ],
+        "default": "4:5",
+        "label": "Aspect ratio"
+      },
+      "duration_s": {
+        "type": "integer",
+        "min": 3,
+        "max": 10,
+        "default": 5,
+        "label": "Clip length (s), if used as video"
+      }
+    },
+    "limits": {
+      "promptChars": 3000,
+      "negativeChars": 0,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 700
+    },
+    "resolutions": [
+      [
+        2048,
+        2048
+      ],
+      [
+        1792,
+        2240
+      ],
+      [
+        2240,
+        1792
+      ],
+      [
+        2560,
+        1440
+      ],
+      [
+        1440,
+        2560
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "detail",
+      "finish",
+      "lens and focus",
+      "lighting cue",
+      "reveal (optional)"
+    ],
+    "examples": [
+      {
+        "input": "Detail: double-stitched seam on a leather watch strap. Finish: matte tanned leather. Lens: 100mm macro. Lighting: raking light.",
+        "output": {
+          "prompt": "Extreme close-up of a double-stitched seam on a matte vegetable-tanned leather watch strap, the waxed cream thread sitting in evenly spaced holes with tiny pressed ridges along the edge. Shot on a 100mm macro lens at f/4; the focal plane is razor sharp across the stitch line while the buckle falls into a soft brown blur at the right. Raking light from the left throws fine shadows into each stitch and shows the fibre grain and subtle scuffs of the leather. Muted warm brown tones, calm, crafted mood.",
+          "params": {
+            "aspect_ratio": "3:2"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 1,
+    "briefFields": [
+      {
+        "key": "detail",
+        "label": "Detail",
+        "placeholder": "double-stitched seam on a leather watch strap"
+      },
+      {
+        "key": "finish",
+        "label": "Finish",
+        "placeholder": "matte vegetable-tanned leather"
+      },
+      {
+        "key": "lens",
+        "label": "Lens",
+        "placeholder": "100mm macro, f/4"
+      },
+      {
+        "key": "focus",
+        "label": "Focus",
+        "placeholder": "sharp on the stitch line, soft falloff to the buckle"
+      },
+      {
+        "key": "lighting",
+        "label": "Lighting cue",
+        "placeholder": "raking light from the left"
+      },
+      {
+        "key": "reveal",
+        "label": "Slow reveal (optional)",
+        "placeholder": "camera pushes in slowly"
+      }
+    ]
+  }
+}

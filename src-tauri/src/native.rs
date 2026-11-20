@@ -561,6 +561,18 @@ impl NativeState {
                 let request: crate::commands::library::CompareRequest = parse(&request)?;
                 self.library_compare(&request)
             }
+            "library_render_meta_get" => {
+                let id: String = arg(&args, "id")?;
+                self.db(|connection| crate::db::repository::render_meta::get(connection, &id))
+            }
+            "library_render_meta_set" => {
+                let id: String = arg(&args, "id")?;
+                let meta: Value = arg(&args, "meta")?;
+                self.db(|connection| {
+                    crate::db::repository::render_meta::set(connection, &id, &meta)?;
+                    crate::db::repository::render_meta::get(connection, &id)
+                })
+            }
             "library_favorite" => {
                 let request: crate::commands::library::FavoriteRequest = parse(&request)?;
                 self.library_favorite(&request)

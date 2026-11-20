@@ -1,0 +1,133 @@
+{
+  "id": "product-photo",
+  "name": "product photo",
+  "kind": "image",
+  "version": "1.0.0",
+  "description": "Product photo template: fill in product, audience and setting; works for text-to-image targets (Krea 2, MiniMax H3 Image, others).",
+  "document": {
+    "schema": 1,
+    "id": "product-photo",
+    "name": "product photo",
+    "kind": "image",
+    "version": "1.0.0",
+    "description": "Product photo template: fill in product, audience and setting; works for text-to-image targets (Krea 2, MiniMax H3 Image, others).",
+    "mode": "compose",
+    "systemPrompt": "You write one commercial product-photo prompt in natural English from the labelled brief (Product, Audience, Setting, and any Style or Notes). Describe a single finished photograph: the product first (exact name, shape, colour, material, and any text or logo spelled exactly), then placement and props that fit the audience, the setting with depth, the lighting (direction, softness, colour), the lens and camera angle, and the overall mood. Keep the product the clear hero and fully visible. If a reference image is supplied it shows the real product: keep its shape, colour and markings unchanged. Prefer concrete, checkable detail over adjectives such as stunning or perfect. No negative prompts and no keyword lists. Choose one aspect ratio and put it in params.aspect_ratio. Return JSON with prompt, params and optional notes.",
+    "guidance": "Fill Product, Audience and Setting. The prompt leads with the product, then audience-appropriate props, setting, lighting, lens and angle, and mood. Product text and logos are quoted exactly. No negative prompt.",
+    "sections": [
+      "product",
+      "placement and props",
+      "setting",
+      "lighting",
+      "lens and angle",
+      "mood"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "aspect_ratio": {
+        "type": "enum",
+        "values": [
+          "1:1",
+          "4:5",
+          "3:4",
+          "2:3",
+          "3:2",
+          "4:3",
+          "16:9",
+          "9:16"
+        ],
+        "default": "4:5",
+        "label": "Aspect ratio"
+      }
+    },
+    "limits": {
+      "promptChars": 3000,
+      "negativeChars": 0,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 700
+    },
+    "resolutions": [
+      [
+        2048,
+        2048
+      ],
+      [
+        1792,
+        2240
+      ],
+      [
+        2240,
+        1792
+      ],
+      [
+        2560,
+        1440
+      ],
+      [
+        1440,
+        2560
+      ]
+    ],
+    "dimensionMultiple": 16,
+    "supportsNegative": false,
+    "checklist": [
+      "product",
+      "placement and props",
+      "setting",
+      "lighting",
+      "lens and angle",
+      "mood"
+    ],
+    "examples": [
+      {
+        "input": "Product: matte black insulated water bottle. Audience: trail runners. Setting: granite ledge at sunrise.",
+        "output": {
+          "prompt": "A matte black insulated water bottle with a brushed steel cap stands upright on a flat granite ledge, fully visible and centred in the lower third, a small trail-running glove resting beside it. Beyond the ledge, a pine valley fills with low mist under a pale orange sunrise. Warm side light from the left grazes the bottle's curved body, giving a soft highlight line and a gentle shadow to the right; cool blue ambient light fills the shade. Shot at eye level on an 85mm lens with a shallow depth of field so the valley blurs softly. The mood is calm, energetic and outdoorsy.",
+          "params": {
+            "aspect_ratio": "4:5"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 1,
+    "briefFields": [
+      {
+        "key": "product",
+        "label": "Product",
+        "placeholder": "matte black insulated water bottle with a steel cap"
+      },
+      {
+        "key": "audience",
+        "label": "Audience",
+        "placeholder": "trail runners and hikers"
+      },
+      {
+        "key": "setting",
+        "label": "Setting",
+        "placeholder": "granite ledge at sunrise, mist below"
+      },
+      {
+        "key": "notes",
+        "label": "Style or notes (optional)",
+        "placeholder": "clean, editorial, warm tones"
+      }
+    ]
+  }
+}

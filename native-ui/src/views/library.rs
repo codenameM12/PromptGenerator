@@ -997,6 +997,85 @@ fn draw_list(
     }
 }
 
+/// Hand-entered render facts (engine, sampler, steps, CFG, notes) for a result.
+/// Seed and model are stored automatically and shown in the facts line.
+fn draw_render_meta(
+    ui: &mut Ui,
+    vm: &mut ViewModel,
+    theme: &Theme,
+    sink: &mut impl FnMut(&str, Value) -> Result<Value, String>,
+    selected: &str,
+) {
+    const FIELDS: [(&str, &str); 5] = [
+        ("engine", "Engine (e.g. ComfyUI, Hailuo)"),
+        ("sampler", "Sampler"),
+        ("steps", "Steps"),
+        ("cfg", "CFG"),
+        ("notes", "Render notes"),
+    ];
+    let id = egui::Id::new(("render-meta", selected));
+    let saved_id = id.with("saved");
+    let mut meta: Value = match ui.data(|data| data.get_temp::<Value>(id)) {
+        Some(meta) => meta,
+        None => {
+            let loaded = sink("library_render_meta_get", json!({ "id": selected }))
+                .unwrap_or_else(|_| json!({}));
+            ui.data_mut(|data| {
+                data.insert_temp(id, loaded.clone());
+                data.insert_temp(saved_id, loaded.clone());
+            });
+            loaded
+        }
+    };
+    ui.add_space(theme.space_xs);
+    ui.label(egui::RichText::new("Render details").color(theme.accent));
+    let mut changed = false;
+    for (key, label) in FIELDS {
+        let mut value = meta
+            .get(key)
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .to_string();
+        ui.label(egui::RichText::new(label).color(theme.ink_2));
+        let response = ui.add(
+            egui::TextEdit::singleline(&mut value)
+                .desired_width(f32::INFINITY)
+                .frame(theme.text_edit_frame()),
+        );
+        if response.has_focus() {
+            vm.text_input_focused = true;
+        }
+        let cleared = crate::widgets::clear_overlay(ui, &response, &mut value, theme);
+        if response.changed() || cleared {
+            meta[key] = json!(value);
+            changed = true;
+        }
+    }
+    if changed {
+        ui.data_mut(|data| data.insert_temp(id, meta.clone()));
+    }
+    let saved: Option<Value> = ui.data(|data| data.get_temp::<Value>(saved_id));
+    let dirty = saved.as_ref() != Some(&meta);
+    if ui
+        .add_enabled(dirty, egui::Button::new("Save render details"))
+        .clicked()
+    {
+        match sink(
+            "library_render_meta_set",
+            json!({ "id": selected, "meta": meta }),
+        ) {
+            Ok(stored) => {
+                ui.data_mut(|data| {
+                    data.insert_temp(id, stored.clone());
+                    data.insert_temp(saved_id, stored);
+                });
+                vm.library.notice = Some("Render details saved".to_string());
+            }
+            Err(error) => vm.library.error = Some(error),
+        }
+    }
+}
+
 fn draw_detail(
     ui: &mut Ui,
     vm: &mut ViewModel,
@@ -1240,6 +1319,8 @@ fn draw_detail(
                     "Notes saved",
                 );
             }
+
+            draw_render_meta(ui, vm, theme, sink, &selected);
 
             if let Some(tags) = record.get("tags").and_then(Value::as_array)
                 && !tags.is_empty()

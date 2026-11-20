@@ -1425,6 +1425,7 @@ mod tests {
             examples: vec![],
             reference_slots: 0,
             instruction_style: false,
+            brief_fields: Vec::new(),
         }
     }
 

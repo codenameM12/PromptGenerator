@@ -76,6 +76,9 @@ pub struct ComposeFlow {
     pub run_guidance: String,
     pub preset_guidance: String,
     pub prompt_limit: Option<i64>,
+    /// Labelled inputs of the preset (key, label, placeholder) and their values.
+    pub brief_fields: Vec<(String, String, String)>,
+    pub field_values: std::collections::HashMap<String, String>,
     pub descriptions: Vec<DescriptionView>,
     pub refine_source_id: String,
     pub refine_existing: String,
@@ -133,6 +136,8 @@ impl Default for ComposeFlow {
             run_guidance: String::new(),
             preset_guidance: String::new(),
             prompt_limit: None,
+            brief_fields: Vec::new(),
+            field_values: std::collections::HashMap::new(),
             descriptions: Vec::new(),
             refine_source_id: String::new(),
             refine_existing: String::new(),
@@ -1352,6 +1357,7 @@ fn preset_guidance(
 ) {
     flow.preset_guidance.clear();
     flow.prompt_limit = None;
+    flow.brief_fields.clear();
     flow.loaded_preset_id = Some(flow.preset_id.clone());
     if flow.preset_id.is_empty() {
         flow.refresh_guidance();
@@ -1368,6 +1374,26 @@ fn preset_guidance(
             .get("limits")
             .and_then(|limits| limits.get("promptChars"))
             .and_then(Value::as_i64);
+        flow.brief_fields = spec
+            .get("briefFields")
+            .and_then(Value::as_array)
+            .map(|fields| {
+                fields
+                    .iter()
+                    .filter_map(|field| {
+                        Some((
+                            field.get("key")?.as_str()?.to_string(),
+                            field.get("label")?.as_str()?.to_string(),
+                            field
+                                .get("placeholder")
+                                .and_then(Value::as_str)
+                                .unwrap_or("")
+                                .to_string(),
+                        ))
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
     }
     flow.refresh_guidance();
 }
@@ -1441,6 +1467,9 @@ fn draw_form(
                     sink,
                 );
             }
+            if !flow.brief_fields.is_empty() {
+                draw_brief_fields(ui, flow, sink, theme, vm);
+            } else {
             ui.label(egui::RichText::new("Brief").color(theme.ink_2));
             let mut brief = flow.brief.clone();
             let response = ui.add(
@@ -1456,6 +1485,7 @@ fn draw_form(
                 let value = brief;
                 dispatch(flow, ComposeAction::SetBrief { value }, sink);
             }
+            }
             if flow.uses_media() {
                 let mut send_images = flow.send_images;
                 if ui
@@ -1468,7 +1498,137 @@ fn draw_form(
         }
     }
     ui.add_space(theme.space_sm);
+    if flow.mode == "compose" || flow.mode == "describe" {
+        draw_terms(ui, flow, sink, theme);
+    }
     draw_advanced(ui, flow, sink, theme, vm);
+}
+
+const TERMS_JSON: &str = include_str!("../../assets/terms.json");
+const TERMS_NOTICE: &str = include_str!("../../assets/NOTICE-terms.txt");
+
+/// Vocabulary pick-list (lighting, camera, mood...). Clicking a term appends it
+/// to the brief (or to the last labelled field of a form preset).
+fn draw_terms(
+    ui: &mut Ui,
+    flow: &mut ComposeFlow,
+    sink: &mut impl FnMut(&str, Value) -> Result<Value, String>,
+    theme: &Theme,
+) {
+    let categories: Vec<Value> = serde_json::from_str(TERMS_JSON).unwrap_or_default();
+    if categories.is_empty() {
+        return;
+    }
+    let mut picked: Option<String> = None;
+    egui::CollapsingHeader::new("Terms")
+        .id_salt("compose-terms")
+        .default_open(false)
+        .show(ui, |ui| {
+            let tab_id = egui::Id::new("compose-terms-tab");
+            let mut tab: usize = ui.data(|data| data.get_temp(tab_id)).unwrap_or(0);
+            ui.horizontal_wrapped(|ui| {
+                for (index, category) in categories.iter().enumerate() {
+                    let name = category
+                        .get("category")
+                        .and_then(Value::as_str)
+                        .unwrap_or("");
+                    if ui.selectable_label(tab == index, name).clicked() {
+                        tab = index;
+                    }
+                }
+            });
+            ui.data_mut(|data| data.insert_temp(tab_id, tab));
+            let terms = categories
+                .get(tab)
+                .and_then(|category| category.get("terms"))
+                .and_then(Value::as_array)
+                .cloned()
+                .unwrap_or_default();
+            egui::ScrollArea::vertical()
+                .id_salt("compose-terms-list")
+                .max_height(150.0)
+                .show(ui, |ui| {
+                    ui.horizontal_wrapped(|ui| {
+                        for term in terms.iter().filter_map(Value::as_str) {
+                            if ui.small_button(term).clicked() {
+                                picked = Some(term.to_string());
+                            }
+                        }
+                    });
+                });
+            egui::CollapsingHeader::new("Credits")
+                .id_salt("compose-terms-credits")
+                .show(ui, |ui| {
+                    ui.label(egui::RichText::new(TERMS_NOTICE).color(theme.faint).size(11.0));
+                });
+        });
+    if let Some(term) = picked {
+        if let Some((key, _, _)) = flow.brief_fields.last().cloned() {
+            let entry = flow.field_values.entry(key).or_default();
+            if !entry.is_empty() {
+                entry.push_str(", ");
+            }
+            entry.push_str(&term);
+            let brief = compose_brief(&flow.brief_fields, &flow.field_values);
+            dispatch(flow, ComposeAction::SetBrief { value: brief }, sink);
+        } else {
+            let mut brief = flow.brief.trim_end().to_string();
+            if !brief.is_empty() {
+                brief.push_str(", ");
+            }
+            brief.push_str(&term);
+            dispatch(flow, ComposeAction::SetBrief { value: brief }, sink);
+        }
+    }
+}
+
+/// Labelled inputs for presets that declare `briefFields`; the composed brief
+/// is "Label: value" lines in field order, empty fields left out.
+fn draw_brief_fields(
+    ui: &mut Ui,
+    flow: &mut ComposeFlow,
+    sink: &mut impl FnMut(&str, Value) -> Result<Value, String>,
+    theme: &Theme,
+    vm: &mut ViewModel,
+) {
+    let fields = flow.brief_fields.clone();
+    let mut changed = false;
+    for (key, label, placeholder) in fields {
+        ui.label(egui::RichText::new(label).color(theme.ink_2));
+        let mut value = flow.field_values.get(&key).cloned().unwrap_or_default();
+        let response = ui.add(
+            egui::TextEdit::singleline(&mut value)
+                .hint_text(placeholder)
+                .desired_width(f32::INFINITY)
+                .frame(theme.text_edit_frame()),
+        );
+        if response.has_focus() {
+            vm.text_input_focused = true;
+        }
+        let cleared = crate::widgets::clear_overlay(ui, &response, &mut value, theme);
+        if response.changed() || cleared {
+            flow.field_values.insert(key, value);
+            changed = true;
+        }
+    }
+    if changed {
+        let brief = compose_brief(&flow.brief_fields, &flow.field_values);
+        dispatch(flow, ComposeAction::SetBrief { value: brief }, sink);
+    }
+}
+
+fn compose_brief(
+    fields: &[(String, String, String)],
+    values: &std::collections::HashMap<String, String>,
+) -> String {
+    fields
+        .iter()
+        .filter_map(|(key, label, _)| {
+            let value = values.get(key).map(|text| text.trim()).unwrap_or("");
+            (!value.is_empty()).then(|| format!("{label}: {value}"))
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 /// Long file names widened the whole left column and pushed text over the right

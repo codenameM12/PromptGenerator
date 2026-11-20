@@ -40,6 +40,14 @@ const BUILTINS: &[BuiltinSource] = &[
         json: include_str!("../presets/mmh3-image-edit.json"),
     },
     BuiltinSource {
+        file: "product-photo.json",
+        json: include_str!("../presets/product-photo.json"),
+    },
+    BuiltinSource {
+        file: "product-macro.json",
+        json: include_str!("../presets/product-macro.json"),
+    },
+    BuiltinSource {
         file: "krea2.json",
         json: include_str!("../presets/krea2.json"),
     },
@@ -153,9 +161,9 @@ mod tests {
         let database = database();
         let connection = database.connection();
 
-        assert_eq!(super::seed(connection).expect("seed"), 10);
+        assert_eq!(super::seed(connection).expect("seed"), 12);
         assert_eq!(super::seed(connection).expect("seed again"), 0);
-        assert_eq!(presets::list(connection, false).expect("list").len(), 10);
+        assert_eq!(presets::list(connection, false).expect("list").len(), 12);
     }
 
     #[test]
@@ -264,7 +272,7 @@ mod tests {
             preset::validate(&spec).expect("valid preset");
             assert!(ids.insert(spec.id.clone()), "duplicate id {}", spec.id);
         }
-        assert_eq!(ids.len(), 10);
+        assert_eq!(ids.len(), 12);
     }
 
     #[test]
