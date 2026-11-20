@@ -1,0 +1,96 @@
+{
+  "id": "hailuo",
+  "name": "hailuo",
+  "kind": "video",
+  "version": "1.0.0",
+  "description": "MiniMax Hailuo 2.3 / 02 video with bracket camera commands, one camera move per clip, pinned lighting. MiniMax API reference, video generation (platform.minimax.io/docs/api-reference/video-generation-t2v): bracket camera commands for MiniMax-Hailuo-2.3, MiniMax-Hailuo-02 and T2V-01-Director.",
+  "document": {
+    "schema": 1,
+    "id": "hailuo",
+    "name": "hailuo",
+    "kind": "video",
+    "version": "1.0.0",
+    "description": "MiniMax Hailuo 2.3 / 02 video with bracket camera commands, one camera move per clip, pinned lighting. MiniMax API reference, video generation (platform.minimax.io/docs/api-reference/video-generation-t2v): bracket camera commands for MiniMax-Hailuo-2.3, MiniMax-Hailuo-02 and T2V-01-Director.",
+    "mode": "compose",
+    "systemPrompt": "You write one prompt for MiniMax Hailuo video (text-to-video, or image-to-video when a reference image is the first frame) in natural English with MiniMax's bracket camera commands. Structure: subject and its look, the action in order, the setting, then lighting, then the camera. Camera commands go inside square brackets in the sentence where the move happens, for example 'A man picks up a book [Pedestal up], then reads [Static shot].' Use only these 15 commands, spelled exactly: [Truck left] [Truck right] [Pan left] [Pan right] [Push in] [Pull out] [Pedestal up] [Pedestal down] [Tilt up] [Tilt down] [Zoom in] [Zoom out] [Shake] [Tracking shot] [Static shot]. Several commands in ONE bracket happen together (for example [Pan left,Pedestal up]); use at most 3 per bracket. Commands in separate brackets happen in order. House rules: use ONE camera move per clip unless the brief asks for more, and when the brief names no camera, use [Static shot]. Pin the lighting once (direction, softness, colour) and do not change it during the clip. For product or commercial shots prefer [Push in] over [Zoom in]. If the brief lists bracket commands under 'Style terms', use exactly those commands, in that order, and add none. If a reference image is supplied it is the first frame: describe only what moves from there and keep its subject, colours and framing. No negative prompts. Keep the whole prompt under 2000 characters. Return JSON with prompt, params and optional notes.",
+    "guidance": "Hailuo: bracket camera commands. 15 allowed: Truck left/right, Pan left/right, Push in, Pull out, Pedestal up/down, Tilt up/down, Zoom in/out, Shake, Tracking shot, Static shot. One move per clip by default, [Static shot] when none is asked, lighting pinned, push-in rather than zoom for products. Several commands in one bracket run together (max 3 recommended); separate brackets run in order. Prompts up to 2000 characters. Source: MiniMax API reference.",
+    "sections": [
+      "subject and action",
+      "setting",
+      "lighting",
+      "camera"
+    ],
+    "outputSchema": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "params"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "params": {
+      "duration_s": {
+        "type": "integer",
+        "min": 6,
+        "max": 10,
+        "default": 6,
+        "label": "Duration (s)"
+      },
+      "resolution": {
+        "type": "enum",
+        "values": [
+          "768P",
+          "1080P"
+        ],
+        "default": "768P",
+        "label": "Resolution"
+      }
+    },
+    "limits": {
+      "promptChars": 2000,
+      "negativeChars": 0,
+      "maxInputTokens": 6000,
+      "maxOutputTokens": 700
+    },
+    "resolutions": [
+      [
+        1366,
+        768
+      ],
+      [
+        1920,
+        1080
+      ]
+    ],
+    "dimensionMultiple": 2,
+    "supportsNegative": false,
+    "checklist": [
+      "one camera move",
+      "lighting pinned",
+      "bracket commands exact"
+    ],
+    "examples": [
+      {
+        "input": "a ceramic mug on a wooden table, steam rising, morning light, slow push toward the mug",
+        "output": {
+          "prompt": "A white ceramic mug sits on a worn oak table, thin steam curling up from the coffee. Soft warm morning light comes from a window on the left and stays constant. The camera moves slowly toward the mug [Push in], with a shallow depth of field and a quiet, cosy mood.",
+          "params": {
+            "duration_s": 6,
+            "resolution": "768P"
+          }
+        }
+      }
+    ],
+    "referenceSlots": 1
+  }
+}

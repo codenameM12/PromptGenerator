@@ -229,5 +229,30 @@
    "beach",
    "living room"
   ]
+ },
+ {
+  "category": "Hailuo camera",
+  "terms": [
+   "[Static shot]",
+   "[Push in]",
+   "[Pull out]",
+   "[Pan left]",
+   "[Pan right]",
+   "[Truck left]",
+   "[Truck right]",
+   "[Pedestal up]",
+   "[Pedestal down]",
+   "[Tilt up]",
+   "[Tilt down]",
+   "[Zoom in]",
+   "[Zoom out]",
+   "[Shake]",
+   "[Tracking shot]",
+   "[Push in,Pedestal up]",
+   "[Pull out,Pedestal up]",
+   "[Truck left,Pan right]",
+   "[Pan left,Tilt up]",
+   "[Tracking shot,Pan right]"
+  ]
  }
 ]

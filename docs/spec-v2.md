@@ -49,6 +49,6 @@ licence and copyright (2026 DareDev256). The picker is a Compose panel.
 | 2 | Brief-fields schema + R5/R8 presets (`product-photo`, `product-macro`) | Built, tests pass |
 | 3 | R9 render metadata (migration 8, Library detail form) | Built, tests pass |
 | 4 | T1 term pick-list (`native-ui/assets/terms.json`, credits in `NOTICE-terms.txt`) | Built, tests pass |
-| 5 | R1/R2 Hailuo preset | Not built: waiting on the MiniMax API-doc check |
+| 5 | R1/R2 Hailuo preset (`hailuo`) | Built. Verified against the MiniMax API reference: 15 commands, simultaneous in one bracket (max 3 recommended), sequential in separate brackets; supported on Hailuo-2.3, Hailuo-02, T2V-01-Director. H3 is not covered by that page. Named combinations are in the Terms picker under "Hailuo camera" and are sent verbatim as Style terms |
 
 Not yet seen on screen: the form inputs, term picker and render-details form were compiled and unit-tested only.

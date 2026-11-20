@@ -78,6 +78,8 @@ pub struct ComposeFlow {
     pub prompt_limit: Option<i64>,
     /// Labelled inputs of the preset (key, label, placeholder) and their values.
     pub brief_fields: Vec<(String, String, String)>,
+    /// Terms picked from the vocabulary list; sent with the brief.
+    pub selected_terms: Vec<String>,
     pub field_values: std::collections::HashMap<String, String>,
     pub descriptions: Vec<DescriptionView>,
     pub refine_source_id: String,
@@ -137,6 +139,7 @@ impl Default for ComposeFlow {
             preset_guidance: String::new(),
             prompt_limit: None,
             brief_fields: Vec::new(),
+            selected_terms: Vec::new(),
             field_values: std::collections::HashMap::new(),
             descriptions: Vec::new(),
             refine_source_id: String::new(),
@@ -244,6 +247,19 @@ impl ComposeFlow {
         self.descriptions
             .iter()
             .find(|entry| entry.asset_id == asset_id)
+    }
+
+    /// The brief as sent to the composer: the typed brief plus the chosen terms.
+    pub fn effective_brief(&self) -> String {
+        let mut brief = self.brief.trim().to_string();
+        if !self.selected_terms.is_empty() {
+            if !brief.is_empty() {
+                brief.push_str("\n\n");
+            }
+            brief.push_str("Style terms: ");
+            brief.push_str(&self.selected_terms.join(", "));
+        }
+        brief
     }
 
     fn refresh_guidance(&mut self) {
@@ -698,6 +714,7 @@ pub fn dispatch(flow: &mut ComposeFlow, action: ComposeAction, call: CallSink) {
             flow.copied = None;
             flow.descriptions.clear();
             flow.brief.clear();
+            flow.selected_terms.clear();
             flow.hint.clear();
             flow.locked.clear();
             flow.run_guidance.clear();
@@ -956,7 +973,7 @@ fn run_compose_flow(
             flow.error = Some("Enter a refinement instruction".into());
             return;
         }
-    } else if !flow.uses_media() && flow.brief.trim().is_empty() {
+    } else if !flow.uses_media() && flow.effective_brief().trim().is_empty() {
         flow.error = Some("Enter a prompt brief or choose media".into());
         return;
     }
@@ -1008,7 +1025,7 @@ fn run_compose_flow(
             "parentId": if refine { flow.refine_parent_id.clone().map(Value::String).unwrap_or(Value::Null) } else { Value::Null },
             "description": primary.as_ref().and_then(|value| value.get("description")).cloned()
                 .unwrap_or(Value::Null),
-            "brief": if refine { Value::Null } else { non_empty(&flow.brief) },
+            "brief": if refine { Value::Null } else { non_empty(&flow.effective_brief()) },
             "instruction": if refine { Value::String(flow.refine_instruction.clone()) } else { Value::Null },
             "guidance": flow.request_guidance(),
             "locked": split_phrases(&flow.locked),
@@ -1091,7 +1108,7 @@ fn queue_batch(flow: &mut ComposeFlow, call: CallSink) {
                 "editId": asset.edit_id.clone().map(Value::String).unwrap_or(Value::Null),
                 "parentId": null,
                 "description": text,
-                "brief": non_empty(&flow.brief),
+                "brief": non_empty(&flow.effective_brief()),
                 "instruction": null,
                 "guidance": flow.request_guidance(),
                 "locked": split_phrases(&flow.locked),
@@ -1486,6 +1503,7 @@ fn draw_form(
                 dispatch(flow, ComposeAction::SetBrief { value }, sink);
             }
             }
+            draw_selected_terms(ui, flow, theme);
             if flow.uses_media() {
                 let mut send_images = flow.send_images;
                 if ui
@@ -1499,7 +1517,7 @@ fn draw_form(
     }
     ui.add_space(theme.space_sm);
     if flow.mode == "compose" || flow.mode == "describe" {
-        draw_terms(ui, flow, sink, theme);
+        draw_terms(ui, flow, theme);
     }
     draw_advanced(ui, flow, sink, theme, vm);
 }
@@ -1507,77 +1525,105 @@ fn draw_form(
 const TERMS_JSON: &str = include_str!("../../assets/terms.json");
 const TERMS_NOTICE: &str = include_str!("../../assets/NOTICE-terms.txt");
 
-/// Vocabulary pick-list (lighting, camera, mood...). Clicking a term appends it
-/// to the brief (or to the last labelled field of a form preset).
-fn draw_terms(
-    ui: &mut Ui,
-    flow: &mut ComposeFlow,
-    sink: &mut impl FnMut(&str, Value) -> Result<Value, String>,
-    theme: &Theme,
-) {
+/// Chips for the chosen terms, right under the brief. Clicking one removes it.
+fn draw_selected_terms(ui: &mut Ui, flow: &mut ComposeFlow, theme: &Theme) {
+    if flow.selected_terms.is_empty() {
+        return;
+    }
+    let mut remove: Option<usize> = None;
+    ui.scope(|ui| {
+        ui.spacing_mut().item_spacing = egui::vec2(4.0, 4.0);
+        ui.spacing_mut().button_padding = egui::vec2(7.0, 2.0);
+        ui.spacing_mut().interact_size.y = 22.0;
+        ui.horizontal_wrapped(|ui| {
+            for (index, term) in flow.selected_terms.iter().enumerate() {
+                if ui
+                    .add(
+                        egui::Button::new(
+                            egui::RichText::new(format!("{term}  x")).color(theme.accent),
+                        )
+                        .fill(theme.accent.gamma_multiply(0.15)),
+                    )
+                    .on_hover_text("Click to remove")
+                    .clicked()
+                {
+                    remove = Some(index);
+                }
+            }
+        });
+    });
+    if let Some(index) = remove {
+        flow.selected_terms.remove(index);
+    }
+}
+
+/// Vocabulary pick-list (lighting, camera, mood...). Terms toggle in the
+/// selected list shown under the brief; they are sent with the brief.
+fn draw_terms(ui: &mut Ui, flow: &mut ComposeFlow, theme: &Theme) {
     let categories: Vec<Value> = serde_json::from_str(TERMS_JSON).unwrap_or_default();
     if categories.is_empty() {
         return;
     }
-    let mut picked: Option<String> = None;
+    let mut toggled: Option<String> = None;
     egui::CollapsingHeader::new("Terms")
         .id_salt("compose-terms")
         .default_open(false)
         .show(ui, |ui| {
             let tab_id = egui::Id::new("compose-terms-tab");
             let mut tab: usize = ui.data(|data| data.get_temp(tab_id)).unwrap_or(0);
-            ui.horizontal_wrapped(|ui| {
-                for (index, category) in categories.iter().enumerate() {
-                    let name = category
-                        .get("category")
-                        .and_then(Value::as_str)
-                        .unwrap_or("");
-                    if ui.selectable_label(tab == index, name).clicked() {
-                        tab = index;
-                    }
-                }
-            });
-            ui.data_mut(|data| data.insert_temp(tab_id, tab));
-            let terms = categories
-                .get(tab)
-                .and_then(|category| category.get("terms"))
-                .and_then(Value::as_array)
-                .cloned()
-                .unwrap_or_default();
-            egui::ScrollArea::vertical()
-                .id_salt("compose-terms-list")
-                .max_height(150.0)
-                .show(ui, |ui| {
-                    ui.horizontal_wrapped(|ui| {
-                        for term in terms.iter().filter_map(Value::as_str) {
-                            if ui.small_button(term).clicked() {
-                                picked = Some(term.to_string());
-                            }
+            ui.scope(|ui| {
+                ui.spacing_mut().item_spacing = egui::vec2(4.0, 3.0);
+                ui.spacing_mut().button_padding = egui::vec2(7.0, 2.0);
+                ui.spacing_mut().interact_size.y = 22.0;
+                ui.horizontal_wrapped(|ui| {
+                    for (index, category) in categories.iter().enumerate() {
+                        let name = category
+                            .get("category")
+                            .and_then(Value::as_str)
+                            .unwrap_or("");
+                        if ui.selectable_label(tab == index, name).clicked() {
+                            tab = index;
                         }
-                    });
+                    }
                 });
+                ui.data_mut(|data| data.insert_temp(tab_id, tab));
+                let terms = categories
+                    .get(tab)
+                    .and_then(|category| category.get("terms"))
+                    .and_then(Value::as_array)
+                    .cloned()
+                    .unwrap_or_default();
+                egui::ScrollArea::vertical()
+                    .id_salt("compose-terms-list")
+                    .max_height(140.0)
+                    .show(ui, |ui| {
+                        ui.horizontal_wrapped(|ui| {
+                            for term in terms.iter().filter_map(Value::as_str) {
+                                let chosen = flow.selected_terms.iter().any(|item| item == term);
+                                if ui
+                                    .add(
+                                        egui::Button::new(egui::RichText::new(term).size(12.5))
+                                            .selected(chosen),
+                                    )
+                                    .clicked()
+                                {
+                                    toggled = Some(term.to_string());
+                                }
+                            }
+                        });
+                    });
+            });
             egui::CollapsingHeader::new("Credits")
                 .id_salt("compose-terms-credits")
                 .show(ui, |ui| {
                     ui.label(egui::RichText::new(TERMS_NOTICE).color(theme.faint).size(11.0));
                 });
         });
-    if let Some(term) = picked {
-        if let Some((key, _, _)) = flow.brief_fields.last().cloned() {
-            let entry = flow.field_values.entry(key).or_default();
-            if !entry.is_empty() {
-                entry.push_str(", ");
-            }
-            entry.push_str(&term);
-            let brief = compose_brief(&flow.brief_fields, &flow.field_values);
-            dispatch(flow, ComposeAction::SetBrief { value: brief }, sink);
+    if let Some(term) = toggled {
+        if let Some(position) = flow.selected_terms.iter().position(|item| *item == term) {
+            flow.selected_terms.remove(position);
         } else {
-            let mut brief = flow.brief.trim_end().to_string();
-            if !brief.is_empty() {
-                brief.push_str(", ");
-            }
-            brief.push_str(&term);
-            dispatch(flow, ComposeAction::SetBrief { value: brief }, sink);
+            flow.selected_terms.push(term);
         }
     }
 }
@@ -2498,4 +2544,26 @@ pub fn run_compose(vm: &mut ViewModel, backend: &dyn Backend) {
         dispatch(&mut flow, ComposeAction::Compose, &mut sink);
         sync_to_vm(&flow, vm);
     });
+}
+
+#[cfg(test)]
+mod brief_tests {
+    use super::*;
+
+    #[test]
+    fn selected_terms_are_sent_with_the_brief() {
+        let mut flow = ComposeFlow::default();
+        flow.brief = "a red fox in snow".into();
+        flow.selected_terms = vec!["macro".into(), "soft light".into()];
+        assert_eq!(
+            flow.effective_brief(),
+            "a red fox in snow
+
+Style terms: macro, soft light"
+        );
+        flow.brief.clear();
+        assert_eq!(flow.effective_brief(), "Style terms: macro, soft light");
+        flow.selected_terms.clear();
+        assert_eq!(flow.effective_brief(), "");
+    }
 }
